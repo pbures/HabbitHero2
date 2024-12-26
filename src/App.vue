@@ -2,12 +2,13 @@
 import { RouterLink, RouterView } from 'vue-router'
 import { useCounterStore } from '@/stores/counter'
 import { useUserStore } from '@/stores/user'
+import { useAuth0 } from '@auth0/auth0-vue'
 import HelloWorld from './components/HelloWorld.vue'
 
 const counterStore = useCounterStore()
 const userStore = useUserStore()
+const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0()
 
-// Fetch real user data when the component is mounted
 userStore.fetchUserData()
 </script>
 
@@ -18,15 +19,22 @@ userStore.fetchUserData()
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
       <button @click="counterStore.increment">Count: {{ counterStore.count }}</button>
-      <div>
-        <p>User Name: {{ userStore.name }}</p>
-        <p>User Email: {{ userStore.email }}</p>
-      </div>
 
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
       </nav>
+
+      <div v-if="isAuthenticated">
+        <p>Welcome, {{ user.name }}</p>
+        <!-- <button @click="logout({ returnTo:{window.location.origin} })">Logout</button> -->
+        <button @click="logout()">Logout</button>
+        <p>User Name: {{ userStore.name }}</p>
+        <p>User Email: {{ userStore.email }}</p>
+      </div>
+      <div v-else>
+        <button @click="loginWithRedirect">Login</button>
+      </div>
     </div>
   </header>
 

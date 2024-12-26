@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuth0 } from '@auth0/auth0-vue'
 import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
@@ -16,8 +17,25 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue'),
+      meta: {
+        requiresAuth: true,
+      },
     },
   ],
+})
+
+router.beforeEach((to, from, next) => {
+  const { isAuthenticated, loginWithRedirect } = useAuth0()
+
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!isAuthenticated.value) {
+      loginWithRedirect()
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
 })
 
 export default router

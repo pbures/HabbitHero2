@@ -16,9 +16,16 @@ export default defineConfig({
     },
   },
   build: {
-    sourcemap: true, // Enable source maps
+    sourcemap: false,
   },
   server: {
     sourcemap: true, // Enable source maps in development
+    sourcemapIgnoreList: (sourcePath) => {
+      // Ignore missing source maps for specific packages
+      if (sourcePath.includes('auth0/auth0-vue')) {
+        return true
+      }
+      return false
+    }
   },
 })
