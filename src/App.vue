@@ -1,9 +1,14 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
 import { useCounterStore } from '@/stores/counter'
+import { useUserStore } from '@/stores/user'
 import HelloWorld from './components/HelloWorld.vue'
 
 const counterStore = useCounterStore()
+const userStore = useUserStore()
+
+// Fetch real user data when the component is mounted
+userStore.fetchUserData()
 </script>
 
 <template>
@@ -13,6 +18,10 @@ const counterStore = useCounterStore()
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
       <button @click="counterStore.increment">Count: {{ counterStore.count }}</button>
+      <div>
+        <p>User Name: {{ userStore.name }}</p>
+        <p>User Email: {{ userStore.email }}</p>
+      </div>
 
       <nav>
         <RouterLink to="/">Home</RouterLink>
