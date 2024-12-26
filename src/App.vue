@@ -1,6 +1,9 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
+import { useCounterStore } from '@/stores/counter'
 import HelloWorld from './components/HelloWorld.vue'
+
+const counterStore = useCounterStore()
 </script>
 
 <template>
@@ -16,6 +19,8 @@ import HelloWorld from './components/HelloWorld.vue'
       </nav>
     </div>
   </header>
+
+  <button @click="counterStore.increment">Count: {{ counterStore.count }}</button>
 
   <RouterView />
 </template>
