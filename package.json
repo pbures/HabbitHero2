@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "dockerbuild": "docker build -t habbithero2 .",
+    "dockerstart": "docker run -p 8080:80 habbithero2",
     "preview": "vite preview",
     "lint": "eslint . --fix"
   },
