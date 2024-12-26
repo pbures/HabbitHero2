@@ -12,6 +12,7 @@ const counterStore = useCounterStore()
 
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
+      <button @click="counterStore.increment">Count: {{ counterStore.count }}</button>
 
       <nav>
         <RouterLink to="/">Home</RouterLink>
@@ -20,7 +21,6 @@ const counterStore = useCounterStore()
     </div>
   </header>
 
-  <button @click="counterStore.increment">Count: {{ counterStore.count }}</button>
 
   <RouterView />
 </template>
