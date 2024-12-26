@@ -15,4 +15,10 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  build: {
+    sourcemap: true, // Enable source maps
+  },
+  server: {
+    sourcemap: true, // Enable source maps in development
+  },
 })
