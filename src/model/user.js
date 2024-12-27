@@ -1,3 +1,5 @@
+/* An example data item of a single habbit */
+
 export default
 {
     _id: 1,

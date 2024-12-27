@@ -1,3 +1,5 @@
+/* An example data item of a single habbit */
+
 export default {
     _id: 1,
     schema_version: "1.0",
@@ -33,7 +35,7 @@ export default {
                        deleted - habbit was deleted, is kept of recovery.
     */
     status: "active",
-    
+
     /* A date when the status was changed to it's last state */
     status_date: "2023-10-01T10:00:00Z",
 
