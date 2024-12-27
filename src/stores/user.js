@@ -2,22 +2,20 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useAuth0 } from '@auth0/auth0-vue'
-
+import userMockData from '../model/user.js'
 
 function getMockData(){
-  return {
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-  }
+  return userMockData
 }
 
 const useMockData = import.meta.env.VITE_USE_MOCK_DATA === 'true'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    name: useMockData ? 'John Doe' : '', // Mock data
-    email: useMockData ? 'john.doe@example.com' : '', // Mock data
+    name: '',
+    email: ''
   }),
+  
   actions: {
     setName(name) {
       this.name = name
