@@ -1,12 +1,12 @@
 <script setup>
-import HabbitView from '@/components/HabbitView.vue';
+import HabbitsView from '@/components/HabbitsView.vue';
+import { useAuth0 } from '@auth0/auth0-vue'
 
-
-
+const { isAuthenticated } = useAuth0()
 </script>
 
 <template>
-  <main>
-    <HabbitView />
+  <main v-if="isAuthenticated">
+    <HabbitsView />
   </main>
 </template>

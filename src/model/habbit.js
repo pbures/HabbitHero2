@@ -12,16 +12,13 @@ export default {
     /* User IDs of the owners of the habbit. Habbits can be shared amongst more users */
     user_ids: [1, 2],
 
-    /* allowed values: regular, or anytime */
-    repetition_type: "regular", 
+    /* allowed values: goal or habbit */
+    type: "goal", 
 
-    /* Expiration date of the habbit. This is to set a time limited goals */
+    /* Expiration date of the goal or habbit. This is to set a time limited goals or habbits */
     expiration_date: "2023-12-31T23:59:59Z",
 
-    /* Number of repetitions. 
-       If set to 0, it means regularity is the target 
-       (applicable only on repetition_type: regular). 
-    */
+    /* Number of repetitions. Applicable only for type: goal. */
     target: 20,
 
     /* How many events (like exercises) can you add at once?

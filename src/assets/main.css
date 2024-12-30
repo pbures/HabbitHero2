@@ -40,3 +40,13 @@ h1 {
 .nav a:hover {
   text-decoration: underline;
 }
+
+.clickable:hover {
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+body {
+  cursor: default;
+}
+/*  */
