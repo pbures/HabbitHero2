@@ -2,40 +2,40 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useAuth0 } from '@auth0/auth0-vue'
-import userMockData from '../model/user.js'
+import habbitsMockData from '../model/habbit.js'
 
 function getMockData(){
-  return userMockData
+  return [ habbitsMockData,  habbitsMockData, habbitsMockData, habbitsMockData ]
 }
 
 const useMockData = import.meta.env.VITE_USE_MOCK_DATA === 'true'
 
-export const useUserStore = defineStore('user', {
+export const useHabbitStore = defineStore('habbit', {
   state: () => ({
-    name: '',
-    email: ''
+    habbits: [],
   }),
   
   actions: {
-    setName(name) {
-      this.name = name
-    },
-    setEmail(email) {
-      this.email = email
+    getHabbits() {
+        return this.habbits;
     },
 
-    async fetchUserData() {
+    addNewHabbit(habbit) {
+      this.habbits.push(habbit);
+    },
+
+    async fetchHabbitsData() {
       if (useMockData) {
-        console.log('Using mock data')
+        console.log('Using mock data to get habbits')
         let data =  getMockData()
-        let model = this
+        let model = this;
+        console.log(model.habbits);
 
         return new Promise( (resolve) => {
             setTimeout(() => {
-                model.name = data.name
-                model.email = data.email
+                model.habbits = data;
                 resolve(data);
-            }, 2000);
+            }, 1000);
         });
 
       }
@@ -44,16 +44,15 @@ export const useUserStore = defineStore('user', {
 
       try {
         const token = await getAccessTokenSilently()
-        const response = await axios.get('https://api.example.com/user', {
+        const response = await axios.get('https://api.example.com/habbits', {
           headers: {
             Authorization: `Bearer ${token}`
           }
         })
-        
-        this.name = response.data.name
-        this.email = response.data.email
+        this.habbits = response.data.habbits
+
       } catch (error) {
-        console.error('Failed to fetch user data:', error)
+        console.error('Failed to fetch habbit data:', error)
       }
     },
   },

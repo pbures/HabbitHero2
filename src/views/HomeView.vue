@@ -1,9 +1,12 @@
 <script setup>
-import TheWelcome from '../components/TheWelcome.vue'
+import HabbitView from '@/components/HabbitView.vue';
+
+
+
 </script>
 
 <template>
   <main>
-    <TheWelcome />
+    <HabbitView />
   </main>
 </template>
