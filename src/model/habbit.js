@@ -3,7 +3,10 @@
 export default {
     _id: 1,
     schema_version: "1.0",
-    title: "Eat vegetables 4 times a week",
+
+    /* Title of the habbit, Max 16 characters */
+    title: "Eat vegetables",
+    
     description: "I will eat vegetables at least four times a week",
 
     /* User IDs of the owners of the habbit. Habbits can be shared amongst more users */

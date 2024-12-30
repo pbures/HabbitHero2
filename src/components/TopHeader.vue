@@ -38,22 +38,6 @@
     top: 0;
     width: 100%;
     z-index: 1000;
-}
-
-.nav ul {
-    list-style: none;
-    display: flex;
-    gap: 1rem;
-    padding: 0;
-    margin: 0;
-}
-
-.nav a {
-    color: white;
-    text-decoration: none;
-}
-
-.nav a:hover {
-    text-decoration: underline;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1), 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 </style>
