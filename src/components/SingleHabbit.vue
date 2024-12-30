@@ -49,6 +49,8 @@
 
         background-color: #2e79bf;
         color: black;
+
+        border-radius: 15px;
     }
 
     div.habbit-footer {
