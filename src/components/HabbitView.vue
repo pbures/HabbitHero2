@@ -8,10 +8,6 @@
         </code> -->
 
         <div class="habbits-container">
-            <div>
-                Home View with a list of habbits.
-                Habbits: {{ habbitLen }}
-            </div>
             <div class="habbit" v-for="habbit in habbits" :key="habbit.id">
                 <h3>{{ habbit.title }}</h3>
             </div>
