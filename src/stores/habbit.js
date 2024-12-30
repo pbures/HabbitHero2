@@ -43,7 +43,16 @@ export const useHabbitStore = defineStore('habbit', {
     },
 
     addHabbitsEvent(habbitId) {
-      let h = this.habbits.findOne(h => h._id === habbitId)
+
+      let h
+      for (let h1 of this.habbits) {
+        if (h1._id === habbitId) {
+          h = h1;
+          break;
+        }
+      }
+
+      // let h = this.habbits.findOne(h => h._id === habbitId)
       if (!h) {
         console.error('Habbit not found');
         return;
