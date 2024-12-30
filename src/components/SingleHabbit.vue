@@ -8,8 +8,10 @@
             <div class="habbit-details" v-else>
                 H: {{ habbit.total_event_count }}
             </div>
-            <div class="clickable" @click="confirmEvent(habbit.id)">&#x2713;</div>
-            <div class="clickable">&#9432;</div>
+
+            <div class="clickable" @click="confirmEvent(habbit._id)">&#x2713;</div>
+            <div class="clickable" @click="editHabbit(habbit._id)">E</div>
+            <div class="clickable" @click="showHabbitDetails(habbit._id)">&#9432;</div>
         </div>
     </div>
 </template>
@@ -20,6 +22,17 @@
 
     const confirmEvent = (id) => {
         console.log('Event confirmed for habbit with id:', id);
+        habbitStore.addHabbitsEvent(id)
+    };
+
+    const editHabbit = (id) => {
+        console.log('Edit habbit with id:', id);
+        /* TODO: Implement edit habbit */
+    };
+
+    const showHabbitDetails = (id) => {
+        console.log('Show details for habbit with id:', id);
+        /* TODO: Implement show habbit details */
     };
 
     defineProps(['habbit'])

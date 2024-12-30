@@ -52,7 +52,7 @@ export default {
         },
         {
             _id: 2,
-            owner_id: 2,
+            user_id: 2,
             num_of_events: 1,
             /* Time is in UTC */
             date: "2023-10-03T10:00:00Z"
