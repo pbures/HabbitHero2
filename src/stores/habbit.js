@@ -54,7 +54,7 @@ export const useHabbitStore = defineStore('habbit', {
       
       if(useMockData){
         /* Update existing */
-        if(habbit._id){
+        if(habbit._id !== null){
           for(let i=0; i<this.habbits.length; i++){
             if(this.habbits[i]._id === habbit._id){
               this.habbits[i] = habbit;

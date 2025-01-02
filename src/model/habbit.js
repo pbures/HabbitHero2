@@ -16,7 +16,7 @@ export default {
     type: "goal", 
 
     /* Expiration date of the goal or habbit. This is to set a time limited goals or habbits */
-    expiration_date: "2023-12-31T23:59:59Z",
+    expiration_date: "2023-12-31",
 
     /* Number of repetitions. Applicable only for type: goal. */
     target: 20,
@@ -37,7 +37,7 @@ export default {
     status: "active",
 
     /* A date when the status was changed to it's last state */
-    status_date: "2023-10-01T10:00:00Z",
+    status_date: "2023-10-01",
 
     /* Inline list of events.
        Every record of 1..n events is done by a singler user.
