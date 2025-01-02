@@ -39,7 +39,38 @@ export const useHabbitStore = defineStore('habbit', {
     },
 
     addNewHabbit(habbit) {
-      this.habbits.push(habbit);
+      if(useMockData) {
+        this._addNewHabbitMock(habbit);
+      } else {
+        //TODO: Add or update the habbit on the server and  re-fetch all users habbits.
+      }
+    },
+
+    _addNewHabbitMock(habbit) {
+      
+      if(useMockData){
+        /* Update existing */
+        if(habbit._id){
+          for(let i=0; i<this.habbits.length; i++){
+            if(this.habbits[i]._id === habbit._id){
+              this.habbits[i] = habbit;
+              return
+            }
+          }
+        }
+
+        /* Create new ID and add to the array */
+        let maxId = 0;
+        this.habbits.forEach( (e) => {
+          if(e._id > maxId){
+            maxId = e._id;
+          }
+        })
+          
+        habbit._id = maxId + 1;
+        this.habbits.push(habbit);
+      }
+
     },
 
     addHabbitsEvent(habbitId) {

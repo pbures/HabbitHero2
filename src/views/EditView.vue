@@ -18,7 +18,7 @@ onMounted(() => {
         //Fetch the data for task with taskId
         // habbitStore.getHabbitById(taskId)
         habbitStore.fetchHabbitsData().then(() => {
-            task.value = habbitStore.getHabbitById(taskId)
+            task.value = Object.assign({}, habbitStore.getHabbitById(taskId))
             console.log("TV:",task.value);
         })
     }
