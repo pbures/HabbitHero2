@@ -38,9 +38,13 @@ export const useHabbitStore = defineStore('habbit', {
       return this.habbits;
     },
 
-    addNewHabbit(habbit) {
+    async addNewHabbit(habbit) {
       if(useMockData) {
-        this._addNewHabbitMock(habbit);
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            this._addNewHabbitMock(habbit);
+            resolve()
+          }, 1000)})
       } else {
         //TODO: Add or update the habbit on the server and  re-fetch all users habbits.
       }
@@ -74,7 +78,6 @@ export const useHabbitStore = defineStore('habbit', {
     },
 
     addHabbitsEvent(habbitId) {
-
       let h
       for (let h1 of this.habbits) {
         if (h1._id === habbitId) {
