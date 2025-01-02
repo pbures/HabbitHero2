@@ -6,6 +6,7 @@ import { useAuth0 } from '@auth0/auth0-vue'
 import HelloWorld from './components/HelloWorld.vue'
 import TopHeader from './components/TopHeader.vue'
 import ActionsBlock from './components/ActionsBlock.vue'
+import EditView from './views/EditView.vue'
 
 const counterStore = useCounterStore()
 const userStore = useUserStore()
@@ -26,6 +27,7 @@ userStore.fetchUserData()
   </div> -->
 
   <RouterView />
+   <!-- <EditView /> -->
 
   <ActionsBlock />
 </template>

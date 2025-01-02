@@ -21,7 +21,7 @@
         margin-top: var(--top-header-height);
 
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         flex-wrap: wrap;
 
         align-items: flex-start;

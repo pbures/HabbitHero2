@@ -4,10 +4,10 @@ import axios from 'axios'
 import { useAuth0 } from '@auth0/auth0-vue'
 import habbitsMockData from '../model/habbit.js'
 
-function getMockData(){
+function getMockData() {
   const ret = []
 
-  for(let i = 0; i < 10; i++) {
+  for (let i = 0; i < 10; i++) {
     let nh = Object.assign({}, habbitsMockData)
     nh._id = i
     if (nh._id % 3 !== 0) {
@@ -22,7 +22,7 @@ function getMockData(){
 
     ret.push(nh)
   }
-  
+
   return ret;
 }
 
@@ -32,10 +32,10 @@ export const useHabbitStore = defineStore('habbit', {
   state: () => ({
     habbits: [],
   }),
-  
+
   actions: {
     getHabbits() {
-        return this.habbits;
+      return this.habbits;
     },
 
     addNewHabbit(habbit) {
@@ -68,18 +68,25 @@ export const useHabbitStore = defineStore('habbit', {
       /* TODO: Save the data to the server and reload the habbit with it's ids*/
     },
 
+    getHabbitById(habbitId) {
+      const habbit = this.habbits.filter(h => h._id == habbitId)
+      console.log(this.habbits)
+      console.log('Habbit:', habbit);
+      return habbit[0]
+    },
+
     async fetchHabbitsData() {
       if (useMockData) {
         console.log('Using mock data to get habbits')
-        let data =  getMockData()
+        let data = getMockData()
         let model = this;
         console.log(model.habbits);
 
-        return new Promise( (resolve) => {
-            setTimeout(() => {
-                model.habbits = data;
-                resolve(data);
-            }, 500);
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            model.habbits = data;
+            resolve(data);
+          }, 500);
         });
       }
 

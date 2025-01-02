@@ -17,9 +17,17 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue'),
-      meta: {
-        requiresAuth: true,
-      },
+    },
+    {
+      path: '/edit',
+      name: 'edit',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/EditView.vue'),
+      // meta: {
+      //   requiresAuth: true,
+      // },
     },
   ],
 })
