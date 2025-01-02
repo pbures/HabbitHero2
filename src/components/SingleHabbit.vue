@@ -10,7 +10,8 @@
             </div>
 
             <div class="clickable" @click="confirmEvent(habbit._id)">&#x2713;</div>
-            <div class="clickable" @click="editHabbit(habbit._id)">E</div>
+            <div class="clickable"><RouterLink :to="{ path: '/edit', query: { taskId:habbit._id } }" >E</RouterLink>
+</div>
             <div class="clickable" @click="showHabbitDetails(habbit._id)">&#9432;</div>
         </div>
     </div>

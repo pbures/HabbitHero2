@@ -3,11 +3,11 @@ import { ref } from 'vue';
 import { onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useHabbitStore } from '@/stores/habbit'
+import { useRouter } from 'vue-router';
 
 const habbitStore = useHabbitStore();
-
-
 const task = ref({});
+const router = useRouter();
 const route = useRoute();
 
 onMounted(() => {
@@ -25,6 +25,8 @@ onMounted(() => {
 });
 function saveTaskData() {
     console.log(task.value);
+    habbitStore.addNewHabbit(task.value)
+    router.push({ path: '/'})
 }
 
 </script>
@@ -33,8 +35,8 @@ function saveTaskData() {
 <template>
     <form class="edit-container">
         <div>
-            <label for="taskName">Task Name:</label>
-            <input type="text" id="taskName" v-model="task.name" required />
+            <label for="taskName">Task Title:</label>
+            <input type="text" id="taskName" v-model="task.title" required />
         </div>
         <div>
             <label for="taskDescription">Description:</label>

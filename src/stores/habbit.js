@@ -77,6 +77,9 @@ export const useHabbitStore = defineStore('habbit', {
 
     async fetchHabbitsData() {
       if (useMockData) {
+        if (this.habbits.length > 0) {
+          return;
+        }
         console.log('Using mock data to get habbits')
         let data = getMockData()
         let model = this;

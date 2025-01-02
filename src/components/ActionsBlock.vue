@@ -1,8 +1,8 @@
 <template>
     <nav class="nav">
         <ul id="actions">
-            <li v-if="isAuthenticated" @click="logout()">
-                <h1>New</h1>
+            <li v-if="isAuthenticated">
+                <h1><RouterLink :to="{ path: '/edit'}" >New</RouterLink></h1>
             </li>
             <li v-if="isAuthenticated" @click="logout()">
                 <h1>Stats</h1>
