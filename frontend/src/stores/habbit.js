@@ -137,6 +137,8 @@ export const useHabbitStore = defineStore('habbit', {
 
       try {
         const token = await getAccessTokenSilently()
+        console.log('Token on FE:', token)
+
         const response = await axios.get('http://localhost:3000/habbits', {
           headers: {
             Authorization: `Bearer ${token}`

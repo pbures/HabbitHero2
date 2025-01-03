@@ -1,15 +1,18 @@
 {
-  "name": "habbithero2-backend",
+  "name": "h2be",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "main.mjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "env $(cat .env) node main.mjs"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "axios": "^1.7.9",
     "cors": "^2.8.5",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "express-oauth2-jwt-bearer": "^1.6.0"
   }
 }

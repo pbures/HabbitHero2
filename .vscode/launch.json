@@ -7,7 +7,7 @@
         {
             "type": "chrome",
             "request": "launch",
-            "name": "Debug the app in Chrome",
+            "name": "Launch Frontend",
             "url": "http://localhost:5173",
             "webRoot": "${workspaceFolder}/frontend/src",
             "breakOnLoad": true,
@@ -15,8 +15,9 @@
         },
         {
             "type": "node",
+            "envFile": "${workspaceFolder}/backend/.env",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Launch Backend",
             "skipFiles": [
                 "<node_internals>/**"
             ],
