@@ -11,8 +11,9 @@
 
             <div class="clickable" @click="confirmEvent(habbit._id)">&#x2713;</div>
             <div class="clickable"><RouterLink :to="{ path: '/edit', query: { taskId:habbit._id } }" >E</RouterLink>
-</div>
+            </div>
             <div class="clickable" @click="showHabbitDetails(habbit._id)">&#9432;</div>
+            <div class="clickable" @click="deleteHabbit(habbit._id)">&#x1F5D1;</div>
         </div>
     </div>
 </template>
@@ -31,6 +32,11 @@
         /* TODO: Implement edit habbit */
     };
 
+    const deleteHabbit = (id) => {
+        console.log('Delete habbit with id:', id);
+        habbitStore.deleteHabbit(id)
+    };
+
     const showHabbitDetails = (id) => {
         console.log('Show details for habbit with id:', id);
         /* TODO: Implement show habbit details */
@@ -43,12 +49,16 @@
 <style scoped>
     div.habbit {
         /* border: solid 2px black; */
+        display: flex;
+        justify-content: space-between;
+        width: 300px;
+        height: 50px;
+
         margin: 1em;
         padding: 8px;
-        max-width: 200px;
         box-shadow: 3px 3px 5px #1b2d3d;
 
-        background-color: #2e79bf;
+        background-color: var( --vt-habbit);
         color: black;
 
         border-radius: 15px;
@@ -56,10 +66,15 @@
 
     div.habbit-footer {
         display: flex;
-        justify-content: space-between;
+        flex-direction: row;
     }
 
     div.habbit-details {
+        color: black;
+    }
+
+    .clickable {
+        cursor: pointer;
         color: black;
     }
 </style>
