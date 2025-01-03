@@ -1,6 +1,6 @@
 import express from 'express';
-import modelHabbit from '../src/model/habbit.js'
-import modelUser from '../src/model/user.js'
+import modelHabbit from '../frontend/src/model/habbit.js'
+import modelUser from '../frontend/src/model/user.js'
 import cors from 'cors'
 
 const corsOptions = {

@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Debug the app in Chrome",
             "url": "http://localhost:5173",
-            "webRoot": "${workspaceFolder}/src",
+            "webRoot": "${workspaceFolder}/frontend/src",
             "breakOnLoad": true,
             "sourceMaps": true
         },
