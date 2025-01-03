@@ -7,7 +7,7 @@ import habbitsMockData from '../model/habbit.js'
 function getMockData() {
   const ret = []
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 15; i++) {
     let nh = Object.assign({}, habbitsMockData)
     nh._id = i
     if (nh._id % 3 !== 0) {
@@ -22,7 +22,7 @@ function getMockData() {
 
     ret.push(nh)
   }
-
+  console.log('Mock data:', ret)
   return ret;
 }
 
@@ -131,13 +131,12 @@ export const useHabbitStore = defineStore('habbit', {
 
       try {
         const token = await getAccessTokenSilently()
-        const response = await axios.get('https://api.example.com/habbits', {
+        const response = await axios.get('http://localhost:3000/habbits', {
           headers: {
             Authorization: `Bearer ${token}`
           }
         })
-        this.habbits = response.data.habbits
-
+        this.habbits = response.data
       } catch (error) {
         console.error('Failed to fetch habbit data:', error)
       }

@@ -44,7 +44,7 @@ export const useUserStore = defineStore('user', {
 
       try {
         const token = await getAccessTokenSilently()
-        const response = await axios.get('https://api.example.com/user', {
+        const response = await axios.get('http://localhost:3000/user', {
           headers: {
             Authorization: `Bearer ${token}`
           }

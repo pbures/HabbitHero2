@@ -1,7 +1,10 @@
 <template>
     <div class="habbits-container">
-        <div v-for="habbit in habbits" :key="habbit.id">
+        <div v-for="habbit in habbits" :key="habbit._id">
             <SingleHabbit :habbit="habbit" />
+        </div>
+        <div>
+            Habbits number: {{  habbits.length }}
         </div>
     </div>
 </template>
@@ -12,7 +15,9 @@
     import { storeToRefs } from 'pinia'
 
     const habbitStore = useHabbitStore()
-    habbitStore.fetchHabbitsData()
+    habbitStore.fetchHabbitsData().then(() => {
+        console.log('Habbits fetched:', habbitStore.habbits.length)
+    })
     const { habbits } = storeToRefs(habbitStore)
 
 </script>

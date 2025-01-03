@@ -13,5 +13,14 @@
             "breakOnLoad": true,
             "sourceMaps": true
         },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/backend/main.mjs"
+        }
     ]
 }
