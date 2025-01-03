@@ -10,3 +10,5 @@ const { isAuthenticated } = useAuth0()
     <HabbitsView />
   </main>
 </template>
+
+

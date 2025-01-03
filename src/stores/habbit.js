@@ -39,24 +39,25 @@ export const useHabbitStore = defineStore('habbit', {
     },
 
     async addNewHabbit(habbit) {
-      if(useMockData) {
+      if (useMockData) {
         return new Promise((resolve) => {
           setTimeout(() => {
             this._addNewHabbitMock(habbit);
             resolve()
-          }, 1000)})
+          }, 1000)
+        })
       } else {
         //TODO: Add or update the habbit on the server and  re-fetch all users habbits.
       }
     },
 
     _addNewHabbitMock(habbit) {
-      
-      if(useMockData){
+
+      if (useMockData) {
         /* Update existing */
-        if(habbit._id !== null){
-          for(let i=0; i<this.habbits.length; i++){
-            if(this.habbits[i]._id === habbit._id){
+        if (habbit._id !== null) {
+          for (let i = 0; i < this.habbits.length; i++) {
+            if (this.habbits[i]._id === habbit._id) {
               this.habbits[i] = habbit;
               return
             }
@@ -65,12 +66,12 @@ export const useHabbitStore = defineStore('habbit', {
 
         /* Create new ID and add to the array */
         let maxId = 0;
-        this.habbits.forEach( (e) => {
-          if(e._id > maxId){
+        this.habbits.forEach((e) => {
+          if (e._id > maxId) {
             maxId = e._id;
           }
         })
-          
+
         habbit._id = maxId + 1;
         this.habbits.push(habbit);
       }
@@ -100,6 +101,11 @@ export const useHabbitStore = defineStore('habbit', {
       });
 
       /* TODO: Save the data to the server and reload the habbit with it's ids*/
+    },
+
+    async deleteHabbit(habbitId) {
+      const habbits = this.habbits.filter(h => h._id !== habbitId);
+      this.habbits = habbits;
     },
 
     getHabbitById(habbitId) {

@@ -29,11 +29,11 @@
         flex-direction: column;
         flex-wrap: wrap;
 
-        align-items: flex-start;
-        align-content: flex-start;
+        align-content: center;
         justify-content: center;
         
-        height: 100vh;
+        /* height: 100vh; */
+        overflow-y: auto;
         font-size: 20px;
     }
 </style>
