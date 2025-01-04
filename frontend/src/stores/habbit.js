@@ -4,6 +4,8 @@ import axios from 'axios'
 import { useAuth0 } from '@auth0/auth0-vue'
 import habbitsMockData from '../model/habbit.js'
 
+
+
 function getMockData() {
   const ret = []
 
@@ -30,6 +32,7 @@ const useMockData = import.meta.env.VITE_USE_MOCK_DATA === 'true'
 
 export const useHabbitStore = defineStore('habbit', {
   state: () => ({
+    auth0: useAuth0(),
     habbits: [],
   }),
 
@@ -39,16 +42,28 @@ export const useHabbitStore = defineStore('habbit', {
     },
 
     async addNewHabbit(habbit) {
-      if (useMockData) {
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            this._addNewHabbitMock(habbit);
-            resolve()
-          }, 1000)
-        })
-      } else {
-        //TODO: Add or update the habbit on the server and  re-fetch all users habbits.
-      }
+      try {
+        if (useMockData) {
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              this._addNewHabbitMock(habbit);
+              resolve()
+            }, 1000)
+          })
+
+        } else {
+
+          const token = await this.auth0.getAccessTokenSilently()
+          axios.put('http://localhost:3000/habbit', {
+            headers: {
+              Authorization: `Bearer ${token}`
+            },
+            data: habbit
+          })
+        }
+      } catch (error) {
+        console.error('Failed to add new habbit:', error)
+      };
     },
 
     _addNewHabbitMock(habbit) {
@@ -104,8 +119,22 @@ export const useHabbitStore = defineStore('habbit', {
     },
 
     async deleteHabbit(habbitId) {
-      const habbits = this.habbits.filter(h => h._id !== habbitId);
-      this.habbits = habbits;
+      const token = await this.auth0.getAccessTokenSilently()
+
+      try {
+        const habbits = this.habbits.filter(h => h._id !== habbitId);
+        this.habbits = habbits;
+        axios.delete('http://localhost:3000/habbit', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+          params: {
+            'habbitId': habbitId,
+          }
+        })
+      } catch (error) {
+        console.error('Failed to delete habbit:', error)
+      };
     },
 
     getHabbitById(habbitId) {
@@ -116,6 +145,7 @@ export const useHabbitStore = defineStore('habbit', {
     },
 
     async fetchHabbitsData() {
+
       if (useMockData) {
         if (this.habbits.length > 0) {
           return;
@@ -133,10 +163,8 @@ export const useHabbitStore = defineStore('habbit', {
         });
       }
 
-      const { getAccessTokenSilently } = useAuth0()
-
       try {
-        const token = await getAccessTokenSilently()
+        const token = await this.auth0.getAccessTokenSilently()
         console.log('Token on FE:', token)
 
         const response = await axios.get('http://localhost:3000/habbits', {
@@ -151,3 +179,4 @@ export const useHabbitStore = defineStore('habbit', {
     },
   },
 })
+
