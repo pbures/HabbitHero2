@@ -4,7 +4,7 @@
   "main": "main.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "env $(cat .env) node main.mjs"
+    "dev": "env $(cat .env | xargs) node main.mjs"
   },
   "author": "",
   "license": "ISC",
