@@ -27,9 +27,13 @@
 
 <style scoped>
 .header {
-    background-color: var(--vt-c-black-mute);
+    /* background-color: var(--vt-c-black-mute); */
+    background: inherit;
+    backdrop-filter: blur(10px);
+
+    border-bottom: 1px solid white;
     max-height: var(--top-header-height);
-    color: white;
+
     padding: 1rem;
     display: flex;
     justify-content: space-between;
@@ -38,6 +42,13 @@
     top: 0;
     width: 100%;
     z-index: 1000;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1), 0 2px 5px rgba(0, 0, 0, 0.1);
-}
+    /* box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1), 0 2px 5px rgba(0, 0, 0, 0.1); */
+    box-shadow: 3px 3px 5px #1b2d3d;
+  }
+
+  .header h1 {
+    color: rgb(255, 255, 255);
+    font-size: 1.5em;
+  }
+
 </style>

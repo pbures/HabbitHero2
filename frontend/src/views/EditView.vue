@@ -72,7 +72,7 @@ function saveTaskData() {
             </div>
             <div class="label submit clickable" @click="saveTaskData">Save Task</div>
         </form>
-    </main> 
+    </main>
 </template>
 
 <style scoped>
@@ -84,6 +84,9 @@ function saveTaskData() {
         justify-content: center;
         align-content:start;
 
+        background: inherit;
+        backdrop-filter: blur(10px);
+
         /* flex-direction: column;
         flex-wrap: wrap;
 
@@ -91,7 +94,7 @@ function saveTaskData() {
         align-content: flex-start;
         justify-content: center;
          */
-        font-size: 20px; 
+        font-size: 20px;
     }
 
     div.label {

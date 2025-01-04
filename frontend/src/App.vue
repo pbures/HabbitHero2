@@ -1,34 +1,17 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import { useCounterStore } from '@/stores/counter'
+import { RouterView } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { useAuth0 } from '@auth0/auth0-vue'
-import HelloWorld from './components/HelloWorld.vue'
 import TopHeader from './components/TopHeader.vue'
 import ActionsBlock from './components/ActionsBlock.vue'
-import EditView from './views/EditView.vue'
 
-const counterStore = useCounterStore()
 const userStore = useUserStore()
-const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0()
 
 userStore.fetchUserData()
 </script>
 
 <template>
   <TopHeader/>
-  <!-- <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" /> -->
-  <!-- <div class="wrapper">
-
-    <nav>
-      <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/about">About</RouterLink>
-    </nav>
-  </div> -->
-
   <RouterView />
-   <!-- <EditView /> -->
-
   <ActionsBlock />
 </template>
 

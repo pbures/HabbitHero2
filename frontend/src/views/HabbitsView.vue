@@ -31,7 +31,7 @@
 
         align-content: center;
         justify-content: center;
-        
+
         /* height: 100vh; */
         overflow-y: auto;
         font-size: 20px;

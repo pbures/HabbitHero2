@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Launch Frontend",
             "url": "http://localhost:5173",
-            "webRoot": "${workspaceFolder}/frontend/src",
+            "webRoot": "${workspaceFolder}/frontend",
             "breakOnLoad": true,
             "sourceMaps": true
         },

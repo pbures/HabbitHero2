@@ -9,8 +9,8 @@ import auth0 from './auth/auth0'
 const app = createApp(App)
 const pinia = createPinia()
 
+app.use(auth0)
 app.use(pinia)
 app.use(router)
-app.use(auth0)
 
 app.mount('#app')
