@@ -49,8 +49,8 @@ app.get('/habbits', checkJwt, async (req, res) => {
   console.log(`User with id:${userId} requested habbits`);
 
   let habbits = [];
-  for(let i = 10; i < 20; i++) {
-    habbits.push({...modelHabbit, _id: i});
+  for (let i = 10; i < 20; i++) {
+    habbits.push({ ...modelHabbit, _id: i });
   }
 
   res.send(habbits);
@@ -63,14 +63,16 @@ app.get('/user', checkJwt, (req, res) => {
   res.send(modelUser);
 });
 
-app.put('/habbit', checkJwt, (req, res) => {
-  console.log(req)
-  res.send('Got a PUT request at /habbit with data: ' + req.body);
+app.put('/habbit', (req, res) => {
+  const userId = req.auth.payload.sub
+
+  console.log(`Got a PUT request from user ${userId} at /habbit with data:`, req.body.data);
+
 });
 
 app.delete('/habbit', checkJwt, (req, res) => {
   const userId = req.auth.payload.sub;
-  console.log(`User with ID: ${userId} requested to delete habbit with Id: ${req.query.id}`)
+  console.log(`User with ID: ${userId} requested to delete habbit with Id: ${req.query.habbitId}`)
 
   res.send('Got a DELETE request at /habbit, id:' + req.query.id);
 });
