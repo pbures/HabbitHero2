@@ -46,7 +46,7 @@ app.get('/habbits', checkJwt, async (req, res) => {
   console.log("userinfo response:", response);
   */
 
-  console.log(`User with id:${userId} requested habbits`);
+  console.log(`GET /habbits from user id: ${userId}`);
 
   let habbits = [];
   for (let i = 10; i < 20; i++) {
@@ -57,24 +57,25 @@ app.get('/habbits', checkJwt, async (req, res) => {
 });
 
 app.get('/user', checkJwt, (req, res) => {
+  const userId = req.auth.payload.sub
   const email = req.auth.payload.email;
 
-  console.log('got a GET request at /user from user with email:', email);
+  console.log(`GET request at /user from user ${userId} with email ${email}`);
   res.send(modelUser);
 });
 
-app.put('/habbit', (req, res) => {
+app.put('/habbit', checkJwt, (req, res) => {
   const userId = req.auth.payload.sub
 
-  console.log(`Got a PUT request from user ${userId} at /habbit with data:`, req.body.data);
-
+  console.log(`PUT request from user ${userId} at /habbit with data:`, req.body);
+  res.status(200).json({ message: 'Habbit updated successfully' });
 });
 
 app.delete('/habbit', checkJwt, (req, res) => {
   const userId = req.auth.payload.sub;
-  console.log(`User with ID: ${userId} requested to delete habbit with Id: ${req.query.habbitId}`)
 
-  res.send('Got a DELETE request at /habbit, id:' + req.query.id);
+  console.log(`DELETE request from user: ${userId} at /habbit, id:` + req.query.id);
+  res.status(200).json({ message: 'Habbit deleted successfully' });
 });
 
 app.listen(port, () => {
@@ -87,7 +88,7 @@ app.listen(port, () => {
     DELETE /habbit/:id
 
     GET /user
-    
+
     Authorization: : Bearer token
       call Auth0 to get the user identity (email)
 

@@ -54,12 +54,16 @@ export const useHabbitStore = defineStore('habbit', {
         } else {
 
           const token = await this.auth0.getAccessTokenSilently()
-          axios.put('http://localhost:3000/habbit', {
-            headers: {
-              Authorization: `Bearer ${token}`
-            },
-            data: habbit
-          })
+          console.log('Token on FE for PUT:', token)
+
+          axios.put('http://localhost:3000/habbit',
+            habbit,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`
+              },
+            }
+          )
         }
       } catch (error) {
         console.error('Failed to add new habbit:', error)
@@ -165,7 +169,7 @@ export const useHabbitStore = defineStore('habbit', {
 
       try {
         const token = await this.auth0.getAccessTokenSilently()
-        console.log('Token on FE:', token)
+        console.log('Token on FE for GET:', token)
 
         const response = await axios.get('http://localhost:3000/habbits', {
           headers: {

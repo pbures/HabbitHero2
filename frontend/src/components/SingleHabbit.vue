@@ -27,13 +27,7 @@
         habbitStore.addHabbitsEvent(id)
     };
 
-    const editHabbit = (id) => {
-        console.log('Edit habbit with id:', id);
-        /* TODO: Implement edit habbit */
-    };
-
     const deleteHabbit = (id) => {
-        console.log('Delete habbit with id:', id);
         habbitStore.deleteHabbit(id)
     };
 
