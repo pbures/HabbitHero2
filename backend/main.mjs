@@ -46,7 +46,7 @@ app.get('/habbits', checkJwt, async (req, res) => {
   console.log("userinfo response:", response);
   */
 
-  console.log(`User ${userName} with id:${userId} requested habbits`);
+  console.log(`User with id:${userId} requested habbits`);
 
   let habbits = [];
   for(let i = 10; i < 20; i++) {
