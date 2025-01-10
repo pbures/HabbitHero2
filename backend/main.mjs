@@ -4,15 +4,19 @@ import modelUser from '../frontend/src/model/user.js'
 import cors from 'cors'
 import MongoDBManager from './mongoDBManager.mjs'
 import { auth } from 'express-oauth2-jwt-bearer';
+import dotenv from 'dotenv';
 
+dotenv.config();
 // Authorization middleware. When used, the Access Token must
 // exist and be verified against the Auth0 JSON Web Key Set.
-
-// TODO: Move these two values into the .env file
+// Authorization middleware. When used, the Access Token must
+// exist and be verified against the Auth0 JSON Web Key Set.
 const checkJwt = auth({
   audience: process.env.AUTH0_AUDIENCE,
   issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
 });
+
+console.log(process.env.AUTH0_AUDIENCE);
 
 const corsOptions = {
   origin: 'http://localhost:5173',
@@ -36,10 +40,13 @@ app.get('/habbits', checkJwt, async (req, res) => {
    * info such as email. This is not needed right now, since the auth0 adds the email to the
    * JWT token issued when user authenticates at the frontend app.
    */
+  
   /*
   const token = req.headers.authorization.split(' ')[1];
-  console.log(req.auth.payload)
+  console.log("token:", token);
+  */
 
+  /*
   const userinfo = req.auth.payload.aud[1]
   const response = await axios.get(userinfo, {
     headers: {
@@ -49,34 +56,38 @@ app.get('/habbits', checkJwt, async (req, res) => {
   console.log("userinfo response:", response);
   */
 
-  console.log(`User with id:${userId} requested habbits`);
-  
-  // let habbits = [];
-  // for(let i = 10; i < 20; i++) {
-  //   habbits.push({...modelHabbit, _id: i});
-  // }
-  const habbits = myMongoDBManager.find();
-  res.send(habbits);
+  console.log(`GET /habbits from user id: ${userId}`);
+  const habbits = await myMongoDBManager.find();
+  console.log(habbits);
+
+  res.status(200).json(habbits);
 });
 
 app.get('/user', checkJwt, (req, res) => {
+  const userId = req.auth.payload.sub
   const email = req.auth.payload.email;
 
-  console.log('got a GET request at /user from user with email:', email);
+  console.log(`GET request at /user from user ${userId} with email ${email}`);
   res.send({...modelUser, email: email});
 });
 
 app.put('/habbit', checkJwt, (req, res) => {
-  console.log(req)
+  const userId = req.auth.payload.sub
+  console.log(`PUT request from user ${userId} at /habbit with data:`, req.body);
+
   myMongoDBManager.insert({name: 'testing habbit', description: 'testing description'});
-  res.send('Got a PUT request at /habbit with data: ' + req.body + ' and tryng to put it to the database');
+
+  console.log(`PUT request from user ${userId} at /habbit with data:`, req.body);
+  res.status(200).json({ message: 'Habbit updated successfully' });
 });
+
+
 
 app.delete('/habbit', checkJwt, (req, res) => {
   const userId = req.auth.payload.sub;
-  console.log(`User with ID: ${userId} requested to delete habbit with Id: ${req.query.id}`)
 
-  res.send('Got a DELETE request at /habbit, id:' + req.query.id);
+  console.log(`DELETE request from user: ${userId} at /habbit, id:` + req.query.id);
+  res.status(200).json({ message: 'Habbit deleted successfully' });
 });
 
 app.listen(port, () => {
@@ -89,7 +100,7 @@ app.listen(port, () => {
     DELETE /habbit/:id
 
     GET /user
-    
+
     Authorization: : Bearer token
       call Auth0 to get the user identity (email)
 

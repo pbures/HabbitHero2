@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb';
 
 class MongoDBManager {
   // I dont know if the connection in the constructor will work because it is async
-  constructor(uri = process.env('MONGODB_CONNECTION_STRING')) {
+  constructor(uri = process.env.MONGODB_CONNECTION_STRING) {
     this.client = new MongoClient(uri);
     (async () => {
       await this.client.connect();

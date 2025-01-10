@@ -24,7 +24,11 @@
 
 <style scoped>
     #actions {
-        background-color: var(--vt-c-black-mute);
+        background: inherit;
+        backdrop-filter: blur(10px);
+
+        border-top: solid 2px white;
+
         position: fixed;
         bottom: 0;
         width: 100%;

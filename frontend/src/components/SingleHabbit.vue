@@ -27,13 +27,7 @@
         habbitStore.addHabbitsEvent(id)
     };
 
-    const editHabbit = (id) => {
-        console.log('Edit habbit with id:', id);
-        /* TODO: Implement edit habbit */
-    };
-
     const deleteHabbit = (id) => {
-        console.log('Delete habbit with id:', id);
         habbitStore.deleteHabbit(id)
     };
 
@@ -52,13 +46,15 @@
         display: flex;
         justify-content: space-between;
         width: 300px;
-        height: 50px;
+        min-height: 50px;
 
         margin: 1em;
         padding: 8px;
-        box-shadow: 3px 3px 5px #1b2d3d;
 
-        background-color: var( --vt-habbit);
+        border: 1px solid white;
+        box-shadow: 3px 3px 5px #1b2d3d;
+        background: inherit;
+        backdrop-filter: blur(10px);
         color: black;
 
         border-radius: 15px;
