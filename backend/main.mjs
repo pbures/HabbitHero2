@@ -2,7 +2,7 @@ import express from 'express'
 import modelHabbit from '../frontend/src/model/habbit.js'
 import modelUser from '../frontend/src/model/user.js'
 import cors from 'cors'
-
+import MongoDBManager from './mongoDBManager.mjs'
 import { auth } from 'express-oauth2-jwt-bearer';
 
 // Authorization middleware. When used, the Access Token must
@@ -26,6 +26,9 @@ app.use(cors(corsOptions));
 
 const port = 3000
 
+const myMongoDBManager = new MongoDBManager();
+myMongoDBManager.connect();
+
 app.get('/habbits', checkJwt, async (req, res) => {
   const userId = req.auth.payload.sub
 
@@ -47,12 +50,12 @@ app.get('/habbits', checkJwt, async (req, res) => {
   */
 
   console.log(`User with id:${userId} requested habbits`);
-
-  let habbits = [];
-  for(let i = 10; i < 20; i++) {
-    habbits.push({...modelHabbit, _id: i});
-  }
-
+  
+  // let habbits = [];
+  // for(let i = 10; i < 20; i++) {
+  //   habbits.push({...modelHabbit, _id: i});
+  // }
+  const habbits = myMongoDBManager.find();
   res.send(habbits);
 });
 
@@ -60,12 +63,13 @@ app.get('/user', checkJwt, (req, res) => {
   const email = req.auth.payload.email;
 
   console.log('got a GET request at /user from user with email:', email);
-  res.send(modelUser);
+  res.send({...modelUser, email: email});
 });
 
 app.put('/habbit', checkJwt, (req, res) => {
   console.log(req)
-  res.send('Got a PUT request at /habbit with data: ' + req.body);
+  myMongoDBManager.insert({name: 'testing habbit', description: 'testing description'});
+  res.send('Got a PUT request at /habbit with data: ' + req.body + ' and tryng to put it to the database');
 });
 
 app.delete('/habbit', checkJwt, (req, res) => {
