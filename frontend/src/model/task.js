@@ -1,9 +1,9 @@
 /* An example data item of a single habbit */
 
-class Task {
+export class Task {
     constructor() {
         this._id;
-        this.schema_version = "";
+        this.schema_version = "1.0";
         this.title = "";
         this.description = "";
         this.user_ids = [];
@@ -18,7 +18,7 @@ class Task {
     }
 }
 
-export default Task;
+
 
 // export default {
 //     _id: 1,
