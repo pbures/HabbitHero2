@@ -40,12 +40,10 @@ app.get('/habbits', checkJwt, async (req, res) => {
    * info such as email. This is not needed right now, since the auth0 adds the email to the
    * JWT token issued when user authenticates at the frontend app.
    */
-  
   /*
   const token = req.headers.authorization.split(' ')[1];
   console.log("token:", token);
   */
-
   /*
   const userinfo = req.auth.payload.aud[1]
   const response = await axios.get(userinfo, {
@@ -56,7 +54,7 @@ app.get('/habbits', checkJwt, async (req, res) => {
   console.log("userinfo response:", response);
   */
 
-  console.log(`GET /habbits from user id: ${userId}`);
+  console.log(`GET request at /habbits from user id: ${userId}`);
   const habbits = await myMongoDBManager.find();
   console.log(habbits);
 
@@ -71,17 +69,36 @@ app.get('/user', checkJwt, (req, res) => {
   res.send({...modelUser, email: email});
 });
 
-app.put('/habbit', checkJwt, (req, res) => {
+app.put('/habbit', checkJwt, async (req, res) => {
   const userId = req.auth.payload.sub
-  console.log(`PUT request from user ${userId} at /habbit with data:`, req.body);
+  console.log(`PUT request from user ${userId} at /habbit with data:`, req.body, '_id:', req.body._id);
+  // console.log(req.body);
+  // console.log(req.body._id);
+  
+  let habbit = (await myMongoDBManager.find({_id: req.body._id}))[0];
+  console.log('Habbitttt', habbit);
+  // console.log(habbit)
+  if(habbit) {
+    console.log("Habbit exists", habbit);
+    const changes = {};
+    for (const key in req.body) {
+      if (req.body[key] !== habbit[key]) {
+        console.log(`Key: ${key}, old value: ${habbit[key]}, new value: ${req.body[key]}`);
+      changes[key] = req.body[key];
+      }
+    }
+    console.log("Changes:", changes);
+    myMongoDBManager.update({_id: habbit._id}, changes);
+  } else {
+    console.log('habbits does not exist');
+    // console.log(habbit);
+    // Does not exist, so we insert a new one
+    myMongoDBManager.insert(req.body);
+  }
 
-  myMongoDBManager.insert({name: 'testing habbit', description: 'testing description'});
-
-  console.log(`PUT request from user ${userId} at /habbit with data:`, req.body);
+  // console.log(`PUT request from user ${userId} at /habbit with data:`, req.body);
   res.status(200).json({ message: 'Habbit updated successfully' });
 });
-
-
 
 app.delete('/habbit', checkJwt, (req, res) => {
   const userId = req.auth.payload.sub;
