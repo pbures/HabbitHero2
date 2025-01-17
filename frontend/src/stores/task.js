@@ -2,7 +2,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useAuth0 } from '@auth0/auth0-vue'
-import habbitsMockData from '../model/habbit.js'
+import habbitsMockData from '../model/task.js'
 
 
 

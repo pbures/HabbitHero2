@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { useHabbitStore } from '@/stores/habbit'
+import { useHabbitStore } from '@/stores/task'
 import { useRouter } from 'vue-router';
 import { useAuth0 } from '@auth0/auth0-vue'
 

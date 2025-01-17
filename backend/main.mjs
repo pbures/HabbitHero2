@@ -1,5 +1,5 @@
 import express from 'express'
-import modelHabbit from '../frontend/src/model/habbit.js'
+import modelHabbit from '../frontend/src/model/task.js'
 import modelUser from '../frontend/src/model/user.js'
 import cors from 'cors'
 

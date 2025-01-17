@@ -10,8 +10,8 @@
 </template>
 
 <script setup>
-    import SingleHabbit from '@/components/SingleHabbit.vue'
-    import { useHabbitStore } from '@/stores/habbit'
+    import SingleHabbit from '@/components/SingleTask.vue'
+    import { useHabbitStore } from '@/stores/task'
     import { storeToRefs } from 'pinia'
 
     const habbitStore = useHabbitStore()

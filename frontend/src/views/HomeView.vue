@@ -1,5 +1,5 @@
 <script setup>
-import HabbitsView from '@/views/HabbitsView.vue';
+import HabbitsView from '@/views/TasksView.vue';
 import { useAuth0 } from '@auth0/auth0-vue'
 
 const { isAuthenticated } = useAuth0()
