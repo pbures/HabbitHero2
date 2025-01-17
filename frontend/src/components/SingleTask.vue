@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-    import { useHabbitStore } from '@/stores/habbit'
+    import { useHabbitStore } from '@/stores/task'
     const habbitStore = useHabbitStore()
 
     const confirmEvent = (id) => {

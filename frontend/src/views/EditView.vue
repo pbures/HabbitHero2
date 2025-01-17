@@ -2,13 +2,15 @@
 import { ref } from 'vue';
 import { onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { useHabbitStore } from '@/stores/habbit'
+import { useHabbitStore } from '@/stores/task'
 import { useRouter } from 'vue-router';
 import { useAuth0 } from '@auth0/auth0-vue'
+import { Task } from '@/model/task';
+
 
 const { isAuthenticated } = useAuth0()
 const habbitStore = useHabbitStore();
-const task = ref({});
+const task = ref(new Task());
 const router = useRouter();
 const route = useRoute();
 
