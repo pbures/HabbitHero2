@@ -1,18 +1,23 @@
 import express from 'express'
-import modelHabbit from '../frontend/src/model/task.js'
-import modelUser from '../frontend/src/model/user.js'
+// import modelHabbit from '../frontend/src/model/task.js'
+// import modelUser from '../frontend/src/model/user.js'
 import cors from 'cors'
-
+import MongoDBManager from './mongoDBManager.mjs'
 import { auth } from 'express-oauth2-jwt-bearer';
+import dotenv from 'dotenv';
+import { ObjectId } from 'mongodb'
 
+dotenv.config();
 // Authorization middleware. When used, the Access Token must
 // exist and be verified against the Auth0 JSON Web Key Set.
-
-// TODO: Move these two values into the .env file
+// Authorization middleware. When used, the Access Token must
+// exist and be verified against the Auth0 JSON Web Key Set.
 const checkJwt = auth({
   audience: process.env.AUTH0_AUDIENCE,
   issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
 });
+
+console.log(process.env.AUTH0_AUDIENCE);
 
 const corsOptions = {
   origin: 'http://localhost:5173',
@@ -26,6 +31,9 @@ app.use(cors(corsOptions));
 
 const port = 3000
 
+const myMongoDBManager = new MongoDBManager();
+myMongoDBManager.connect();
+
 app.get('/habbits', checkJwt, async (req, res) => {
   const userId = req.auth.payload.sub
 
@@ -35,8 +43,9 @@ app.get('/habbits', checkJwt, async (req, res) => {
    */
   /*
   const token = req.headers.authorization.split(' ')[1];
-  console.log(req.auth.payload)
-
+  console.log("token:", token);
+  */
+  /*
   const userinfo = req.auth.payload.aud[1]
   const response = await axios.get(userinfo, {
     headers: {
@@ -46,14 +55,11 @@ app.get('/habbits', checkJwt, async (req, res) => {
   console.log("userinfo response:", response);
   */
 
-  console.log(`GET /habbits from user id: ${userId}`);
+  console.log(`GET request at /habbits from user id: ${userId}`);
+  const habbits = await myMongoDBManager.find();
+  // console.log(habbits);
 
-  let habbits = [];
-  for (let i = 10; i < 20; i++) {
-    habbits.push({ ...modelHabbit, _id: i });
-  }
-
-  res.send(habbits);
+  res.status(200).json(habbits);
 });
 
 app.get('/user', checkJwt, (req, res) => {
@@ -61,13 +67,41 @@ app.get('/user', checkJwt, (req, res) => {
   const email = req.auth.payload.email;
 
   console.log(`GET request at /user from user ${userId} with email ${email}`);
-  res.send(modelUser);
+  res.send({user: 'I dont have it done yet', email: email});
+  // res.send({...modelUser, email: email});
 });
 
-app.put('/habbit', checkJwt, (req, res) => {
+app.put('/habbit', checkJwt, async (req, res) => {
   const userId = req.auth.payload.sub
+  console.log(`PUT request from user ${userId} at /habbit with data:`, req.body, '_id:', req.body._id);
+  // console.log(req.body);
+  // console.log(req.body._id);
+  let objectId = new ObjectId(req.body._id);
+  let habbit = (await myMongoDBManager.find({_id: objectId}))[0];
+  console.log('Habbitttt', habbit);
+  // console.log(habbit)
+  if(habbit) {
+    console.log("Habbit exists", habbit);
+    const changes = {};
+    for (const key in req.body) {
+      // Here if there is an incomming key that is _id, then we have the raw string version, comparing it with the new one.
+      if (req.body[key] !== habbit[key]) {
+        console.log(`Key: ${key}, old value: ${habbit[key]}, new value: ${req.body[key]}`);
+      changes[key] = req.body[key];
+      }
+    }
+    delete changes._id;
+    console.log("Changes:", changes);
+    myMongoDBManager.update({_id: habbit._id}, changes);
+  } else {
+    console.log('habbits does not exist');
+    // console.log(habbit);
+    // Does not exist, so we insert a new one
+    console.log('Inserting new habbit');
+    myMongoDBManager.insert({...req.body, _id: new ObjectId(req.body._id)});
+  }
 
-  console.log(`PUT request from user ${userId} at /habbit with data:`, req.body);
+  // console.log(`PUT request from user ${userId} at /habbit with data:`, req.body);
   res.status(200).json({ message: 'Habbit updated successfully' });
 });
 
@@ -75,6 +109,7 @@ app.delete('/habbit', checkJwt, (req, res) => {
   const userId = req.auth.payload.sub;
 
   console.log(`DELETE request from user: ${userId} at /habbit, id:` + req.query.id);
+  myMongoDBManager.delete({ _id: new ObjectId(req.query.id) });
   res.status(200).json({ message: 'Habbit deleted successfully' });
 });
 
