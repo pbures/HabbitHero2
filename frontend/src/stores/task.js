@@ -2,7 +2,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useAuth0 } from '@auth0/auth0-vue'
-import habbitsMockData from '../model/habbit.js'
+import { Task } from '../model/task.js'
 
 
 
@@ -10,7 +10,7 @@ function getMockData() {
   const ret = []
 
   for (let i = 0; i < 15; i++) {
-    let nh = Object.assign({}, habbitsMockData)
+    let nh = new Task()
     nh._id = i
     if (nh._id % 3 !== 0) {
       nh.type = 'goal'
