@@ -1,10 +1,11 @@
 import express from 'express'
-import modelHabbit from '../frontend/src/model/task.js'
-import modelUser from '../frontend/src/model/user.js'
+// import modelHabbit from '../frontend/src/model/task.js'
+// import modelUser from '../frontend/src/model/user.js'
 import cors from 'cors'
 import MongoDBManager from './mongoDBManager.mjs'
 import { auth } from 'express-oauth2-jwt-bearer';
 import dotenv from 'dotenv';
+import { ObjectId } from 'mongodb'
 
 dotenv.config();
 // Authorization middleware. When used, the Access Token must
@@ -56,7 +57,7 @@ app.get('/habbits', checkJwt, async (req, res) => {
 
   console.log(`GET request at /habbits from user id: ${userId}`);
   const habbits = await myMongoDBManager.find();
-  console.log(habbits);
+  // console.log(habbits);
 
   res.status(200).json(habbits);
 });
@@ -66,7 +67,8 @@ app.get('/user', checkJwt, (req, res) => {
   const email = req.auth.payload.email;
 
   console.log(`GET request at /user from user ${userId} with email ${email}`);
-  res.send({...modelUser, email: email});
+  res.send({user: 'I dont have it done yet', email: email});
+  // res.send({...modelUser, email: email});
 });
 
 app.put('/habbit', checkJwt, async (req, res) => {
@@ -74,26 +76,29 @@ app.put('/habbit', checkJwt, async (req, res) => {
   console.log(`PUT request from user ${userId} at /habbit with data:`, req.body, '_id:', req.body._id);
   // console.log(req.body);
   // console.log(req.body._id);
-  
-  let habbit = (await myMongoDBManager.find({_id: req.body._id}))[0];
+  let objectId = new ObjectId(req.body._id);
+  let habbit = (await myMongoDBManager.find({_id: objectId}))[0];
   console.log('Habbitttt', habbit);
   // console.log(habbit)
   if(habbit) {
     console.log("Habbit exists", habbit);
     const changes = {};
     for (const key in req.body) {
+      // Here if there is an incomming key that is _id, then we have the raw string version, comparing it with the new one.
       if (req.body[key] !== habbit[key]) {
         console.log(`Key: ${key}, old value: ${habbit[key]}, new value: ${req.body[key]}`);
       changes[key] = req.body[key];
       }
     }
+    delete changes._id;
     console.log("Changes:", changes);
     myMongoDBManager.update({_id: habbit._id}, changes);
   } else {
     console.log('habbits does not exist');
     // console.log(habbit);
     // Does not exist, so we insert a new one
-    myMongoDBManager.insert(req.body);
+    console.log('Inserting new habbit');
+    myMongoDBManager.insert({...req.body, _id: new ObjectId(req.body._id)});
   }
 
   // console.log(`PUT request from user ${userId} at /habbit with data:`, req.body);
@@ -104,6 +109,7 @@ app.delete('/habbit', checkJwt, (req, res) => {
   const userId = req.auth.payload.sub;
 
   console.log(`DELETE request from user: ${userId} at /habbit, id:` + req.query.id);
+  myMongoDBManager.delete({ _id: new ObjectId(req.query.id) });
   res.status(200).json({ message: 'Habbit deleted successfully' });
 });
 

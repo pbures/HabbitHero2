@@ -27,6 +27,7 @@ class MongoDBManager {
   async update(query, data) {
     const collection = this.habbitCollection;
     console.log(`tryng to update something with data: ....updateOne( ${query}, { $set: ${data} })`)
+    
     await collection.updateOne(query, { $set: data });
   }
   async delete(query) {
