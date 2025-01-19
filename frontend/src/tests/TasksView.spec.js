@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, vi } from 'vitest';
 import * as auth0 from '@auth0/auth0-vue'
 
 import { createTestingPinia } from '@pinia/testing';
@@ -23,11 +23,12 @@ describe('TasksView.vue', () => {
     const habbitStore = useHabbitStore(testingPinia);
     vi.spyOn(habbitStore, 'fetchHabbitsData').mockImplementation(function() {
       console.log('mockFetchHabbits called via a spy');
-  
+
       this.habbits = [
         new Task(),
         new Task(),
-      ];  
+        new Task(),
+      ];
 
       return Promise.resolve(true);
     });
@@ -46,7 +47,7 @@ describe('TasksView.vue', () => {
       },
     });
 
-    expect(wrapper.findAll('.task-container').length).toBe(2);
+    expect(wrapper.findAll('.task-container').length).toBe(3);
   });
 
 });
