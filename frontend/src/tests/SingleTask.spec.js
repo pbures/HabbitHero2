@@ -13,7 +13,7 @@ let testingPinia;
 let habbitStore;
 let oneHabbit;
 
-describe("SingleHabbit.vue", async () => {
+describe("SingleTask.vue", async () => {
  beforeAll(() => {
 
   testingPinia = createTestingPinia({
