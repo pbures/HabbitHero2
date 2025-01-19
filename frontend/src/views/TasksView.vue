@@ -1,6 +1,6 @@
 <template>
     <div class="habbits-container">
-        <div v-for="habbit in habbits" :key="habbit._id">
+        <div v-for="habbit in habbits" :key="habbit._id" class="task-container">
             <SingleHabbit :habbit="habbit" />
         </div>
         <div>
@@ -19,6 +19,7 @@
         console.log('Habbits fetched:', habbitStore.habbits.length)
     })
     const { habbits } = storeToRefs(habbitStore)
+    console.log('Habbits num:', habbits.length);
 
 </script>
 <style scoped>
