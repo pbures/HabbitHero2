@@ -3,12 +3,15 @@ import { MongoClient } from 'mongodb';
 class MongoDBManager {
   // I dont know if the connection in the constructor will work because it is async
   constructor(uri = process.env.MONGODB_CONNECTION_STRING) {
-    this.client = new MongoClient(uri);
+    console.log(`Connecting to DB: ${uri}`);
+    this.client = new MongoClient(uri,
+      {
+        connectTimeoutMS: 5000,
+        serverSelectionTimeoutMS: 5000
+      }
+    );
     this.database = this.client.db('habbitHeroDatabase1');
     this.habbitCollection = this.database.collection('habbits');
-    (async () => {
-      await this.client.connect();
-    })();
   }
   async connect() {
     await this.client.connect();
@@ -27,7 +30,7 @@ class MongoDBManager {
   async update(query, data) {
     const collection = this.habbitCollection;
     console.log(`tryng to update something with data: ....updateOne( ${query}, { $set: ${data} })`)
-    
+
     await collection.updateOne(query, { $set: data });
   }
   async delete(query) {
