@@ -98,6 +98,7 @@ export const useHabbitStore = defineStore('habbit', {
     },
 
     addHabbitsEvent(habbitId) {
+      console.log('Adding event to habbit:', habbitId);
       let h
       for (let h1 of this.habbits) {
         if (h1._id === habbitId) {

@@ -1,19 +1,18 @@
 <template>
     <div class="habbit">
-        <div>{{ habbit.title }}</div>
+        <div class="title">{{ habbit.title }}</div>
         <div class="habbit-footer">
             <div class="habbit-details" v-if="habbit.type === 'goal'">
-                G: {{ habbit.total_event_count }} /  {{ habbit.target }}
+                G: {{ habbit.total_event_count }} / {{ habbit.target }}
             </div>
             <div class="habbit-details" v-else>
                 H: {{ habbit.total_event_count }}
             </div>
-
-            <div class="clickable" @click="confirmEvent(habbit._id)">&#x2713;</div>
-            <div class="clickable"><RouterLink :to="{ path: '/edit', query: { taskId:habbit._id } }" >E</RouterLink>
+            <div class="clickable" @click="confirmEvent(habbit._id)" id="add-progress">&#x2713;</div>
+            <div id="edit" class="clickable"><RouterLink :to="{ path: '/edit', query: { taskId:habbit._id } }" >E</RouterLink>
             </div>
-            <div class="clickable" @click="showHabbitDetails(habbit._id)">&#9432;</div>
-            <div class="clickable" @click="deleteHabbit(habbit._id)">&#x1F5D1;</div>
+            <div id="show-info" class="clickable" @click="showHabbitDetails(habbit._id)">&#9432;</div>
+            <div id="delete" class="clickable" @click="deleteHabbit(habbit._id)">&#x1F5D1;</div>
         </div>
     </div>
 </template>
