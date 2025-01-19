@@ -5,7 +5,7 @@ export default defineWorkspace([
   // Vitest expects a list of config files
   // or directories where there is a config file
   './backend/vitest.config.js',
-  // 'frontend/vitest.config.js',
+  './frontend/vitest.config.js',
   // you can even run the same tests,
   // but with different configs in the same "vitest" process
   // {
