@@ -7,6 +7,11 @@ import { auth } from 'express-oauth2-jwt-bearer';
 import dotenv from 'dotenv';
 import { ObjectId } from 'mongodb'
 
+import { fileURLToPath } from 'url'
+import path from 'path'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
 dotenv.config({path:`${__dirname}/.env`});
 // Authorization middleware. When used, the Access Token must
 // exist and be verified against the Auth0 JSON Web Key Set.
