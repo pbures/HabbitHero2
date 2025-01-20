@@ -75,7 +75,6 @@ it('displays the count', async () => {
     const confirmEventSpy = vi.spyOn(wrapper.vm, 'confirmEvent');
     await wrapper.find("#add-progress").trigger("click");
     expect(confirmEventSpy).toHaveBeenCalled();
-  
     expect(wrapper.find(".habbit-details").text()).toContain("2 / 5");
 
   });
