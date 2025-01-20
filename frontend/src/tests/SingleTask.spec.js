@@ -1,4 +1,4 @@
-import { test, expect, beforeAll } from "vitest";
+import { expect, beforeAll } from "vitest";
 import { mount } from "@vue/test-utils";
 import SingleTask from "@/components/SingleTask.vue";
 import { useHabbitStore } from '@/stores/task';
@@ -7,7 +7,7 @@ import { createTestingPinia } from '@pinia/testing';
 vi.mock('@auth0/auth0-vue')
 
 import { useHabbitStore } from '@/stores/task';
-import { describe } from "node:test";
+import { describe, it } from "vitest";
 
 let testingPinia;
 let habbitStore;

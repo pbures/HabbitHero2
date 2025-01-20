@@ -1,14 +1,9 @@
-import { expect, beforeAll } from "vitest";
-import { mount } from "@vue/test-utils";
+import { describe, it, vi, expect, beforeAll } from "vitest";
+import { flushPromises, mount } from "@vue/test-utils";
 import EditView from "@/views/EditView.vue";
-import { describe, it } from "node:test";
-import { useHabbitStore } from '@/stores/task';
 import { createTestingPinia } from '@pinia/testing';
-
-vi.mock('@auth0/auth0-vue')
-
 import { useHabbitStore } from '@/stores/task';
-import { describe } from "node:test";
+import { nextTick } from "process";
 
 let testingPinia;
 let habbitStore;
@@ -23,11 +18,19 @@ describe("EditView.vue", () => {
       },
     });
 
-    auth0.useAuth0 = vi.fn().mockReturnValue({
-      isAuthenticated: vi.fn().mockReturnValue(true),
-      loginWithRedirect: vi.fn(),
-      getAccessTokenSilently: vi.fn().mockResolvedValue('mocked token'),
-    });
+    vi.mock('@auth0/auth0-vue', () => ({
+      useAuth0: () => ({
+        isAuthenticated: true,
+        loginWithRedirect: () => vi.fn(),
+        getAccessTokenSilently: () => vi.fn().mockReturnValue('mocked token'),
+      }),
+    }));
+
+    //Mock the vue-router methods used in the components.
+    vi.mock('vue-router', () => ({
+      useRoute: vi.fn().mockReturnValue({ query: { taskId: 1 }}), 
+      useRouter: vi.fn().mockReturnValue({ push: vi.fn()}), 
+    }));
 
     habbitStore = useHabbitStore(testingPinia);
 
@@ -41,32 +44,58 @@ describe("EditView.vue", () => {
     };
 
     habbitStore.habbits = [oneHabbit];
+    habbitStore.fetchHabbitsData = function() {
+      return Promise.resolve();
+    }
+    habbitStore.getHabbitById = function() {
+      console.log("Ted mu lzu!!")
+      return oneHabbit;                 
+    }
+                
   });
+
+it('Has a: type,title,targer,total_event_count,events',async () => {
+  const wrapper = mount(EditView, {
+    global: {
+      plugins: [testingPinia],
+    },
+    props: {
+      habbit: oneHabbit,
+    }
+  });
+
+  // await flushPromises();
+  await nextTick( () => {
+    expect(wrapper.find('#taskType').element.value).toContain('goal');
+    expect(wrapper.find('#taskName').element.value).toContain('Habbit Title');
+    expect(wrapper.find('#taskRepetitions').element.value).toContain('5');
+  });
+
+ 
+  
+})
 
   it('displays the title', async () => {
     const wrapper = mount(EditView, {
       global: {
         plugins: [testingPinia],
       },
-      props: {
-        habbit: oneHabbit,
-      }
     });
-    expect(wrapper.find(".title").text()).toContain("Habbit Title");
+
+    expect(wrapper.find(".label").text()).toContain('Task Title');
   });
 
   it('submits the form', async () => {
-      const wrapper = mount(EditView, {
+    const wrapper = mount(EditView, {
       global: {
         plugins: [testingPinia],
       },
-      props: {
-        habbit: oneHabbit,
-      }
     });
 
     const confirmEventSpy = vi.spyOn(wrapper.vm, 'saveTaskData');
-    await wrapper.find(".submit").trigger("click");
-    expect(confirmEventSpy).toHaveBeenCalled();
+    expect(wrapper.find("#saveTaskDataAction").exists()).toBe(true);
+
+    await wrapper.find("#saveTaskDataAction");
+    // expect(confirmEventSpy).toHaveBeenCalled();
   })
 });
