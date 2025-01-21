@@ -1,5 +1,6 @@
-import { describe, it, vi, expect, beforeAll } from "vitest";
-import { flushPromises, mount } from "@vue/test-utils";
+import { describe, it, vi, expect, beforeAll, afterAll } from "vitest";
+import { mount } from "@vue/test-utils";
+
 import EditView from "@/views/EditView.vue";
 import { createTestingPinia } from '@pinia/testing';
 import { useHabbitStore } from '@/stores/task';
@@ -9,8 +10,12 @@ let testingPinia;
 let habbitStore;
 let oneHabbit;
 
+const spies = {};
+
 describe("EditView.vue", () => {
   beforeAll(() => {
+
+    // Setup the pinia store mock with it's actions, create spies on them
     testingPinia = createTestingPinia({
       stubActions: false,
       initialState: {
@@ -18,21 +23,35 @@ describe("EditView.vue", () => {
       },
     });
 
+    habbitStore = useHabbitStore(testingPinia);
+
+    spies.fetchHabbitsDataSpy = vi.spyOn(habbitStore, 'fetchHabbitsData').mockImplementation(() => {
+       return Promise.resolve();
+    });
+
+    spies.getHabbitByIdSpy = vi.spyOn(habbitStore, 'getHabbitById').mockImplementation(() => {
+      return oneHabbit;
+    });
+
+    spies.addNewHabbitSpy = vi.spyOn(habbitStore, 'addNewHabbit').mockImplementation(() => {
+      return Promise.resolve();
+    });
+
+    //Mock the auth0 methods so the authentication is passed.
     vi.mock('@auth0/auth0-vue', () => ({
       useAuth0: () => ({
         isAuthenticated: true,
         loginWithRedirect: () => vi.fn(),
-        getAccessTokenSilently: () => vi.fn().mockReturnValue('mocked token'),
+        getAccessTokenSilently: () => 'mocked token',
       }),
     }));
 
     //Mock the vue-router methods used in the components.
     vi.mock('vue-router', () => ({
-      useRoute: vi.fn().mockReturnValue({ query: { taskId: 1 }}), 
-      useRouter: vi.fn().mockReturnValue({ push: vi.fn()}), 
+      useRoute: vi.fn().mockReturnValue({ query: { taskId: 1 }}),
+      useRouter: vi.fn().mockReturnValue({ push: vi.fn()}),
     }));
 
-    habbitStore = useHabbitStore(testingPinia);
 
     oneHabbit = {
       _id: 1,
@@ -43,37 +62,22 @@ describe("EditView.vue", () => {
       events: [{ num_of_events: 1, date: "2021-10-10" }],
     };
 
-    habbitStore.habbits = [oneHabbit];
-    habbitStore.fetchHabbitsData = function() {
-      return Promise.resolve();
-    }
-    habbitStore.getHabbitById = function() {
-      console.log("Ted mu lzu!!")
-      return oneHabbit;                 
-    }
-                
+
   });
 
-it('Has a: type,title,targer,total_event_count,events',async () => {
-  const wrapper = mount(EditView, {
-    global: {
-      plugins: [testingPinia],
-    },
-    props: {
-      habbit: oneHabbit,
-    }
-  });
+  it('Has a: type,title,targer,total_event_count,events',async () => {
+    const wrapper = mount(EditView, {
+      global: {
+        plugins: [testingPinia],
+      },
+    });
 
-  // await flushPromises();
-  await nextTick( () => {
-    expect(wrapper.find('#taskType').element.value).toContain('goal');
-    expect(wrapper.find('#taskName').element.value).toContain('Habbit Title');
-    expect(wrapper.find('#taskRepetitions').element.value).toContain('5');
-  });
-
- 
-  
-})
+    await nextTick( () => {
+      expect(wrapper.find('#taskType').element.value).toContain('goal');
+      expect(wrapper.find('#taskName').element.value).toContain('Habbit Title');
+      expect(wrapper.find('#taskRepetitions').element.value).toContain('5');
+    });
+  })
 
   it('displays the title', async () => {
     const wrapper = mount(EditView, {
@@ -83,6 +87,8 @@ it('Has a: type,title,targer,total_event_count,events',async () => {
     });
 
     expect(wrapper.find(".label").text()).toContain('Task Title');
+    expect(spies.fetchHabbitsDataSpy).toHaveBeenCalled();
+    expect(spies.getHabbitByIdSpy).toReturnWith(oneHabbit);
   });
 
   it('submits the form', async () => {
@@ -92,10 +98,14 @@ it('Has a: type,title,targer,total_event_count,events',async () => {
       },
     });
 
-    const confirmEventSpy = vi.spyOn(wrapper.vm, 'saveTaskData');
     expect(wrapper.find("#saveTaskDataAction").exists()).toBe(true);
-
+    expect(wrapper.find("#saveTaskDataAction").trigger("click"));
     await wrapper.find("#saveTaskDataAction");
-    // expect(confirmEventSpy).toHaveBeenCalled();
+
+    expect(spies.addNewHabbitSpy).toHaveBeenCalled();
   })
+
+  afterAll(() => {
+    vi.resetAllMocks();
+  });
 });

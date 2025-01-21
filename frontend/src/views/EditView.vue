@@ -51,7 +51,7 @@ const saveTaskData = () => {
                 <textarea id="taskDescription" v-model="task.description" required></textarea>
             </div>
             <div class="label">
-                <label for="taskType" :bind>Task type (habbit or a goal):</label>
+                <label for="taskType">Task type (habbit or a goal):</label>
             </div>
             <div class="value">
                 <select id="taskType" v-model="task.type" required>
