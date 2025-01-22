@@ -11,16 +11,20 @@ import { useHabbitStore } from '@/stores/task';
 
 vi.mock('@auth0/auth0-vue')
 
-const testingPinia = createTestingPinia({
-  stubActions: false,
-  initialState: {
-    habbits: [],
-  },
-});
+let testingPinia;
+let habbitStore;
 
 describe('TasksView.vue', () => {
   beforeAll(() => {
-    const habbitStore = useHabbitStore(testingPinia);
+
+    testingPinia = createTestingPinia({
+      stubActions: false,
+      initialState: {
+        habbits: [],
+      },
+    });
+
+    habbitStore = useHabbitStore(testingPinia);
     vi.spyOn(habbitStore, 'fetchHabbitsData').mockImplementation(function() {
       console.log('mockFetchHabbits called via a spy');
 
@@ -33,11 +37,13 @@ describe('TasksView.vue', () => {
       return Promise.resolve(true);
     });
 
+    // eslint-disable-next-line no-import-assign
     auth0.useAuth0 = vi.fn().mockReturnValue({
       isAuthenticated: vi.fn().mockReturnValue(true),
       loginWithRedirect: vi.fn(),
       getAccessTokenSilently: vi.fn().mockResolvedValue('mocked token'),
     });
+
   });
 
   it('renders the correct message', () => {

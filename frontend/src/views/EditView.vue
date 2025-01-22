@@ -1,9 +1,8 @@
 <script setup>
 import { ref } from 'vue';
 import { onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useHabbitStore } from '@/stores/task'
-import { useRouter } from 'vue-router';
 import { useAuth0 } from '@auth0/auth0-vue'
 import { Task } from '@/model/task';
 
@@ -27,8 +26,8 @@ onMounted(() => {
         })
     }
 });
-function saveTaskData() {
-    console.log(task.value);
+const saveTaskData = () => {
+    console.log("Task Value:", task.value);
     habbitStore.addNewHabbit(task.value)
     router.push({ path: '/'})
 }
@@ -52,7 +51,7 @@ function saveTaskData() {
                 <textarea id="taskDescription" v-model="task.description" required></textarea>
             </div>
             <div class="label">
-                <label for="taskType" :bind>Task type (habbit or a goal):</label>
+                <label for="taskType">Task type (habbit or a goal):</label>
             </div>
             <div class="value">
                 <select id="taskType" v-model="task.type" required>
@@ -72,7 +71,7 @@ function saveTaskData() {
             <div class="value">
                 <input type="date" id="taskDueDate" v-model="task.expiration_date" required />
             </div>
-            <div class="label submit clickable" @click="saveTaskData">Save Task</div>
+            <div class="label submit clickable" id="saveTaskDataAction" @click="saveTaskData">Save Task</div>
         </form>
     </main>
 </template>
