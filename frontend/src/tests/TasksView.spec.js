@@ -13,6 +13,7 @@ vi.mock('@auth0/auth0-vue')
 
 let testingPinia;
 let habbitStore;
+let spies = {};
 
 describe('TasksView.vue', () => {
   beforeAll(() => {
@@ -25,7 +26,7 @@ describe('TasksView.vue', () => {
     });
 
     habbitStore = useHabbitStore(testingPinia);
-    vi.spyOn(habbitStore, 'fetchHabbitsData').mockImplementation(function() {
+    spies.fetchHabbitsDataSpy = vi.spyOn(habbitStore, 'fetchHabbitsData').mockImplementation(function() {
       console.log('mockFetchHabbits called via a spy');
 
       this.habbits = [
@@ -36,6 +37,8 @@ describe('TasksView.vue', () => {
 
       return Promise.resolve(true);
     });
+
+    spies.addHabbitsEventSpy = vi.spyOn(habbitStore, 'addHabbitsEvent').mockReturnValue(true);
 
     // eslint-disable-next-line no-import-assign
     auth0.useAuth0 = vi.fn().mockReturnValue({
@@ -54,6 +57,20 @@ describe('TasksView.vue', () => {
     });
 
     expect(wrapper.findAll('.task-container').length).toBe(3);
+  });
+
+  it('adds an event to the task', () => {
+    const wrapper = mount(TasksView, {
+      global: {
+        plugins: [testingPinia],
+      },
+    });
+
+    const addProgress = wrapper.find('#add-progress')
+    expect(addProgress.exists()).toBe(true);
+    addProgress.trigger('click');
+
+    expect(spies.addHabbitsEventSpy).toBeCalled();
   });
 
 });
