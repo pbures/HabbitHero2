@@ -103,7 +103,7 @@ app.put('/habbit', checkJwt, async (req, res) => {
     }
     delete changes._id;
     console.log("Changes:", changes);
-    myMongoDBManager.update({_id: habbit._id}, changes);
+    await myMongoDBManager.update({_id: habbit._id}, changes);
   } else {
     console.log('Habbit does not exist');
     console.log('Inserting new habbit');
