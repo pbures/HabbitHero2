@@ -56,7 +56,7 @@ export const useHabbitStore = defineStore('habbit', {
           const token = await this.auth0.getAccessTokenSilently()
           console.log('Token on FE for PUT:', token)
 
-          axios.put('http://localhost:3000/habbit',
+          await axios.put('http://localhost:3000/habbit',
             habbit,
             {
               headers: {
@@ -97,7 +97,7 @@ export const useHabbitStore = defineStore('habbit', {
 
     },
 
-    addHabbitsEvent(habbitId) {
+    async addHabbitsEvent(habbitId) {
       console.log('Adding event to habbit:', habbitId);
       let h
       for (let h1 of this.habbits) {
@@ -113,14 +113,17 @@ export const useHabbitStore = defineStore('habbit', {
         return;
       }
 
-      h.total_event_count++;
 
       h.events.push({
         num_of_events: 1,
         date: new Date().toISOString()
       });
 
-      /* TODO: Save the data to the server and reload the habbit with it's ids*/
+      h.total_event_count = h.events.length;
+
+      await this.addNewHabbit(h);
+      await this.fetchHabbitsData();
+      console.log('Added event, and fetched habbits data:', this.habbits);
     },
 
     async deleteHabbit(habbitId) {

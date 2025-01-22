@@ -14,7 +14,7 @@ export class Task {
         this.status = "";
         this.status_date = "";
         this.events = [];
-        this.total_event_count = undefined
+        this.total_event_count = 0;
     }
 }
 
@@ -26,14 +26,14 @@ export class Task {
 
 //     /* Title of the habbit, Max 16 characters */
 //     title: "Eat vegetables",
-    
+
 //     description: "I will eat vegetables at least four times a week",
 
 //     /* User IDs of the owners of the habbit. Habbits can be shared amongst more users */
 //     user_ids: [1, 2],
 
 //     /* allowed values: goal or habbit */
-//     type: "goal", 
+//     type: "goal",
 
 //     /* Expiration date of the goal or habbit. This is to set a time limited goals or habbits */
 //     expiration_date: "2023-12-31",
@@ -47,7 +47,7 @@ export class Task {
 //     */
 //     numer_of_events_in_one_go: 1,
 
-//     /* Status of the habbit. 
+//     /* Status of the habbit.
 //        allowed values: active - currently user is working on that,
 //                        idle - habbit was defined, but not started yet,
 //                        completed - habbit was successfully completed,
