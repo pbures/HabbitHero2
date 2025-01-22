@@ -97,7 +97,7 @@ export const useHabbitStore = defineStore('habbit', {
 
     },
 
-    addHabbitsEvent(habbitId) {
+    async addHabbitsEvent(habbitId) {
       console.log('Adding event to habbit:', habbitId);
       let h
       for (let h1 of this.habbits) {
@@ -120,7 +120,8 @@ export const useHabbitStore = defineStore('habbit', {
         date: new Date().toISOString()
       });
 
-      /* TODO: Save the data to the server and reload the habbit with it's ids*/
+      await this.actions.addNewHabbit(h);
+      this.actions.fetchHabbitsData();
     },
 
     async deleteHabbit(habbitId) {
