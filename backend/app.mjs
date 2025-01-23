@@ -116,8 +116,8 @@ app.put('/habbit', checkJwt, async (req, res) => {
 app.delete('/habbit', checkJwt, (req, res) => {
   const userId = req.auth.payload.sub;
 
-  console.log(`DELETE request from user: ${userId} at /habbit, id:` + req.query.id);
-  myMongoDBManager.delete({ _id: new ObjectId(req.query.id) });
+  console.log(`DELETE request from user: ${userId} at /habbit, id:` + req.query.habbitId);
+  myMongoDBManager.delete({ _id: new ObjectId(req.query.habbitId) });
   res.status(200).json({ message: 'Habbit deleted successfully' });
 });
 
