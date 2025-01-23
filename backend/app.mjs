@@ -65,7 +65,8 @@ app.get('/habbits', checkJwt, async (req, res) => {
   */
 
   console.log(`GET request at /habbits from user id: ${userId}`);
-  const habbits = await myMongoDBManager.find();
+  const habbits = await myMongoDBManager.find({ user_ids: { $in: [userId] } });
+  console.log('Habbits:', habbits);
   // console.log(habbits);
 
   res.status(200).json(habbits);
@@ -107,7 +108,9 @@ app.put('/habbit', checkJwt, async (req, res) => {
   } else {
     console.log('Habbit does not exist');
     console.log('Inserting new habbit');
-    myMongoDBManager.insert(req.body);
+    let object = req.body;
+    object.user_ids = [userId];
+    myMongoDBManager.insert(object);
   }
 
   res.status(200).json({ message: 'Habbit updated successfully' });
@@ -116,8 +119,8 @@ app.put('/habbit', checkJwt, async (req, res) => {
 app.delete('/habbit', checkJwt, (req, res) => {
   const userId = req.auth.payload.sub;
 
-  console.log(`DELETE request from user: ${userId} at /habbit, id:` + req.query.id);
-  myMongoDBManager.delete({ _id: new ObjectId(req.query.id) });
+  console.log(`DELETE request from user: ${userId} at /habbit, id:` + req.query.habbitId);
+  myMongoDBManager.delete({ _id: new ObjectId(req.query.habbitId) });
   res.status(200).json({ message: 'Habbit deleted successfully' });
 });
 
