@@ -65,7 +65,7 @@ app.get('/habbits', checkJwt, async (req, res) => {
   */
 
   console.log(`GET request at /habbits from user id: ${userId}`);
-  const habbits = await myMongoDBManager.find();
+  const habbits = await myMongoDBManager.find({ user_ids: { $in: ["google-oauth2|100222517170782191009"] } });
   // console.log(habbits);
 
   res.status(200).json(habbits);
@@ -107,7 +107,9 @@ app.put('/habbit', checkJwt, async (req, res) => {
   } else {
     console.log('Habbit does not exist');
     console.log('Inserting new habbit');
-    myMongoDBManager.insert(req.body);
+    let object = req.body;
+    object.user_ids = [userId];
+    myMongoDBManager.insert(object);
   }
 
   res.status(200).json({ message: 'Habbit updated successfully' });
