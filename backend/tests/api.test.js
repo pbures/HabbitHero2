@@ -45,4 +45,33 @@ describe('API Tests', () => {
     // Add your assertions here based on the expected response
     expect(response.body).toHaveProperty('message', 'Habbit updated successfully')
   })
+
+  it('should delete a habbit', async () => {
+    const habitData = {
+      name: 'Test Habit',
+      description: 'This is a test habit'
+    }
+
+    const response = await request(server)
+    .put('/habbit')
+    .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+    .send(habitData)
+    .expect(200)
+
+    const response2 = await request(server)
+    .get('/habbits')
+    .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+    .send(habitData)
+    .expect(200)
+
+    console.log(response2.body[0]._id)
+    const response3 = await request(server)
+      .delete('/habbit')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .send(habitData)
+      .query({habbitId: response2.body[0]._id})
+      .expect(200)
+
+    // Add your assertions here based on the expected response
+  })
 })

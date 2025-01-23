@@ -65,7 +65,8 @@ app.get('/habbits', checkJwt, async (req, res) => {
   */
 
   console.log(`GET request at /habbits from user id: ${userId}`);
-  const habbits = await myMongoDBManager.find({ user_ids: { $in: ["google-oauth2|100222517170782191009"] } });
+  const habbits = await myMongoDBManager.find({ user_ids: { $in: [userId] } });
+  console.log('Habbits:', habbits);
   // console.log(habbits);
 
   res.status(200).json(habbits);
