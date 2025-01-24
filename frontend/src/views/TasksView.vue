@@ -1,25 +1,38 @@
 <template>
     <div class="habbits-container">
-        <div v-for="habbit in habbits" :key="habbit._id" class="task-container">
-            <SingleHabbit :habbit="habbit" />
+        <div v-if="!selectedHabbit" v-for="habbit in habbits" :key="habbit._id" class="task-container">
+            <SingleHabbit :habbit="habbit" @update-habbit-detail="(h) => {toggleTaskStatistics(h)}"/>
         </div>
-        <div>
-            Habbits number: {{  habbits.length }}
+
+        <div v-if="selectedHabbit">
+            <StatisticsView :habbit="selectedHabbit" @close-statistics="closeStatistics()"/>
         </div>
     </div>
 </template>
 
 <script setup>
     import SingleHabbit from '@/components/SingleTask.vue'
+    import StatisticsView from '@/components/StatisticsView.vue'
     import { useHabbitStore } from '@/stores/task'
     import { storeToRefs } from 'pinia'
+    import { ref } from 'vue'
 
     const habbitStore = useHabbitStore()
     habbitStore.fetchHabbitsData().then(() => {
         console.log('Habbits fetched:', habbitStore.habbits.length)
     })
-    const { habbits } = storeToRefs(habbitStore)
+    const { habbits } = storeToRefs(habbitStore);
+    let selectedHabbit = ref(null);
+
     console.log('Habbits num:', habbits.length);
+
+    function toggleTaskStatistics(habbit) {
+        selectedHabbit.value = selectedHabbit.value === null ? habbit : null;
+    }
+
+    function closeStatistics () {
+        selectedHabbit.value = null;
+    }
 
 </script>
 <style scoped>

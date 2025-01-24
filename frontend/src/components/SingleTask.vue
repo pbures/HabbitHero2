@@ -11,7 +11,7 @@
             <div class="clickable" @click="confirmEvent(habbit._id)" id="add-progress">&#x2713;</div>
             <div id="edit" class="clickable"><RouterLink :to="{ path: '/edit', query: { taskId:habbit._id } }" >E</RouterLink>
             </div>
-            <div id="show-info" class="clickable" @click="showHabbitDetails(habbit._id)">&#9432;</div>
+            <div id="show-info" class="clickable" @click="showTaskStatistics(habbit)">&#9432;</div>
             <div id="delete" class="clickable" @click="deleteHabbit(habbit._id)">&#x1F5D1;</div>
         </div>
     </div>
@@ -19,6 +19,7 @@
 
 <script setup>
     import { useHabbitStore } from '@/stores/task'
+    import { toRefs } from 'vue';
     const habbitStore = useHabbitStore()
 
     const confirmEvent = (id) => {
@@ -30,12 +31,16 @@
         habbitStore.deleteHabbit(id)
     };
 
-    const showHabbitDetails = (id) => {
-        console.log('Show details for habbit with id:', id);
-        /* TODO: Implement show habbit details */
+    const showTaskStatistics = (habbit) => {
+        console.log('SingleTask.vue: Show statistics for habbit:', habbit);
+        selectedHabbit = habbit.value;
+        emit('update-habbit-detail', habbit);
     };
 
-    defineProps(['habbit'])
+    const props = defineProps(['habbit','selectedHabbit']);
+    const emit = defineEmits(['update-habbit-detail']);
+
+    let {habbit, selectedHabbit} = toRefs(props);
 
 </script>
 
