@@ -7,7 +7,7 @@ export class Task {
         this.title = "";
         this.description = "";
         this.user_ids = [];
-        this.type = "";
+        this.type = "habbit";
         this.expiration_date = "";
         this.target = undefined
         this.numer_of_events_in_one_go = undefined
@@ -16,7 +16,7 @@ export class Task {
         this.events = [];
         this.total_event_count = 0;
 
-        this.habbit_interval = ""; //Month or Week
+        this.habbit_interval = "days_in_week";
         this.days_in = [];  //Selected days (numbers 1 .. 7, where 0 = Monday or days in Month where 1 .. 31 are the days)
     }
 }

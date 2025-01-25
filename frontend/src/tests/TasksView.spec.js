@@ -73,13 +73,13 @@ describe('TasksView.vue', () => {
     expect(spies.addHabbitsEventSpy).toBeCalled();
   });
 
-  if('renders the statistics', () => {
+  it('renders the statistics', () => {
     const wrapper = mount(TasksView, {
       global: {
         plugins: [testingPinia],
       },
     });
-                    
+
     const statistics = wrapper.find('#statistics');
   });
 });

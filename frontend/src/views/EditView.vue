@@ -5,24 +5,34 @@ import { useRoute, useRouter } from 'vue-router';
 import { useHabbitStore } from '@/stores/task'
 import { useAuth0 } from '@auth0/auth0-vue'
 import { Task } from '@/model/task';
+
 import DaysInWeekSelector from '@/components/DaysInWeekSelector.vue';
+import DaysInMonthSelector from '@/components/DaysInMonthSelector.vue';
 
 const { isAuthenticated } = useAuth0()
 const habbitStore = useHabbitStore();
+
 const task = ref(new Task());
+const daysIn = ref([1]);
+
 const router = useRouter();
 const route = useRoute();
 
 onMounted(() => {
     const taskId = route.query.taskId;
-    console.log(route.query)
     console.log("taskId: ", taskId);
     if (taskId) {
         habbitStore.fetchHabbitsData().then(() => {
-            task.value = Object.assign({}, habbitStore.getHabbitById(taskId))
+            task.value = Object.assign({}, habbitStore.getHabbitById(taskId));
+
+            console.log(`Task ID in Edit in onMounted`, task.value.days_in);
         })
     }
 });
+
+setTimeout(() => {
+  daysIn.value = [1,2,3];
+}, 1500)
 
 function updateSelectedDays(d) {
   task.value.days_in = d.value;
@@ -74,6 +84,10 @@ const saveTaskData = () => {
 
             <div v-if="task.type == 'habbit' && task.habbit_interval === 'days_in_week'" class="span2">
               <DaysInWeekSelector :selectedDays="task.days_in" @update-selected-days="(d) => { updateSelectedDays(d) }"/>
+            </div>
+
+            <div v-if="task.type == 'habbit' && task.habbit_interval === 'days_in_month'" class="span2">
+              <DaysInMonthSelector :selectedDays="task.days_in" @update-selected-days="(d) => { updateSelectedDays(d) }"/>
             </div>
 
             <div v-if="task.type === 'goal'" class="label">

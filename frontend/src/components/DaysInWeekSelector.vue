@@ -1,46 +1,41 @@
-
 <template>
-  <div class="days-in-week-selector" @click="updateSelection([1,2.3])">
-    <div v-for="(d, i) in possibleDays" class="day" @click="updateSelectedDay(i)" :class="dayClass(i)"> {{ d }} </div>
+  <div class="days-in-week-selector">
+    <div v-for="(d, i) in possibleDays" :key="d" class="day" @click="updateSelectedDay(i)" :class="dayClass(i)"> {{ d }} </div>
   </div>
 </template>
 
 <script setup>
-import { ref, defineEmits } from 'vue';
-const selectedDays = ref([]);
+  import { toRefs, ref } from 'vue'
 
-const possibleDays = ref(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
-const props = defineProps(['selectedDays']);
+  const props = defineProps(['selectedDays']);
+  const { selectedDays } = toRefs(props);
 
+  const possibleDays = ref(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
 
-if (props.selectedDays) {
-  selectedDays.value = props.selectedDays
-}
-
-function dayClass(di) {
-  return (selectedDays.value.indexOf(di) !== -1) ? "selected" : "unselected";
-}
-
-const emit = defineEmits(['update-selected-days']);
-
-function updateSelectedDay(di) {
-  let dayIndex = selectedDays.value.indexOf(di);
-
-  if ( dayIndex === -1 ){
-    selectedDays.value.push(di)
-    console.log(`Adding day: ${di}`)
-  } else {
-    selectedDays.value.splice(dayIndex, 1)
-    console.log(`Removing day: ${di}`)
+  function dayClass(di) {
+    return (selectedDays.value.indexOf(di) !== -1) ? "selected" : "unselected";
   }
 
-  updateSelection(selectedDays);
-}
+  const emit = defineEmits(['update-selected-days']);
 
-function updateSelection(days) {
-  console.log('Selected days:', days.value);
-  emit('update-selected-days', selectedDays);
-}
+  function updateSelectedDay(di) {
+    if (!selectedDays.value || !selectedDays?.value) { return };
+
+    let dayIndex = selectedDays.value.indexOf(di);
+
+    if ( dayIndex === -1 ){
+      selectedDays.value.push(di)
+    } else {
+      selectedDays.value.splice(dayIndex, 1)
+    }
+
+    updateSelection(selectedDays);
+  }
+
+  function updateSelection(days) {
+    emit('update-selected-days', days);
+  }
+
 </script>
 
 <style scoped>
