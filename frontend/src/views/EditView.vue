@@ -5,7 +5,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useHabbitStore } from '@/stores/task'
 import { useAuth0 } from '@auth0/auth0-vue'
 import { Task } from '@/model/task';
-
+import DaysInWeekSelector from '@/components/DaysInWeekSelector.vue';
 
 const { isAuthenticated } = useAuth0()
 const habbitStore = useHabbitStore();
@@ -18,20 +18,20 @@ onMounted(() => {
     console.log(route.query)
     console.log("taskId: ", taskId);
     if (taskId) {
-        //Fetch the data for task with taskId
-        // habbitStore.getHabbitById(taskId)
         habbitStore.fetchHabbitsData().then(() => {
             task.value = Object.assign({}, habbitStore.getHabbitById(taskId))
-            console.log("TV:",task.value);
         })
     }
 });
+
+function updateSelectedDays(d) {
+  task.value.days_in = d.value;
+}
+
 const saveTaskData = () => {
-    console.log("Task Value:", task.value);
     habbitStore.addNewHabbit(task.value)
     router.push({ path: '/'})
 }
-
 </script>
 
 
@@ -50,15 +50,32 @@ const saveTaskData = () => {
             <div class="value">
                 <textarea id="taskDescription" v-model="task.description" required></textarea>
             </div>
+
             <div class="label">
                 <label for="taskType">Task type (habbit or a goal):</label>
             </div>
             <div class="value">
                 <select id="taskType" v-model="task.type" required>
-                    <option value="habbit">Habbit</option>
+                    <option value="habbit" selected>Habbit</option>
                     <option value="goal">Goal</option>
                 </select>
             </div>
+
+            <div v-if="task.type === 'habbit'" class="label">
+              <label>Repeats per</label>
+            </div>
+
+            <div v-if="task.type === 'habbit'" class="value">
+              <select id="repeatsPer" v-model="task.habbit_interval" required>
+                <option value="days_in_week">Days in Week</option>
+                <option value="days_in_month">Days in Month</option>
+              </select>
+            </div>
+
+            <div v-if="task.type == 'habbit' && task.habbit_interval === 'days_in_week'" class="span2">
+              <DaysInWeekSelector :selectedDays="task.days_in" @update-selected-days="(d) => { updateSelectedDays(d) }"/>
+            </div>
+
             <div v-if="task.type === 'goal'" class="label">
                 <label for="taskRepetitions">Repetitions:</label>
             </div>
@@ -71,7 +88,7 @@ const saveTaskData = () => {
             <div class="value">
                 <input type="date" id="taskDueDate" v-model="task.expiration_date" required />
             </div>
-            <div class="label submit clickable" id="saveTaskDataAction" @click="saveTaskData">Save Task</div>
+            <div class="label span2 clickable" id="saveTaskDataAction" @click="saveTaskData">Save Task</div>
         </form>
     </main>
 </template>
@@ -87,14 +104,6 @@ const saveTaskData = () => {
 
         background: inherit;
         backdrop-filter: blur(10px);
-
-        /* flex-direction: column;
-        flex-wrap: wrap;
-
-        align-items: flex-start;
-        align-content: flex-start;
-        justify-content: center;
-         */
         font-size: 20px;
     }
 
@@ -107,7 +116,7 @@ const saveTaskData = () => {
         margin: 0.5em;
     }
 
-    div.submit {
+    div.span2 {
         grid-column: 1 / span 2;
         text-align: center;
     }
