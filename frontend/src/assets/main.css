@@ -50,7 +50,7 @@ body {
   cursor: default;
   background-image: url('./backgroud-treee.jpg');
   background-size: 100% auto;
-  background-repeat: no-repeat;
+  background-repeat: repeat;
   background-position: center;
 }
 
