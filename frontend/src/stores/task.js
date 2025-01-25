@@ -54,8 +54,6 @@ export const useHabbitStore = defineStore('habbit', {
         } else {
 
           const token = await this.auth0.getAccessTokenSilently()
-          console.log('Token on FE for PUT:', token)
-
           await axios.put('http://localhost:3000/habbit',
             habbit,
             {
@@ -147,8 +145,6 @@ export const useHabbitStore = defineStore('habbit', {
 
     getHabbitById(habbitId) {
       const habbit = this.habbits.filter(h => h._id == habbitId)
-      console.log(this.habbits)
-      console.log('Habbit:', habbit);
       return habbit[0]
     },
 
@@ -173,8 +169,6 @@ export const useHabbitStore = defineStore('habbit', {
 
       try {
         const token = await this.auth0.getAccessTokenSilently()
-        console.log('Token on FE for GET:', token)
-
         const response = await axios.get('http://localhost:3000/habbits', {
           headers: {
             Authorization: `Bearer ${token}`
