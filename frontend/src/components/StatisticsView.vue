@@ -2,45 +2,10 @@
 import { Task } from '@/model/task';
 import { ref, defineProps, defineEmits } from 'vue';
 
-// import { Bar } from 'vue-chartjs'
-// import exp from 'constants';
-
 const props = defineProps(['habbit']);
 const habbit = ref(props.habbit);
 
-import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  BarElement,
-  CategoryScale,
-  LinearScale
-} from 'chart.js'
-
-
-
-
-// ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
-
-//  export{
-//   name: 'Graph',
-//   components: {
-//     Bar
-//   },
-//   data() {
-//     return {
-//       data: {
-//         labels: ['Progress', 'Target'],
-//         datasets: [{ data: [habbit.total_event_count, habbit.target] }]
-//       },
-//       options: {
-//         responsive: true
-//       }
-//     }
-//   }
-// }
-
+import DoughnutChart from '@/components/Graph.vue';
 
 </script>
 
@@ -52,7 +17,7 @@ import {
         </div>
         <h2>ID: {{ habbit._id }}</h2>
         <h2>Title: {{ habbit.title }}</h2>
-          <canvas id="myChart"></canvas>
+            <DoughnutChart :habbit="habbit"/>
     </div>
 </template>
 
