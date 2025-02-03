@@ -1,6 +1,6 @@
 <template>
   <div class="days-in-week-selector">
-    <div v-for="(d, i) in possibleDays" :key="d" class="day" @click="updateSelectedDay(i)" :class="dayClass(i)"> {{ d }} </div>
+    <div v-for="(d, i) in possibleDays" :key="d" class="day" @click="updateSelectedDay(i+1)" :class="dayClass(i+1)"> {{ d }} </div>
   </div>
 </template>
 
