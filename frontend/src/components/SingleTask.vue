@@ -16,7 +16,7 @@
         </div>
 
         <div class="habbit-stats">
-          <div v-for="he in habbitEvents" :key="he" class="habbit-stat" :class="habbitStatClass(he)">
+          <div v-for="he in habbitEvents" :key="he.date" class="habbit-stat" :class="habbitStatClass(he.hit)">
           </div>
         </div>
     </div>
@@ -25,18 +25,40 @@
 <script setup>
     import { useHabbitStore } from '@/stores/task'
     import { toRefs, ref } from 'vue';
+    import { findPreviousDays } from '@/utils/findDates'
 
     const props = defineProps(['habbit','selectedHabbit']);
     const emit = defineEmits(['update-habbit-detail']);
 
     let {habbit, selectedHabbit} = toRefs(props);
 
-    const habbitEvents = getHabbitEvents();
+    const habbitEvents = getHabbitEvents(habbit.value);
 
-    function getHabbitEvents(){
-      console.log(`Habbit: `, habbit.value)
-      console.log(`Events:`, habbit.value.events)
-      return ref([true, true, false, true, false, true]);
+    function getHabbitEvents(h){
+      if (h.days_in.length == 0) return [];
+
+      const days = findPreviousDays(new Date(), h.days_in).reverse();
+
+      const ret = days.map( (m) => {
+        return {date: m, hit: isEventInDates(m, h.events) }
+      });
+      return ret;
+    }
+
+    function isEventInDates(eDate, dates) {
+      const ret = dates.some( (d) => {
+        const r = theDateOnly(new Date(d.date)) === theDateOnly(eDate);
+        console.log(`R: ${r}`);
+        return r;
+      })
+
+      return ret;
+    }
+
+    function theDateOnly(dateObj) {
+      const ret = `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`;
+      console.log(ret);
+      return ret;
     }
 
     const habbitStore = useHabbitStore()

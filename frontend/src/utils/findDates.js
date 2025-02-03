@@ -1,9 +1,22 @@
 
 function findPreviousDays(today,targetDays) {
   let result = [];
-  
-  for(let i=0; i < 10; i++){
-    let td = targetDays[i % targetDays.length];
+
+  const dayInWeek = today.getDay();
+  const targetDaysReversed = targetDays.sort().reverse();
+
+  let i=0;
+
+  for(let j=0; j< targetDaysReversed.length; j++){
+    if(targetDays[j] === dayInWeek) {
+      i = j;
+      break;
+    }
+  }
+
+  const top = i + 10;
+  for(; i < top; i++){
+    let td = targetDaysReversed[i % targetDaysReversed.length];
     let prevDay = findPreviousOneDay(today, td);
     result.push(prevDay);
     console.log('PD: ' + prevDay);
@@ -15,7 +28,7 @@ function findPreviousDays(today,targetDays) {
 
 function findPreviousOneDay(today, dayOfWeek) {
     let daysAgo = (today.getDay() - dayOfWeek + 7) % 7;
-    const pastDate = new Date();
+    const pastDate = new Date(today);
     pastDate.setDate(today.getDate() - daysAgo);
     return pastDate;
 }

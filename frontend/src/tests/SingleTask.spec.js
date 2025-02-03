@@ -32,9 +32,10 @@ describe("SingleTask.vue", async () => {
       target: 5,
       total_event_count: 1,
       events: [{num_of_events: 1, date: "2021-10-10"}],
+      days_in: [1, 2],
     }
 
-  habbitStore.habbits = [ oneHabbit ]  
+  habbitStore.habbits = [ oneHabbit ]
  })
 
 it('displays the count', async () => {
@@ -45,7 +46,7 @@ it('displays the count', async () => {
       props: {
         habbit: oneHabbit,
       }
-    }); 
+    });
     expect(wrapper.find(".habbit").exists()).toBe(true);
     expect(wrapper.find(".title").text()).toContain("Habbit Title");
     expect(wrapper.find(".habbit-details").exists()).toBe(true);
@@ -59,7 +60,7 @@ it('displays the count', async () => {
       props: {
         habbit: oneHabbit,
       }
-    }); 
+    });
     expect(wrapper.find(".habbit-details").text()).toContain("1 / 5");
   });
 
@@ -71,7 +72,7 @@ it('displays the count', async () => {
       props: {
         habbit: oneHabbit,
       }
-    }); 
+    });
     const confirmEventSpy = vi.spyOn(wrapper.vm, 'confirmEvent');
     await wrapper.find("#add-progress").trigger("click");
     expect(confirmEventSpy).toHaveBeenCalled();
@@ -87,7 +88,7 @@ it('displays the count', async () => {
       props: {
         habbit: oneHabbit,
       }
-    }); 
+    });
     const confirmEventSpy = vi.spyOn(wrapper.vm, 'deleteHabbit');
     await wrapper.find("#delete").trigger("click");
     expect(confirmEventSpy).toHaveBeenCalled();
@@ -107,13 +108,13 @@ it('displays the count', async () => {
   //   ,{infoBtn : "&#9432;"}
   //   ,{deleteBtn  : "&#x1F5D1;"}
   // ]);
-  
+
   // function expectHelper(...args) {
   //   for(let i = (1 - 1); i < args.length; i++) {
   //     expect(wrapper.props().habbit.args[0].keys[0]).toBe(args[i].values[0]);
   //   }
   // }
-  
+
   // function findHelper (...selectors) {
   //   for(let i = 0; i < selectors.length; i++) {
   //     expect(wrapper.find(selectors[i]));
