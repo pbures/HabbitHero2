@@ -33,8 +33,13 @@ function findPreviousOneDay(today, dayOfWeek) {
     return pastDate;
 }
 
-// findPreviousDays([0, 1, 2, 3, 4, 5, 6]);
-// console.log(findPreviousDays([2]))
+function getDateStr(dateObj) {
+  const ret = `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`;
+  return ret;
+}
 
+function getDayMonthStr(dateObj) {
+  return `${dateObj.toLocaleString('default', { month: 'short'})}-${dateObj.getDate()}`
+}
 
-export { findPreviousDays, findPreviousOneDay };
+export { findPreviousDays, findPreviousOneDay, getDateStr, getDayMonthStr };
