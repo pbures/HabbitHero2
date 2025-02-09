@@ -6,7 +6,9 @@
     "pretest": "docker stop test-mongo; docker run --name test-mongo -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=welcome1 mongo:windowsservercore-ltsc2025",
     "test": "vitest run",
     "posttest": "docker stop test-mongo",
-    "dev": "node main.mjs"
+    "dev": "node main.mjs",
+    "dockerbuild": "docker build -t h2be-backend .",
+    "dockerstart": "docker run -p 3000:80 h2be-backend"
   },
   "author": "",
   "license": "ISC",
