@@ -6,5 +6,9 @@ export default
     schema_version: "1.0",
     name: "John Doe",
     email: "john.doe@example.com",
+    nickname: 'johnny',
+    invites_recieved: [],
+    invites_saved: [],
+    friends: [],
     habbits: [1],
 }
