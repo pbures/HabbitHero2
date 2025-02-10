@@ -126,26 +126,66 @@ app.put('/habbit', checkJwt, async (req, res) => {
 });
 
 app.put('/user', checkJwt, async (req, res) => {
+  // I dont know if this will work, because we now in the user have user_id and not _id
+  // const userId = req.auth.payload.sub
+  // let object = req.body;
+  // object.user_id = userId;
+  // myMongoDBUserManager.insert(object);
   const userId = req.auth.payload.sub
-  let object = req.body;
-  object.user_id = userId;
-  myMongoDBUserManager.insert(object);
+  console.log(`PUT request from user ${userId} at /habbit with data:`, req.body, '_id:', req.body.userId);
+
+  let user = null;
+  if (req.body.user_id !== undefined) {
+    let objectId = new ObjectId(req.body.userId);
+    user = (await myMongoDBUserManager.find({ user_id: objectId}))[0];
+    console.log('userttt', user);
+  }
+
+  if(user) {
+    console.log("user exists", user);
+    const changes = {};
+    for (const key in req.body) {
+      // Here if there is an incomming key that is _id, then we have the raw string version, comparing it with the new one.
+      if (req.body[key] !== user[key]) {
+        console.log(`Key: ${key}, old value: ${user[key]}, new value: ${req.body[key]}`);
+      changes[key] = req.body[key];
+      }
+    }
+    delete changes.user_id;
+    console.log("Changes:", changes);
+    await myMongoDBUserManager.update({user_id: userId}, changes);
+  } else {
+    console.log('Habbit does not exist');
+    console.log('Inserting new habbit');
+    let object = req.body;
+    object.user_id = userId;
+    myMongoDBUserManager.insert(object);
+  }
+
+  res.status(200).json({ message: 'Habbit updated successfully' });
 });
 
 app.put('/invite', checkJwt, async (req, res) => {
+  console.log('PUT request at /invite with body:', req.body, "query:", req.query);
   const userId = req.auth.payload.sub
   let object = req.body;
-  object.user_id = userId;
+  req.query.nickname = requestedUserId;
+  // find me and the user we want to invite
   let me = await myMongoDBUserManager.findOne({ user_id: userId });
-  let invitesBefore = await myMongoDBUserManager.find({ nickname: req.query.nickname }).invites_recieved;
-  myMongoDBUserManager.update({ nickname: req.query.nickname }, { invites: [...invites, me] });
+  let target = await myMongoDBUserManager.findOne({ user_id: requestedUserId });
+  // save the intitation to my invites_sent and to the target's invites_recieved
+  let myInvitesBefore = await myMongoDBUserManager.find({ nickname: req.query.nickname }).invites_recieved;
+  let targetInvitesBefore = await myMongoDBUserManager.find({ user_id: userId }).invites_sent;
+  // update the invites arrays
+  await myMongoDBUserManager.update({ nickname: req.query.nickname }, { invites_recieved: [...targetInvitesBefore, me] });
+  await myMongoDBUserManager.update({ user_id: userId }, { invites_sent: [...myInvitesBefore, target] });
+  res.status(200).json({ message: 'Invitation sent successfully' });
 });
 
-app.
 app.get('/users', checkJwt, async (req, res) => {
   const userId = req.auth.payload.sub
   const email = req.auth.payload.email
-  let query = { name: req.query.query};
+  let query = { name: req.query.query };
   console.log('GET request at /users from user:', userId, 'with email:', email, 'query:', query);
   const users = await myMongoDBUserManager.find(query);
 
