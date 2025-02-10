@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useAuth0 } from '@auth0/auth0-vue'
 import { Task } from '../model/task.js'
+import { getDateStr } from '@/utils/findDates.js'
 
 
 
@@ -54,8 +55,6 @@ export const useHabbitStore = defineStore('habbit', {
         } else {
 
           const token = await this.auth0.getAccessTokenSilently()
-          console.log('Token on FE for PUT:', token)
-
           await axios.put('http://localhost:3000/habbit',
             habbit,
             {
@@ -97,8 +96,8 @@ export const useHabbitStore = defineStore('habbit', {
 
     },
 
-    async addHabbitsEvent(habbitId) {
-      console.log('Adding event to habbit:', habbitId);
+    async removeHabbitsFromEvent(habbitId, dateToRemove) {
+      console.log(`Removing events with date: ${dateToRemove} in event: ${habbitId}`);
       let h
       for (let h1 of this.habbits) {
         if (h1._id === habbitId) {
@@ -113,10 +112,40 @@ export const useHabbitStore = defineStore('habbit', {
         return;
       }
 
+      h.total_event_count = h.events.length;
+
+      h.events = h.events.filter( (e) => {
+        const d1 = getDateStr(new Date(e.date));
+        const d2 = getDateStr(dateToRemove);
+
+        const ret = ( d1 != d2 )
+        return ret;
+      });
+
+      await this.addNewHabbit(h);
+      await this.fetchHabbitsData();
+
+    },
+
+    async addHabbitsEvent(habbitId, theDate=null) {
+      console.log('Adding event (date: ', theDate ,') to habbit:', habbitId);
+      let h
+      for (let h1 of this.habbits) {
+        if (h1._id === habbitId) {
+          h = h1;
+          break;
+        }
+      }
+
+      // let h = this.habbits.findOne(h => h._id === habbitId)
+      if (!h) {
+        console.error('Habbit not found');
+        return;
+      }
 
       h.events.push({
         num_of_events: 1,
-        date: new Date().toISOString()
+        date: theDate ? theDate.toISOString() : new Date().toISOString(),
       });
 
       h.total_event_count = h.events.length;
@@ -147,8 +176,6 @@ export const useHabbitStore = defineStore('habbit', {
 
     getHabbitById(habbitId) {
       const habbit = this.habbits.filter(h => h._id == habbitId)
-      console.log(this.habbits)
-      console.log('Habbit:', habbit);
       return habbit[0]
     },
 
@@ -173,8 +200,6 @@ export const useHabbitStore = defineStore('habbit', {
 
       try {
         const token = await this.auth0.getAccessTokenSilently()
-        console.log('Token on FE for GET:', token)
-
         const response = await axios.get('http://localhost:3000/habbits', {
           headers: {
             Authorization: `Bearer ${token}`
