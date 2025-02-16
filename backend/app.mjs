@@ -141,7 +141,6 @@ app.put('/invite', checkJwt, async (req, res) => {
   myMongoDBUserManager.update({ nickname: req.query.nickname }, { invites: [...invites, me] });
 });
 
-app.
 app.get('/users', checkJwt, async (req, res) => {
   const userId = req.auth.payload.sub
   const email = req.auth.payload.email
