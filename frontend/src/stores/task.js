@@ -32,6 +32,8 @@ function getMockData() {
 const useMockData = import.meta.env.VITE_USE_MOCK_DATA === 'true'
 const backendUrl = import.meta.env.VITE_H2_BACKEND
 
+console.log(`Backend URL: ${backendUrl}`)
+
 export const useHabbitStore = defineStore('habbit', {
   state: () => ({
     auth0: useAuth0(),
