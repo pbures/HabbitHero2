@@ -3,7 +3,7 @@ import { MongoClient } from 'mongodb';
 class MongoDBManager {
   // I dont know if the connection in the constructor will work because it is async
   constructor(uri = process.env.MONGODB_CONNECTION_STRING) {
-    console.log(`Connecting to DB: ${uri}`);
+    console.log(`Connecting mongoDBManager to DB: ${uri}`);
     this.client = new MongoClient(uri,
       {
         connectTimeoutMS: 5000,
