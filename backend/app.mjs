@@ -26,7 +26,7 @@ const checkJwt = auth({
 console.log(process.env.AUTH0_AUDIENCE);
 
 const corsOptions = {
-  origin: 'http://h2.buresovi.net',
+  origin: 'https://h2.buresovi.net',
   optionsSuccessStatus: 200
 };
 
