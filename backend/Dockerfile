@@ -15,7 +15,7 @@ COPY . .
 EXPOSE 3000
 
 # Define environment variable
-ENV MONGODB_CONNECTION_STRING=mongodb://root:welcome1@localhost:27017/habbithero
+# ENV MONGODB_CONNECTION_STRING=mongodb://root:welcome1@localhost:27017/habbithero
 
 # Run the app
 CMD [ "node", "main.mjs" ]
