@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
       - name:  hh2-container
-        image:  ghcr.io/pbures/habbithero2:v0.0.5
+        image:  ghcr.io/pbures/habbithero2:v0.0.6
         resources:
           requests:
             cpu: 100m
@@ -38,7 +38,7 @@ spec:
         - containerPort: 80
           name: fe-hh2-port
         env:
-          - name: H2_BACKEND
+          - name: VITE_H2_BACKEND
             value: https://be.h2.buresovi.net
       
       imagePullSecrets:

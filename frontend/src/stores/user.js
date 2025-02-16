@@ -9,7 +9,7 @@ function getMockData(){
 }
 
 const useMockData = import.meta.env.VITE_USE_MOCK_DATA === 'true'
-const backendUrl = import.meta.env.H2_BACKEND
+const backendUrl = import.meta.env.VITE_H2_BACKEND
 
 export const useUserStore = defineStore('user', {
   state: () => ({
