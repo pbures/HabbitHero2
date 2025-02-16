@@ -9,13 +9,14 @@ function getMockData(){
 }
 
 const useMockData = import.meta.env.VITE_USE_MOCK_DATA === 'true'
+const backendUrl = import.meta.env.H2_BACKEND
 
 export const useUserStore = defineStore('user', {
   state: () => ({
     name: '',
     email: ''
   }),
-  
+
   actions: {
     setName(name) {
       this.name = name
@@ -44,12 +45,12 @@ export const useUserStore = defineStore('user', {
 
       try {
         const token = await getAccessTokenSilently()
-        const response = await axios.get('http://localhost:3000/user', {
+        const response = await axios.get(`${backendUrl}/user`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         })
-        
+
         this.name = response.data.name
         this.email = response.data.email
       } catch (error) {

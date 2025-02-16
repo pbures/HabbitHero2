@@ -30,6 +30,7 @@ function getMockData() {
 }
 
 const useMockData = import.meta.env.VITE_USE_MOCK_DATA === 'true'
+const backendUrl = import.meta.env.H2_BACKEND
 
 export const useHabbitStore = defineStore('habbit', {
   state: () => ({
@@ -55,7 +56,7 @@ export const useHabbitStore = defineStore('habbit', {
         } else {
 
           const token = await this.auth0.getAccessTokenSilently()
-          await axios.put('http://localhost:3000/habbit',
+          await axios.put(`${backendUrl}/habbit`,
             habbit,
             {
               headers: {
@@ -161,7 +162,7 @@ export const useHabbitStore = defineStore('habbit', {
       try {
         const habbits = this.habbits.filter(h => h._id !== habbitId);
         this.habbits = habbits;
-        axios.delete('http://localhost:3000/habbit', {
+        axios.delete(`${backendUrl}/habbit`, {
           headers: {
             Authorization: `Bearer ${token}`
           },
@@ -200,7 +201,7 @@ export const useHabbitStore = defineStore('habbit', {
 
       try {
         const token = await this.auth0.getAccessTokenSilently()
-        const response = await axios.get('http://localhost:3000/habbits', {
+        const response = await axios.get(`${backendUrl}/habbits`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

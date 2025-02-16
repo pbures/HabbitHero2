@@ -8,25 +8,25 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name:  hh2-deployment
+  name:  fe-hh2-deployment
   namespace: hh2
   labels:
-    app:  hh2-deployment
+    app:  fe-hh2-deployment
 spec:
   selector:
     matchLabels:
-      app: hh2-app
+      app: fe-hh2-app
   replicas: 1
 
   template:
     metadata:
       labels:
-        app:  hh2-app
+        app:  fe-hh2-app
 
     spec:
       containers:
       - name:  hh2-container
-        image:  ghcr.io/pbures/habbithero2:latest
+        image:  ghcr.io/pbures/habbithero2:v0.0.5
         resources:
           requests:
             cpu: 100m
@@ -36,31 +36,10 @@ spec:
             memory: 200Mi
         ports:
         - containerPort: 80
-          name: hh2-port
-
-      - name:  hh2-backend
-        image:  ghcr.io/pbures/habbithero2-backend:latest
-        resources:
-          requests:
-            cpu: 100m
-            memory: 95Mi
-          limits:
-            cpu: 100m
-            memory: 200Mi
+          name: fe-hh2-port
         env:
-            - name: MONGODB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: mongodb-secret
-                  key: MONGODB_USERNAME
-            - name: MONGODB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mongodb-secret
-                  key: MONGODB_PASSWORD
-        ports:
-        - containerPort: 3000
-          name: hh2-be-port
+          - name: H2_BACKEND
+            value: https://be.h2.buresovi.net
       
       imagePullSecrets:
       - name: ghcr-secret
@@ -73,21 +52,21 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: hh2
-  name: hh2-service
+  name: fe-hh2-service
 spec:
   selector:
-    app:  hh2-app
+    app:  fe-hh2-app
   ports:
     - protocol: TCP
       port: 3007
-      targetPort: hh2-port
+      targetPort: fe-hh2-port
 
 ---
 
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: hh2-ingress
+  name: fe-hh2-ingress
   namespace: hh2
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-production"
@@ -118,6 +97,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: hh2-service
+            name: fe-hh2-service
             port:
               number: 3007
