@@ -13,7 +13,6 @@ const { isAuthenticated } = useAuth0()
 const habbitStore = useHabbitStore();
 
 const task = ref(new Task());
-const daysIn = ref([1]);
 
 const router = useRouter();
 const route = useRoute();
@@ -29,10 +28,6 @@ onMounted(() => {
         })
     }
 });
-
-setTimeout(() => {
-  daysIn.value = [1,2,3];
-}, 1500)
 
 function updateSelectedDays(d) {
   task.value.days_in = d.value;
