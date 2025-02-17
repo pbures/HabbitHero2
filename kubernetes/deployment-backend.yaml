@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
       - name:  be-hh2
-        image:  ghcr.io/pbures/habbithero2-backend:v0.0.11
+        image:  ghcr.io/pbures/habbithero2-backend:v0.0.13
         resources:
           requests:
             cpu: 100m
@@ -35,21 +35,11 @@ spec:
             cpu: 100m
             memory: 200Mi
         env:
-            - name: MONGODB_USERNAME
+            - name: MONGODB_CONNECTION_STRING
               valueFrom:
                 secretKeyRef:
                   name: mongodb-secret
-                  key: MONGODB_USERNAME
-            - name: MONGODB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mongodb-secret
-                  key: MONGODB_PASSWORD
-            - name: MONGODB_URL
-              valueFrom:
-                secretKeyRef:
-                  name: mongodb-secret
-                  key: MONGODB_URL
+                  key: MONGODB_CONNECTION_STRING
         ports:
         - containerPort: 3000
           name: be-hh2-port

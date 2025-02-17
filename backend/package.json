@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "main.mjs",
   "scripts": {
-    "pretest": "docker stop test-mongo; docker run --name test-mongo -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=welcome1 mongo:windowsservercore-ltsc2025",
+    "pretest": "docker stop test-mongo; docker run --name test-mongo -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=welcome1 mongo",
     "test": "vitest run",
     "posttest": "docker stop test-mongo",
     "dev": "node main.mjs",

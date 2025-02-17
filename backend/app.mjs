@@ -35,11 +35,7 @@ const app = express();
 app.use(express.json());
 app.use(cors(corsOptions));
 
-const mongodbUsername = process.env.MONGODB_USERNAME
-const mongodbPassword = process.env.MONGODB_PASSWORD
-const mongodbUrl = process.env.MONGODB_URL
-
-const uri = `mongodb+srv://${mongodbUsername}:${mongodbPassword}@${mongodbUrl}`
+const uri = process.env.MONGODB_CONNECTION_STRING;
 
 const myMongoDBManager = new MongoDBManager(uri);
 const myMongoDBUserManager = new MongoDBUserManager(uri);
