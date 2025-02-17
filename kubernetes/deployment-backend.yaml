@@ -40,6 +40,9 @@ spec:
                 secretKeyRef:
                   name: mongodb-secret
                   key: MONGODB_CONNECTION_STRING
+            - name: CORS_ORIGIN_ALLOW
+              value: "https://h2.buresovi.net"
+
         ports:
         - containerPort: 3000
           name: be-hh2-port
