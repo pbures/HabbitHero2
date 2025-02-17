@@ -20,7 +20,7 @@
             <div id="delete" class="clickable" @click="deleteHabbit(habbit._id)">&#x1F5D1;</div>
         </div>
 
-        <div class="habbit-stats">
+        <div v-if="habbit.type=='habbit'" class="habbit-stats">
           <div
             v-for="he, i in habbitEvents"
             :key="he.date"
@@ -32,6 +32,12 @@
           <div v-if="i == focusedEvent" class="habbit-event-detail"> {{ getDayMonthStr(he.date) }}</div>
         </div>
         </div>
+        <div v-else class="habbit-stats">
+          <div :style="{ width: goalLeftWidth }" class="habbit-goal-stat-left" />
+          <div :style="{ width: goalRightWidth }" class="habbit-goal-stat-right" />
+        </div>
+
+
     </div>
 </template>
 
@@ -47,7 +53,19 @@
 
     const days = ref(findPreviousDays(new Date(), habbit.value.days_in).reverse());
     const habbitEvents = computed( () => { return getHabbitEvents(habbit.value) });
-    const focusedEvent = ref(9);
+    const focusedEvent = ref(null);
+
+    const goalLeftWidth = computed( () => {
+      return `${goalWidthPercentage()}%`;
+    });
+
+    const goalRightWidth = computed( () => {
+      return `${100 - goalWidthPercentage()}%`;
+    });
+
+    function goalWidthPercentage() {
+      return Math.floor(habbit.value.total_event_count * 100 / habbit.value.target);
+    }
 
     function getHabbitEvents(h){
       if (h.days_in.length == 0) return [];
@@ -166,5 +184,21 @@
     .habbit-event-detail {
       font-size: 0.7em;
       white-space: nowrap;
+    }
+
+    .habbit-goal-stat-left {
+      border: solid 1px black;
+      background-color: green;
+      /* width: 60%; */
+      height: 12px;
+      margin-top: 4px;
+    }
+
+    .habbit-goal-stat-right {
+      border: solid 1px black;
+      background-color: red;
+      /* width: 40%; */
+      height: 12px;
+      margin-top: 4px;
     }
 </style>
