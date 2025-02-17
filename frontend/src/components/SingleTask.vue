@@ -94,6 +94,9 @@
 
     const confirmEvent = (id) => {
         console.log('Event confirmed for habbit with id:', id);
+        if (habbit.value.total_event_count >= habbit.value.target) {
+          return;
+        }
 
         let date = new Date();
         if (focusedEvent.value != null) {
