@@ -123,7 +123,7 @@ app.put('/habbit', checkJwt, async (req, res) => {
     console.log('Inserting new habbit');
     let object = req.body;
     object.user_ids = [userId];
-    myMongoDBManager.insert(object);
+    await myMongoDBManager.insert(object);
   }
 
   res.status(200).json({ message: 'Habbit updated successfully' });

@@ -19,8 +19,6 @@ function findPreviousDays(today,targetDays) {
     let td = targetDaysReversed[i % targetDaysReversed.length];
     let prevDay = findPreviousOneDay(today, td);
     result.push(prevDay);
-    console.log('PD: ' + prevDay);
-    // today = prevDay;
     today = new Date(prevDay.valueOf() - 1000*60*60*24);
   }
   return result;

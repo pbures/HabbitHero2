@@ -115,8 +115,6 @@ export const useHabbitStore = defineStore('habbit', {
         return;
       }
 
-      h.total_event_count = h.events.length;
-
       h.events = h.events.filter( (e) => {
         const d1 = getDateStr(new Date(e.date));
         const d2 = getDateStr(dateToRemove);
@@ -125,9 +123,10 @@ export const useHabbitStore = defineStore('habbit', {
         return ret;
       });
 
+      h.total_event_count = h.events.length;
+
       await this.addNewHabbit(h);
       await this.fetchHabbitsData();
-
     },
 
     async addHabbitsEvent(habbitId, theDate=null) {
@@ -152,10 +151,8 @@ export const useHabbitStore = defineStore('habbit', {
       });
 
       h.total_event_count = h.events.length;
-
       await this.addNewHabbit(h);
       await this.fetchHabbitsData();
-      console.log('Added event, and fetched habbits data:', this.habbits);
     },
 
     async deleteHabbit(habbitId) {
