@@ -58,6 +58,7 @@ export const useHabbitStore = defineStore('habbit', {
         } else {
 
           const token = await this.auth0.getAccessTokenSilently()
+          console.log('Calling to insert new habbit');
           await axios.put(`${backendUrl}/habbit`,
             habbit,
             {
@@ -66,6 +67,8 @@ export const useHabbitStore = defineStore('habbit', {
               },
             }
           )
+          console.log('Insert finished');
+          await this.fetchHabbitsData();
         }
       } catch (error) {
         console.error('Failed to add new habbit:', error)

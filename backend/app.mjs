@@ -73,9 +73,6 @@ app.get('/habbits', checkJwt, async (req, res) => {
 
   console.log(`GET request at /habbits from user id: ${userId}`);
   const habbits = await myMongoDBManager.find({ user_ids: { $in: [userId] } });
-  console.log('Habbits:', habbits);
-  // console.log(habbits);
-
   res.status(200).json(habbits);
 });
 
@@ -119,7 +116,6 @@ app.put('/habbit', checkJwt, async (req, res) => {
     console.log("Changes:", changes);
     await myMongoDBManager.update({_id: habbit._id}, changes);
   } else {
-    console.log('Habbit does not exist');
     console.log('Inserting new habbit');
     let object = req.body;
     object.user_ids = [userId];

@@ -21,18 +21,35 @@ class MongoDBManager {
   }
   async insert(data) {
     const collection = this.habbitCollection;
-    await collection.insertOne(data);
+    console.log('inserting a habbit');
+    // await collection.insertOne(data);
+    return new Promise((resolve) => {
+      setTimeout( async () => {
+        const result = await collection.insertOne(data);
+        console.log('habbit inserted');
+        resolve(result);
+      }, 2500);
+    });
   }
   async findOne(query) {
     const collection = this.habbitCollection;
     return await collection.findOne(query);
   }
+
   async update(query, data) {
     const collection = this.habbitCollection;
     console.log(`tryng to update something with data: ....updateOne( ${query}, { $set: ${data} })`)
 
-    await collection.updateOne(query, { $set: data });
+    // return await collection.updateOne(query, { $set: data });
+    return new Promise((resolve) => {
+      setTimeout(async () => {
+        const result = await collection.updateOne(query, { $set: data });
+        console.log('The record was updated.\n\n')
+        resolve(result);
+      }, 2500);
+    });
   }
+
   async delete(query) {
     const collection = this.habbitCollection;
     await collection.deleteOne(query);

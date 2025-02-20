@@ -79,7 +79,6 @@
     function isEventInDates(eDate, dates) {
       const ret = dates.some( (d) => {
         const r = getDateStr(new Date(d.date)) === getDateStr(eDate);
-        console.log(`R: ${r}`);
         return r;
       })
 
