@@ -18,10 +18,24 @@ dotenv.config({path:`${__dirname}/.env`});
 // exist and be verified against the Auth0 JSON Web Key Set.
 // Authorization middleware. When used, the Access Token must
 // exist and be verified against the Auth0 JSON Web Key Set.
-const checkJwt = auth({
+let checkJwt = auth({
   audience: process.env.AUTH0_AUDIENCE,
   issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
 });
+
+if (process.env.MODE=='testing') {
+  console.log("Using mocked authentication");
+
+  checkJwt = (req, res, next) => {
+    req.auth = {
+      payload: {
+        sub: 'auth0|1234567890',
+        email: 'mockuser@example.com'
+      }
+    };
+    next();
+  };
+}
 
 console.log(process.env.AUTH0_AUDIENCE);
 
@@ -52,6 +66,7 @@ try {
 
 app.get('/habbits', checkJwt, async (req, res) => {
   const userId = req.auth.payload.sub
+  console.log(`userId: ${userId}`);
 
   /* Keep this for reference. The code uses the /userinfo endpoint of the Auth0 to get the user
    * info such as email. This is not needed right now, since the auth0 adds the email to the

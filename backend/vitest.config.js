@@ -9,5 +9,8 @@ export default defineConfig({
     // },
     // setupFiles: ['./test/setup.js'],
     testTimeout: 5000,
+    env: {
+      MODE: 'testing',
+    }
   },
 })
