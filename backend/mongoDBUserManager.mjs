@@ -37,6 +37,15 @@ class MongoDBUserManager {
     const collection = this.habbitCollection;
     await collection.deleteOne(query);
   }
+  async push(query, data, arrayName) {
+    const collection = this.habbitCollection;
+    const updateDoct = {
+      $push: {
+        [arrayName]: data
+      }
+    }
+    await collection.updateOne(query, updateDoct);
+  }
   async find(query = {}) {
     console.log('trying to find a habbit with query:', query);
     const collection = this.habbitCollection;

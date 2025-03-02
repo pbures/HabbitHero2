@@ -169,17 +169,28 @@ app.put('/invite', checkJwt, async (req, res) => {
   console.log('PUT request at /invite with body:', req.body, "query:", req.query);
   const userId = req.auth.payload.sub
   let object = req.body;
-  req.query.nickname = requestedUserId;
+  let requestedUserId = req.query.nickname;
   // find me and the user we want to invite
-  let me = await myMongoDBUserManager.findOne({ user_id: userId });
-  let target = await myMongoDBUserManager.findOne({ user_id: requestedUserId });
+  // let me = await myMongoDBUserManager.findOne({ user_id: userId });
+  // let target = await myMongoDBUserManager.findOne({ user_id: requestedUserId });
   // save the intitation to my invites_sent and to the target's invites_recieved
-  let myInvitesBefore = await myMongoDBUserManager.find({ nickname: req.query.nickname }).invites_recieved;
-  let targetInvitesBefore = await myMongoDBUserManager.find({ user_id: userId }).invites_sent;
+  // let myInvitesBefore = await myMongoDBUserManager.find({ nickname: req.query.nickname }).invites_recieved;
+  // let targetInvitesBefore = await myMongoDBUserManager.find({ user_id: userId }).invites_sent;
   // update the invites arrays
-  await myMongoDBUserManager.update({ nickname: req.query.nickname }, { invites_recieved: [...targetInvitesBefore, me] });
-  await myMongoDBUserManager.update({ user_id: userId }, { invites_sent: [...myInvitesBefore, target] });
+  await myMongoDBUserManager.push({user_id: requestedUserId}, userId, 'invites_sent');
+  await myMongoDBUserManager.push({ user_id: userId }, requestedUserId, 'invites_recieved');
   res.status(200).json({ message: 'Invitation sent successfully' });
+});
+
+app.put('/accept', checkJwt, async (req, res) => {
+  console.log('PUT request at /accept with body:', req.body, "query:", req.query);
+  const userId = req.auth.payload.sub
+  let object = req.body;
+  let requestedUserId = req.query.nickname;
+
+  await myMongoDBUserManager.push({user_id: requestedUserId}, userId, 'friends');
+  await myMongoDBUserManager.push({ user_id: userId }, requestedUserId, 'friends');
+  
 });
 
 app.get('/users', checkJwt, async (req, res) => {
