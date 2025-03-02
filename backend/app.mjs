@@ -18,15 +18,31 @@ dotenv.config({path:`${__dirname}/.env`});
 // exist and be verified against the Auth0 JSON Web Key Set.
 // Authorization middleware. When used, the Access Token must
 // exist and be verified against the Auth0 JSON Web Key Set.
-const checkJwt = auth({
+let checkJwt = auth({
   audience: process.env.AUTH0_AUDIENCE,
   issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
 });
 
+if (process.env.MODE=='testing') {
+  console.log("Using mocked authentication");
+
+  checkJwt = (req, res, next) => {
+    req.auth = {
+      payload: {
+        sub: 'auth0|1234567890',
+        email: 'mockuser@example.com'
+      }
+    };
+    next();
+  };
+}
+
 console.log(process.env.AUTH0_AUDIENCE);
 
+let origin = process.env.CORS_ORIGIN_ALLOW || 'http://localhost:5173';
+
 const corsOptions = {
-  origin: 'http://localhost:5173',
+  origin: origin,
   optionsSuccessStatus: 200
 };
 
@@ -35,8 +51,10 @@ const app = express();
 app.use(express.json());
 app.use(cors(corsOptions));
 
-const myMongoDBManager = new MongoDBManager();
-const myMongoDBUserManager = new MongoDBUserManager();
+const uri = process.env.MONGODB_CONNECTION_STRING;
+
+const myMongoDBManager = new MongoDBManager(uri);
+const myMongoDBUserManager = new MongoDBUserManager(uri);
 
 try {
   await myMongoDBManager.connect();
@@ -48,6 +66,7 @@ try {
 
 app.get('/habbits', checkJwt, async (req, res) => {
   const userId = req.auth.payload.sub
+  console.log(`userId: ${userId}`);
 
   /* Keep this for reference. The code uses the /userinfo endpoint of the Auth0 to get the user
    * info such as email. This is not needed right now, since the auth0 adds the email to the
@@ -69,9 +88,6 @@ app.get('/habbits', checkJwt, async (req, res) => {
 
   console.log(`GET request at /habbits from user id: ${userId}`);
   const habbits = await myMongoDBManager.find({ user_ids: { $in: [userId] } });
-  console.log('Habbits:', habbits);
-  // console.log(habbits);
-
   res.status(200).json(habbits);
 });
 
@@ -115,11 +131,10 @@ app.put('/habbit', checkJwt, async (req, res) => {
     console.log("Changes:", changes);
     await myMongoDBManager.update({_id: habbit._id}, changes);
   } else {
-    console.log('Habbit does not exist');
     console.log('Inserting new habbit');
     let object = req.body;
     object.user_ids = [userId];
-    myMongoDBManager.insert(object);
+    await myMongoDBManager.insert(object);
   }
 
   res.status(200).json({ message: 'Habbit updated successfully' });

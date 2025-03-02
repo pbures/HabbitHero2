@@ -30,6 +30,9 @@ function getMockData() {
 }
 
 const useMockData = import.meta.env.VITE_USE_MOCK_DATA === 'true'
+const backendUrl = import.meta.env.VITE_H2_BACKEND
+
+console.log(`Backend URL: ${backendUrl}`)
 
 export const useHabbitStore = defineStore('habbit', {
   state: () => ({
@@ -55,7 +58,8 @@ export const useHabbitStore = defineStore('habbit', {
         } else {
 
           const token = await this.auth0.getAccessTokenSilently()
-          await axios.put('http://localhost:3000/habbit',
+          console.log('Calling to insert new habbit');
+          await axios.put(`${backendUrl}/habbit`,
             habbit,
             {
               headers: {
@@ -63,6 +67,8 @@ export const useHabbitStore = defineStore('habbit', {
               },
             }
           )
+          console.log('Insert finished');
+          await this.fetchHabbitsData();
         }
       } catch (error) {
         console.error('Failed to add new habbit:', error)
@@ -112,8 +118,6 @@ export const useHabbitStore = defineStore('habbit', {
         return;
       }
 
-      h.total_event_count = h.events.length;
-
       h.events = h.events.filter( (e) => {
         const d1 = getDateStr(new Date(e.date));
         const d2 = getDateStr(dateToRemove);
@@ -122,9 +126,10 @@ export const useHabbitStore = defineStore('habbit', {
         return ret;
       });
 
+      h.total_event_count = h.events.length;
+
       await this.addNewHabbit(h);
       await this.fetchHabbitsData();
-
     },
 
     async addHabbitsEvent(habbitId, theDate=null) {
@@ -149,10 +154,8 @@ export const useHabbitStore = defineStore('habbit', {
       });
 
       h.total_event_count = h.events.length;
-
       await this.addNewHabbit(h);
       await this.fetchHabbitsData();
-      console.log('Added event, and fetched habbits data:', this.habbits);
     },
 
     async deleteHabbit(habbitId) {
@@ -161,7 +164,7 @@ export const useHabbitStore = defineStore('habbit', {
       try {
         const habbits = this.habbits.filter(h => h._id !== habbitId);
         this.habbits = habbits;
-        axios.delete('http://localhost:3000/habbit', {
+        axios.delete(`${backendUrl}/habbit`, {
           headers: {
             Authorization: `Bearer ${token}`
           },
@@ -200,7 +203,7 @@ export const useHabbitStore = defineStore('habbit', {
 
       try {
         const token = await this.auth0.getAccessTokenSilently()
-        const response = await axios.get('http://localhost:3000/habbits', {
+        const response = await axios.get(`${backendUrl}/habbits`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

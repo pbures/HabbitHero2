@@ -12,10 +12,10 @@ RUN npm install
 COPY . .
 
 # Expose the port the app runs on
-EXPOSE 8080
+EXPOSE 3000
 
 # Define environment variable
-ENV MONGODB_CONNECTION_STRING=mongodb://root:welcome1@localhost:27017/habbithero
+# ENV MONGODB_CONNECTION_STRING=mongodb://root:welcome1@localhost:27017/habbithero
 
 # Run the app
 CMD [ "node", "main.mjs" ]

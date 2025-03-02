@@ -22,7 +22,7 @@
     "vue-chart-3": "^3.1.8",
     "vue-router": "^4.5.0"
   },
-  
+
   "devDependencies": {
     "@eslint/js": "^9.14.0",
     "@pinia/testing": "^0.1.7",
