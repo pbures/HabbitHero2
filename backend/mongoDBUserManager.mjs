@@ -12,7 +12,7 @@ class MongoDBUserManager {
       }
     );
     this.database = this.client.db('habbitHeroDatabase1');
-    this.habbitCollection = this.database.collection('users');
+    this.userCollection = this.database.collection('users');
   }
   async connect() {
     await this.client.connect();
@@ -21,25 +21,30 @@ class MongoDBUserManager {
     await this.client.close();
   }
   async insert(data) {
-    const collection = this.habbitCollection;
+    const collection = this.userCollection;
     await collection.insertOne(data);
   }
   async findOne(query) {
-    const collection = this.habbitCollection;
+    const collection = this.userCollection;
     return await collection.findOne(query);
   }
   async update(query, data) {
-    const collection = this.habbitCollection;
+    const collection = this.userCollection;
     console.log(`tryng to update something with data: ....updateOne( ${query}, { $set: ${data} })`)
 
     await collection.updateOne(query, { $set: data });
   }
   async delete(query) {
-    const collection = this.habbitCollection;
+    const collection = this.userCollection;
     await collection.deleteOne(query);
   }
+
+  async dropCollection(collection) {
+    return this.database.dropCollection(collection);
+  }
+
   async push(query, data, arrayName) {
-    const collection = this.habbitCollection;
+    const collection = this.userCollection;
     const updateDoct = {
       $push: {
         [arrayName]: data
@@ -47,9 +52,17 @@ class MongoDBUserManager {
     }
     await collection.updateOne(query, updateDoct);
   }
+  async deleteFromArray(user_id, arrayName, friend_id) {
+    const collection = this.userCollection;
+    await collection.updateOne(
+      { user_id: user_id },
+      { $pull: { [arrayName]: { user_id: friend_id } } }
+   )
+   
+  }
   async find(query = {}) {
-    console.log('trying to find a habbit with query:', query);
-    const collection = this.habbitCollection;
+    console.log('trying to find a user with query:', query);
+    const collection = this.userCollection;
     let ret = await collection.find(query).toArray();
     console.log('query:', query,'found this:', ret);
     return ret;

@@ -27,10 +27,14 @@ if (process.env.MODE=='testing') {
   console.log("Using mocked authentication");
 
   checkJwt = (req, res, next) => {
+    let userId = 'auth0|1234567890';
+    if(req.headers.testuserid) {
+      userId = req.headers.testuserid;
+    }
     req.auth = {
       payload: {
-        sub: 'auth0|1234567890',
-        email: 'mockuser@example.com'
+        sub: `${userId}`,
+        email: `${userId}@example.com`
       }
     };
     next();
@@ -91,15 +95,15 @@ app.get('/habbits', checkJwt, async (req, res) => {
   res.status(200).json(habbits);
 });
 
-app.get('/user', checkJwt, (req, res) => {
+app.get('/user', checkJwt, async (req, res) => {
   const userId = req.auth.payload.sub
   const email = req.auth.payload.email
 
   console.log(`GET request at /user from user ${userId} with email ${email}`);
-  const user = myMongoDBUserManager.find({
+  const user =  await myMongoDBUserManager.findOne({
     $or: [
       { user_id: userId },
-      { email: req.auth.payload.email }
+      { email: email }
     ]
   });
   res.send(user);
@@ -140,19 +144,27 @@ app.put('/habbit', checkJwt, async (req, res) => {
   res.status(200).json({ message: 'Habbit updated successfully' });
 });
 
+app.delete('/habbit', checkJwt, (req, res) => {
+  const userId = req.auth.payload.sub;
+
+  console.log(`DELETE request from user: ${userId} at /habbit, id:` + req.query.habbitId);
+  myMongoDBManager.delete({ _id: new ObjectId(req.query.habbitId) });
+  res.status(200).json({ message: 'Habbit deleted successfully' });
+});
+
 app.put('/user', checkJwt, async (req, res) => {
   // I dont know if this will work, because we now in the user have user_id and not _id
   // const userId = req.auth.payload.sub
   // let object = req.body;
   // object.user_id = userId;
   // myMongoDBUserManager.insert(object);
-  const userId = req.auth.payload.sub
-  console.log(`PUT request from user ${userId} at /habbit with data:`, req.body, '_id:', req.body.userId);
+  const id = req.auth.payload.sub;
+  console.log(`PUT request from user ${id} at /user with data:`, req.body, '_id:', id);
 
   let user = null;
-  if (req.body.user_id !== undefined) {
-    let objectId = new ObjectId(req.body.userId);
-    user = (await myMongoDBUserManager.find({ user_id: objectId}))[0];
+  // let objectId = new ObjectId(id);
+  if (id !== undefined) {
+    user = (await myMongoDBUserManager.find({user_id: `${id}`}))[0];
     console.log('userttt', user);
   }
 
@@ -161,19 +173,22 @@ app.put('/user', checkJwt, async (req, res) => {
     const changes = {};
     for (const key in req.body) {
       // Here if there is an incomming key that is _id, then we have the raw string version, comparing it with the new one.
-      if (req.body[key] !== user[key]) {
+      if (`${req.body[key]}` !== user[key]) {
         console.log(`Key: ${key}, old value: ${user[key]}, new value: ${req.body[key]}`);
-      changes[key] = req.body[key];
+      changes[key] = `${req.body[key]}`;
       }
     }
-    delete changes.user_id;
+    delete changes._id;
     console.log("Changes:", changes);
-    await myMongoDBUserManager.update({user_id: userId}, changes);
+    if(Object.keys(changes).length > 0) {
+      await myMongoDBUserManager.update({user_id: `${id}`}, changes);
+    }
   } else {
-    console.log('Habbit does not exist');
-    console.log('Inserting new habbit');
+    console.log('User does not exist');
+    console.log('Inserting new user');
+
     let object = req.body;
-    object.user_id = userId;
+    object.user_id = id;
     myMongoDBUserManager.insert(object);
   }
 
@@ -183,8 +198,10 @@ app.put('/user', checkJwt, async (req, res) => {
 app.put('/invite', checkJwt, async (req, res) => {
   console.log('PUT request at /invite with body:', req.body, "query:", req.query);
   const userId = req.auth.payload.sub
-  let object = req.body;
-  let requestedUserId = req.query.nickname;
+  // let object = req.body;
+  // let requestedUserId = req.query.nickname;
+  let requestedUser = await myMongoDBUserManager.findOne({'nickname': req.query.nickname});
+  let requestedUserId = requestedUser.user_id;
   // find me and the user we want to invite
   // let me = await myMongoDBUserManager.findOne({ user_id: userId });
   // let target = await myMongoDBUserManager.findOne({ user_id: requestedUserId });
@@ -192,41 +209,43 @@ app.put('/invite', checkJwt, async (req, res) => {
   // let myInvitesBefore = await myMongoDBUserManager.find({ nickname: req.query.nickname }).invites_recieved;
   // let targetInvitesBefore = await myMongoDBUserManager.find({ user_id: userId }).invites_sent;
   // update the invites arrays
-  await myMongoDBUserManager.push({user_id: requestedUserId}, userId, 'invites_sent');
-  await myMongoDBUserManager.push({ user_id: userId }, requestedUserId, 'invites_recieved');
+  await myMongoDBUserManager.push({user_id: requestedUserId}, userId, 'invites_received');
+  await myMongoDBUserManager.push({ user_id: userId }, requestedUserId, 'invites_sent');
   res.status(200).json({ message: 'Invitation sent successfully' });
 });
 
 app.put('/accept', checkJwt, async (req, res) => {
   console.log('PUT request at /accept with body:', req.body, "query:", req.query);
   const userId = req.auth.payload.sub
-  let object = req.body;
-  let requestedUserId = req.query.nickname;
 
+  let requestedUser = await myMongoDBUserManager.findOne({'nickname': req.query.nickname});
+  let requestedUserId = requestedUser.user_id;
+
+  await myMongoDBUserManager.deleteFromArray(userId, 'invites_recieved', requestedUserId);
+  await myMongoDBUserManager.deleteFromArray(requestedUserId, 'invites_sent', userId);
+  // update
   await myMongoDBUserManager.push({user_id: requestedUserId}, userId, 'friends');
   await myMongoDBUserManager.push({ user_id: userId }, requestedUserId, 'friends');
-  
+  res.status(200).json({ message: 'Invitation accepted successfully' });
 });
 
 app.get('/users', checkJwt, async (req, res) => {
   const userId = req.auth.payload.sub
   const email = req.auth.payload.email
-  let query = { name: req.query.query };
+  let query = req.query;
   console.log('GET request at /users from user:', userId, 'with email:', email, 'query:', query);
   const users = await myMongoDBUserManager.find(query);
 
   console.log(`GET request at /user from user ${userId} with email ${email}`);
-  res.send(users);
+  if(users.length > 0) {
+    res.send(users);
+  } else {
+    res.status(404).json({ message: 'No users found' });
+  }
   // res.send({...modelUser, email: email});
 });
 
-app.delete('/habbit', checkJwt, (req, res) => {
-  const userId = req.auth.payload.sub;
 
-  console.log(`DELETE request from user: ${userId} at /habbit, id:` + req.query.habbitId);
-  myMongoDBManager.delete({ _id: new ObjectId(req.query.habbitId) });
-  res.status(200).json({ message: 'Habbit deleted successfully' });
-});
 
 
 export default app;
