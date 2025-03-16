@@ -1,5 +1,5 @@
-import { createRouter, createWebHistory } from 'vue-router'
 import { useAuth0 } from '@auth0/auth0-vue'
+import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
@@ -28,6 +28,16 @@ const router = createRouter({
       // meta: {
       //   requiresAuth: true,
       // },
+    },
+    {
+      path: '/friends',
+      name: 'friends',
+      component: () => import('../views/FriendsView.vue'),
+    },
+    {
+      path: '/userprofile',
+      name: 'userprofile',
+      component: () => import('../views/UserProfileEdit.vue'),
     },
   ],
 })

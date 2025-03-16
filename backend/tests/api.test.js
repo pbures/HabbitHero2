@@ -17,7 +17,7 @@ const myMongoDBUserManager = new MongoDBUserManager(uri);
 
 beforeAll((done) => {
   server = createServer(app)
-  server.listen(3000, done)
+  server.listen(3001, done)
 
   testJWT = "testingToken"
 })
@@ -84,7 +84,7 @@ describe('API Tests users', () => {
     const user1 = {
       nickname: 'nick-123',
       invites_sent: [],
-      invites_received: [], 
+      invites_received: [],
       friends: []
     }
 
@@ -98,7 +98,7 @@ describe('API Tests users', () => {
     const user2 = {
       nickname: 'nick-321',
       invites_sent: [],
-      invites_received: [], 
+      invites_received: [],
       friends: []
     }
 
@@ -130,7 +130,7 @@ describe('API Tests users', () => {
       name: 'Test Habit',
       description: 'This is a test habit'
     }
-    
+
     // const user = await request(server)
     // .get('/users')
     // .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
@@ -175,6 +175,16 @@ describe('API Tests users', () => {
     expect(response.body).toHaveProperty('user_id', 'fakeAuth-234');
   })
 
+  it('should return 404 for non-existent user on GET /user', async () => {
+    const response = await request(server)
+      .get('/user')
+      .set('Authorization', `Bearer ${testJWT}`)
+      .set('testUserId', 'nonExistentUser')
+      .expect(404)
+
+    expect(response.body).toHaveProperty('message', 'User not found')
+  })
+
   it('should return users on GET /users', async () => {
 
     const response = await request(server)
@@ -200,7 +210,7 @@ describe('API Tests users', () => {
       name: 'Test Habit',
       description: 'This is a test habit'
     }
-    
+
     // const user = await request(server)
     // .get('/users')
     // .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT

@@ -1,15 +1,15 @@
-import express from 'express'
+import express from 'express';
 // import modelHabbit from '../frontend/src/model/task.js'
 // import modelUser from '../frontend/src/model/user.js'
-import cors from 'cors'
-import MongoDBManager from './mongoDBManager.mjs'
-import MongoDBUserManager from './mongoDBUserManager.mjs'
-import { auth } from 'express-oauth2-jwt-bearer';
+import cors from 'cors';
 import dotenv from 'dotenv';
-import { ObjectId } from 'mongodb'
+import { auth } from 'express-oauth2-jwt-bearer';
+import { ObjectId } from 'mongodb';
+import MongoDBManager from './mongoDBManager.mjs';
+import MongoDBUserManager from './mongoDBUserManager.mjs';
 
-import { fileURLToPath } from 'url'
-import path from 'path'
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -106,7 +106,12 @@ app.get('/user', checkJwt, async (req, res) => {
       { email: email }
     ]
   });
-  res.send(user);
+  console.log(`Sending back: ${user}`)
+  if (user) {
+    res.send(user);
+  } else {
+    res.status(404).json({ message: 'User not found' });
+  }
   // res.send({...modelUser, email: email});
 });
 
@@ -201,6 +206,9 @@ app.put('/invite', checkJwt, async (req, res) => {
   // let object = req.body;
   // let requestedUserId = req.query.nickname;
   let requestedUser = await myMongoDBUserManager.findOne({'nickname': req.query.nickname});
+  if (!requestedUser) {
+    return res.status(404).json({ message: 'User not found' });
+  }
   let requestedUserId = requestedUser.user_id;
   // find me and the user we want to invite
   // let me = await myMongoDBUserManager.findOne({ user_id: userId });

@@ -4,11 +4,11 @@
             <li v-if="isAuthenticated">
                 <h1><RouterLink :to="{ path: '/edit'}" >New</RouterLink></h1>
             </li>
-            <li v-if="isAuthenticated" @click="logout()">
+            <li v-if="isAuthenticated">
                 <h1>Stats</h1>
             </li>
-            <li v-if="isAuthenticated" @click="logout()">
-                <h1>Friends</h1>
+            <li v-if="isAuthenticated">
+                <h1><RouterLink :to="{ path: '/friends'}" >Friends</RouterLink></h1>
             </li>
             <li v-if="!isAuthenticated">
                 <button @click="loginWithRedirect"><h1>Login</h1></button>

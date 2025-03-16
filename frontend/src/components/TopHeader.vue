@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-    import { useUserStore } from '@/stores/user'
+    import { useUserStore } from '@/stores/user_legacy'
     import { useAuth0 } from '@auth0/auth0-vue'
 
     const userStore = useUserStore()
