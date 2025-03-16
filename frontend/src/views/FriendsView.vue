@@ -5,7 +5,7 @@
         <p><strong>Name:</strong> {{ user.name }}</p>
         <p><strong>Email:</strong> {{ user.email }}</p>
         <p><strong>Nickname:</strong> {{ user.nickname }}</p>
-        <button @onclick="switchToEdit">edit</button>
+        <button @click="switchToEdit">edit</button>
       </div>
       <div class="invitations-received">
         <h2>Invitations Received</h2>
