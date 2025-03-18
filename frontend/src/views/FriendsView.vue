@@ -1,13 +1,16 @@
 <template>
-  <div class="view-container">
+  <main>
     <div v-if="user">
-      <div class="basic-details">
-        <p><strong>Name:</strong> {{ user.name }}</p>
-        <p><strong>Email:</strong> {{ user.email }}</p>
-        <p><strong>Nickname:</strong> {{ user.nickname }}</p>
-        <button @click="switchToEdit">edit</button>
+      <div class="content-container grid-form">
+        <div class="form-label">Name:</div>
+        <div class="form-value">{{ user.name }}</div>
+        <div class="form-label">Email:</div>
+        <div class="form-value">{{ user.email }}</div>
+        <div class="form-label">Nickname:</div>
+        <div class="form-value">{{ user.nickname }}</div>
+        <div class="clickable form-label form-span2" @click="switchToEdit">Edit</div>
       </div>
-      <div class="invitations-received">
+      <div class="content-container">
         <h2>Invitations Received</h2>
         <ul>
           <li v-for="invitation in user.invites_received">
@@ -16,7 +19,7 @@
         </ul>
       </div>
 
-      <div class="invitations-sent">
+      <div class="content-container">
         <h2>Invitations Sent</h2>
         <ul>
           <li v-for="is in user.invites_sent">
@@ -25,7 +28,7 @@
         </ul>
       </div>
 
-      <div class="send-invitation">
+      <div class="content-container">
         Send invite to: <input type="text" v-model="invitee" />
         <button @click="sendInvite">Send</button>
         <div v-if="error"> {{ error }}</div>
@@ -35,7 +38,7 @@
     <div v-else>
       <p>Loading...</p>
     </div>
-  </div>
+</main>
 </template>
 
 <script setup>
@@ -82,37 +85,5 @@ watch(user, (newValue) => {
 </script>
 
 <style scoped>
-  .view-container {
-      margin-top: var(--top-header-height);
-      display: flex;
-      justify-content: center;
-      align-content:start;
 
-      background: inherit;
-      backdrop-filter: blur(10px);
-      font-size: 20px;
-
-      color: black;
-  }
-h1 {
-  font-size: 2em;
-  margin-bottom: 0.5em;
-}
-
-p {
-  font-size: 1.2em;
-  margin: 0.2em 0;
-}
-
-strong {
-  color: black;
-}
-
-div {
-  padding-top: 150px;
-  padding: 1em;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  /* background-color: #f9f9f9; */
-}
 </style>
