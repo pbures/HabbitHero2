@@ -177,6 +177,9 @@ app.put('/user', checkJwt, async (req, res) => {
     console.log("user exists", user);
     const changes = {};
     for (const key in req.body) {
+      if (key === 'invites_sent' || key === 'invites_received' || key === 'friends') {
+        continue;
+      }
       // Here if there is an incomming key that is _id, then we have the raw string version, comparing it with the new one.
       if (`${req.body[key]}` !== user[key]) {
         console.log(`Key: ${key}, old value: ${user[key]}, new value: ${req.body[key]}`);

@@ -43,9 +43,9 @@ const user = ref({ ...userStore.user });
 const router = useRouter();
 
 const updateProfile = () => {
+  console.log(`Saving user ${user.value}`);
   userStore.updateUser(user.value);
   router.push({ name: 'friends' });
-
 };
 </script>
 
