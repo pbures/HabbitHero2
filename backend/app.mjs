@@ -194,6 +194,10 @@ app.put('/user', checkJwt, async (req, res) => {
 
     let object = req.body;
     object.user_id = id;
+
+    object.invites_sent = object.invites_sent || [];
+    object.invites_received = object.invites_received || [];
+
     myMongoDBUserManager.insert(object);
   }
 
