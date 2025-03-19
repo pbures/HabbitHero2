@@ -22,12 +22,6 @@
         <input type="text" id="nickname" v-model="user.nickname" required />
       </div>
 
-      <div class="form-label">
-        <label for="bio">Bio:</label>
-      </div>
-      <div class="form-value">
-        <textarea id="bio" v-model="user.bio"></textarea>
-      </div>
       <div type="submit" class="form-label form-span2 clickable" @click="updateProfile">Save</div>
     </form>
 </main>

@@ -110,13 +110,12 @@ app.get('/user', checkJwt, async (req, res) => {
       { email: email }
     ]
   });
-  console.log(`Sending back: ${user}`)
+  console.log(`Sending back: `, JSON.stringify(user))
   if (user) {
     res.send(user);
   } else {
     res.status(404).json({ message: 'User not found' });
   }
-  // res.send({...modelUser, email: email});
 });
 
 app.put('/habbit', checkJwt, async (req, res) => {
@@ -215,7 +214,7 @@ app.put('/user', checkJwt, async (req, res) => {
     object.invites_sent = object.invites_sent || [];
     object.invites_received = object.invites_received || [];
 
-    myMongoDBUserManager.insert(object);
+    await myMongoDBUserManager.insert(object);
   }
 
   res.status(200).json({ message: 'Habbit updated successfully' });
