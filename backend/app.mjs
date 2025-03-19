@@ -8,8 +8,12 @@ import { ObjectId } from 'mongodb';
 import MongoDBManager from './mongoDBManager.mjs';
 import MongoDBUserManager from './mongoDBUserManager.mjs';
 
+import ajv from 'ajv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
+import { error } from 'console';
+import User from '../frontend/src/model/user.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -165,6 +169,16 @@ app.put('/user', checkJwt, async (req, res) => {
   // myMongoDBUserManager.insert(object);
   const id = req.auth.payload.sub;
   console.log(`PUT request from user ${id} at /user with data:`, req.body, '_id:', id);
+
+  const schema = User.getJsonSchema();
+  /* Validate the payload of the request against the schema using AJV */
+  const ajvInstance = new ajv();
+  const validate = ajvInstance.compile(schema);
+  const valid = validate(req.body);
+  if (!valid) {
+    console.log('Validation errors:', validate.errors);
+    return res.status(400).json({ message: 'Validation errors', errors: validate.errors });
+  }
 
   let user = null;
   // let objectId = new ObjectId(id);

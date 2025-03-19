@@ -1,11 +1,11 @@
 // tests/api.test.js
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
-import request from 'supertest'
-import { createServer } from 'http'
-import app from '../app.mjs' // Adjust the path to your main.mjs file
+import { createServer } from 'http';
+import request from 'supertest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import app from '../app.mjs'; // Adjust the path to your main.mjs file
 
-import MongoDBManager from './mongoDBManager.mjs'
-import MongoDBUserManager from './mongoDBUserManager.mjs'
+import MongoDBManager from './mongoDBManager.mjs';
+import MongoDBUserManager from './mongoDBUserManager.mjs';
 
 let server
 let testJWT
@@ -82,21 +82,30 @@ describe('API Tests users', () => {
     await myMongoDBUserManager.dropCollection('users');
 
     const user1 = {
+      name: 'Nick 123',
       nickname: 'nick-123',
+      email: 'nick123@example.com',
+      schema_version: '1.0',
       invites_sent: [],
       invites_received: [],
       friends: []
     }
 
     const user3 = {
+      name: 'Nick 234',
       nickname: 'nick-234',
+      email: 'nick234@example.com',
+      schema_version: '1.0',
       invites_sent: [],
       invites_received: [],
       friends: []
     }
 
     const user2 = {
+      name: 'Nick 321',
       nickname: 'nick-321',
+      email: 'nick321@example.com',
+      schema_version: '1.0',
       invites_sent: [],
       invites_received: [],
       friends: []
@@ -238,6 +247,23 @@ describe('API Tests users', () => {
   })
   afterAll(async () => {
     await myMongoDBUserManager.close();
+  })
+
+  it('should throw error when sending invalid user object', async () => {
+
+    const user = {
+      nickname: 'nick-123',
+      invites_sent: [],
+      invites_received: [],
+      friends: []
+    }
+
+    const response3 = await request(server)
+    .put('/user')
+    .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+    .set('testUserId', 'usertofail')
+    .send(user)
+    .expect(400)
   })
 })
 

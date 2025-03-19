@@ -29,6 +29,34 @@ class User {
     });
   }
 
+  static getJsonSchema() {
+    return {
+      type: "object",
+      properties: {
+        _id: { type: ["integer", "null"] },
+        schema_version: { type: "string" },
+        user_id: { type: "string" },
+        name: { type: "string" },
+        nickname: { type: "string" },
+        email: { type: "string"},
+        invites_sent: {
+          type: "array",
+          items: { type: "string" }
+        },
+        invites_received: {
+          type: "array",
+          items: { type: "string" }
+        },
+        friends: {
+          type: "array",
+          items: { type: "string" }
+        }
+      },
+      required: ["name", "nickname", "email", "schema_version", "invites_sent", "invites_received", "friends"],
+      additionalProperties: false
+    };
+  }
+
   toString() {
     return `User {
       _id: ${this._id},
