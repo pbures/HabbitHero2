@@ -79,14 +79,14 @@ describe("EditView.vue", () => {
     });
   })
 
-  it.skip('displays the title', async () => {
+  it('displays the title', async () => {
     const wrapper = mount(EditView, {
       global: {
         plugins: [testingPinia],
       },
     });
 
-    expect(wrapper.find(".label").text()).toContain('Task Title');
+    expect(wrapper.find(".form-label").text()).toContain('Task Title');
     expect(spies.fetchHabbitsDataSpy).toHaveBeenCalled();
     expect(spies.getHabbitByIdSpy).toReturnWith(oneHabbit);
   });
