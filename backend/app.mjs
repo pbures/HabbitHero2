@@ -284,11 +284,11 @@ app.get('/nicknames', checkJwt, async (req, res) => {
   let query = req.query;
   console.log('GET request at /known_nicknames from user:', userId, 'with email:', email, 'query:', query);
   let ret = [];
-  let me = myMongoDBUserManager.findOne({user_id: userId});
+  let me = await myMongoDBUserManager.findOne({user_id: userId});
   let arr = [...me.invites_received, ...me.invites_sent, ...me.friends];
   for(const user_id of arr) {
-    let user = myMongoDBUserManager.findOne({user_id: user_id});
-    ret.push({ nick: user.nickname, user_id: user_id });
+    let user = await myMongoDBUserManager.findOne({user_id: user_id});
+    ret.push({ nickname: user.nickname, user_id: user_id });
   }
   res.send(ret);
   // let nicks = req.body
