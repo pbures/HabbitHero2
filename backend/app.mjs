@@ -290,7 +290,10 @@ app.get('/nicknames', checkJwt, async (req, res) => {
     let user = await myMongoDBUserManager.findOne({user_id: user_id});
     ret2.push({ nickname: user.nickname, user_id: user_id });
   }
-  const ret = [...new Set(ret2)].sort((a, b) => a.nickname.localeCompare(b.nickname));
+  let ret = ret2.filter((obj, index, arr) => {
+    return ret2.findIndex(o =>{
+        return JSON.stringify(o) === JSON.stringify(obj)}) === index
+  }).sort((a, b) => a.nickname.localeCompare(b.nickname));
   res.send(ret);
 
 });
