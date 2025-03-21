@@ -77,7 +77,7 @@ describe('API Tests habbits', () => {
 })
 
 describe('API Tests users', () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
 
     await myMongoDBUserManager.dropCollection('users');
 
@@ -133,7 +133,9 @@ describe('API Tests users', () => {
     .expect(200)
 
   })
-
+  // beforeEach(async () => {
+  //   await myMongoDBUserManager.dropCollection('users');
+  // });
   it('should invite user on PUT /invite', async () => {
     const habitData = {
       name: 'Test Habit',
