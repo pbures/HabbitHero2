@@ -23,7 +23,7 @@
         <h2>Invitations Sent</h2>
         <ul>
           <li v-for="is in user.invites_sent">
-            {{ is }}
+            {{ userIdtoNickname(is) }}
           </li>
         </ul>
       </div>
@@ -60,6 +60,10 @@ onMounted(() => {
     }
   })
 })
+
+const userIdtoNickname = (userId) => {
+  return userStore.userIdtoNickname(userId);
+}
 
 const sendInvite = () => {
   userStore.sendInvite(invitee.value).then(() => {
