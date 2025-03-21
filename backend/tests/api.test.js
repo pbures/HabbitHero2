@@ -80,6 +80,7 @@ describe('API Tests users', () => {
   beforeEach(async () => {
 
     await myMongoDBUserManager.dropCollection('users');
+    console.log('deleted users col.')
 
     const user1 = {
       name: 'Nick 123',
@@ -132,6 +133,7 @@ describe('API Tests users', () => {
     .send(user3)
     .expect(200)
 
+    console.log('added users')
   })
   // beforeEach(async () => {
   //   await myMongoDBUserManager.dropCollection('users');
@@ -347,7 +349,7 @@ describe('API Tests users', () => {
     const response1 = await request(server)
       .put('/user')
       .set('Authorization',  `Bearer ${testJWT}`)
-      .set('testUserId', 'fakeAuth-123') //set to nickname that already exists
+      .set('testUserId', 'fakeAuth-new') //set to nickname that already exists
       .send(newUser)
       .expect(406);
 

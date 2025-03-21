@@ -201,6 +201,11 @@ app.put('/user', checkJwt, async (req, res) => {
     }
     delete changes._id;
     console.log("Changes:", changes);
+    let nicknameExists = await myMongoDBUserManager.findOne({nickname: changes?.nickname});
+    if(nicknameExists) {
+      res.status(406).json({ message: 'Nickname already exists' });
+      return;
+    }
     if(Object.keys(changes).length > 0) {
       await myMongoDBUserManager.update({user_id: `${id}`}, changes);
     }
@@ -210,8 +215,9 @@ app.put('/user', checkJwt, async (req, res) => {
     // check if nickname is awailable
     let nickname = req.body.nickname;
     let nicknameExists = await myMongoDBUserManager.findOne({nickname: nickname});
+    console.log(nicknameExists);
     if(nicknameExists) {
-      res.status(409).json({ message: 'Nickname already exists' });
+      res.status(406).json({ message: 'Nickname already exists' });
       return;
     }
     let object = req.body;
