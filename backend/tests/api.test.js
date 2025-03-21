@@ -323,8 +323,8 @@ describe('API Tests users', () => {
   it('should return an array of user id and nickname objects', async () => {
 
     const expectedResult = [
-      { "user_id": "fakeAuth-321", "nickname": "nick-321" },
       { "user_id": "fakeAuth-234", "nickname": "nick-234" },
+      { "user_id": "fakeAuth-321", "nickname": "nick-321" },
     ];
 
     /* set up my user (123) to have some invitations via rest call PUT /invite */
@@ -342,11 +342,18 @@ describe('API Tests users', () => {
       .query({nickname: 'nick-234'})
       .expect(200);
 
+    const response3 = await request(server)
+      .put('/invite')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-234')
+      .query({nickname: 'nick-123'})
+      .expect(200);
+
     const response = await request(server)
-    .get('/nicknames')
-    .set('Authorization', `Bearer ${testJWT}`)
-    .set('testUserId', 'fakeAuth-123')
-    .expect(200)
+      .get('/nicknames')
+      .set('Authorization', `Bearer ${testJWT}`)
+      .set('testUserId', 'fakeAuth-123')
+      .expect(200)
 
     expect(response.body).toBeDefined();
     expect(response.body).toEqual(expectedResult);
