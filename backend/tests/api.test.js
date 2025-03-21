@@ -332,6 +332,27 @@ describe('API Tests users', () => {
       expect(response1.body).toHaveProperty('message', 'User cannot invite himself');
   });
 
+  it('should return error 406 if PUT /user contains already existin nickname', async () => {
+
+    const newUser = {
+      name: 'New Nick 123',
+      nickname: 'nick-123',
+      email: 'new-nick123@example.com',
+      schema_version: '1.0',
+      invites_sent: [],
+      invites_received: [],
+      friends: []
+    }
+
+    const response1 = await request(server)
+      .put('/user')
+      .set('Authorization',  `Bearer ${testJWT}`)
+      .set('testUserId', 'fakeAuth-123') //set to nickname that already exists
+      .send(newUser)
+      .expect(406);
+
+      expect(response1.body).toHaveProperty('message', 'Nickname already exists');
+  });
 
   it('should return an array of user id and nickname objects', async () => {
 
