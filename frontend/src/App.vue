@@ -1,12 +1,11 @@
 <script setup>
 import { RouterView } from 'vue-router'
-import { useUserStore } from '@/stores/user'
+// import { useUserStore } from '@/stores/user.js'
 import TopHeader from './components/TopHeader.vue'
 import ActionsBlock from './components/ActionsBlock.vue'
 
-const userStore = useUserStore()
-
-userStore.fetchUserData()
+// const userStore = useUserStore()
+// userStore.fetchUser()
 </script>
 
 <template>

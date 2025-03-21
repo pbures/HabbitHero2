@@ -54,4 +54,49 @@ body {
   background-position: center;
 }
 
+main {
+  margin-top: var(--top-header-height);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.grid-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: center;
+  align-content:start;
+}
+
+.content-container {
+  margin-top: 10px;
+  background: inherit;
+  backdrop-filter: blur(10px);
+  font-size: 20px;
+  padding: 5px;
+
+  box-shadow: 3px 3px 5px #1b2d3d;
+  color: black;
+  border-radius: 15px;
+  border: solid 1px white;
+}
+
+.content-container:first-child {
+  margin-top: var(--top-header-height);
+}
+
+div.form-label {
+  margin-top: 0.5em;
+  font-weight: bold;
+}
+
+div.form-value {
+  margin-top: 0.5em;
+}
+
+.form-span2 {
+  grid-column: 1 / span 2;
+  text-align: center;
+}
+
 /*  */

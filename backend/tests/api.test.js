@@ -1,11 +1,11 @@
 // tests/api.test.js
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
-import request from 'supertest'
-import { createServer } from 'http'
-import app from '../app.mjs' // Adjust the path to your main.mjs file
+import { createServer } from 'http';
+import request from 'supertest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import app from '../app.mjs'; // Adjust the path to your main.mjs file
 
-import MongoDBManager from './mongoDBManager.mjs'
-import MongoDBUserManager from './mongoDBUserManager.mjs'
+import MongoDBManager from './mongoDBManager.mjs';
+import MongoDBUserManager from './mongoDBUserManager.mjs';
 
 let server
 let testJWT
@@ -17,7 +17,7 @@ const myMongoDBUserManager = new MongoDBUserManager(uri);
 
 beforeAll((done) => {
   server = createServer(app)
-  server.listen(3000, done)
+  server.listen(3001, done)
 
   testJWT = "testingToken"
 })
@@ -82,23 +82,32 @@ describe('API Tests users', () => {
     await myMongoDBUserManager.dropCollection('users');
 
     const user1 = {
+      name: 'Nick 123',
       nickname: 'nick-123',
+      email: 'nick123@example.com',
+      schema_version: '1.0',
       invites_sent: [],
-      invites_received: [], 
+      invites_received: [],
       friends: []
     }
 
     const user3 = {
+      name: 'Nick 234',
       nickname: 'nick-234',
+      email: 'nick234@example.com',
+      schema_version: '1.0',
       invites_sent: [],
       invites_received: [],
       friends: []
     }
 
     const user2 = {
+      name: 'Nick 321',
       nickname: 'nick-321',
+      email: 'nick321@example.com',
+      schema_version: '1.0',
       invites_sent: [],
-      invites_received: [], 
+      invites_received: [],
       friends: []
     }
 
@@ -130,7 +139,7 @@ describe('API Tests users', () => {
       name: 'Test Habit',
       description: 'This is a test habit'
     }
-    
+
     // const user = await request(server)
     // .get('/users')
     // .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
@@ -175,6 +184,16 @@ describe('API Tests users', () => {
     expect(response.body).toHaveProperty('user_id', 'fakeAuth-234');
   })
 
+  it('should return 404 for non-existent user on GET /user', async () => {
+    const response = await request(server)
+      .get('/user')
+      .set('Authorization', `Bearer ${testJWT}`)
+      .set('testUserId', 'nonExistentUser')
+      .expect(404)
+
+    expect(response.body).toHaveProperty('message', 'User not found')
+  })
+
   it('should return users on GET /users', async () => {
 
     const response = await request(server)
@@ -200,7 +219,7 @@ describe('API Tests users', () => {
       name: 'Test Habit',
       description: 'This is a test habit'
     }
-    
+
     // const user = await request(server)
     // .get('/users')
     // .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
@@ -280,6 +299,23 @@ describe('API Tests users', () => {
 
   afterAll(async () => {
     await myMongoDBUserManager.close();
+  })
+
+  it('should throw error when sending invalid user object', async () => {
+
+    const user = {
+      nickname: 'nick-123',
+      invites_sent: [],
+      invites_received: [],
+      friends: []
+    }
+
+    const response3 = await request(server)
+    .put('/user')
+    .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+    .set('testUserId', 'usertofail')
+    .send(user)
+    .expect(400)
   })
 })
 

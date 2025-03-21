@@ -1,15 +1,19 @@
-import express from 'express'
+import express from 'express';
 // import modelHabbit from '../frontend/src/model/task.js'
 // import modelUser from '../frontend/src/model/user.js'
-import cors from 'cors'
-import MongoDBManager from './mongoDBManager.mjs'
-import MongoDBUserManager from './mongoDBUserManager.mjs'
-import { auth } from 'express-oauth2-jwt-bearer';
+import cors from 'cors';
 import dotenv from 'dotenv';
-import { ObjectId } from 'mongodb'
+import { auth } from 'express-oauth2-jwt-bearer';
+import { ObjectId } from 'mongodb';
+import MongoDBManager from './mongoDBManager.mjs';
+import MongoDBUserManager from './mongoDBUserManager.mjs';
 
-import { fileURLToPath } from 'url'
-import path from 'path'
+import ajv from 'ajv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+import { error } from 'console';
+import User from '../frontend/src/model/user.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -106,8 +110,12 @@ app.get('/user', checkJwt, async (req, res) => {
       { email: email }
     ]
   });
-  res.send(user);
-  // res.send({...modelUser, email: email});
+  console.log(`Sending back: `, JSON.stringify(user))
+  if (user) {
+    res.send(user);
+  } else {
+    res.status(404).json({ message: 'User not found' });
+  }
 });
 
 app.put('/habbit', checkJwt, async (req, res) => {
@@ -161,6 +169,16 @@ app.put('/user', checkJwt, async (req, res) => {
   const id = req.auth.payload.sub;
   console.log(`PUT request from user ${id} at /user with data:`, req.body, '_id:', id);
 
+  const schema = User.getJsonSchema();
+  /* Validate the payload of the request against the schema using AJV */
+  const ajvInstance = new ajv();
+  const validate = ajvInstance.compile(schema);
+  const valid = validate(req.body);
+  if (!valid) {
+    console.log('Validation errors:', validate.errors);
+    return res.status(400).json({ message: 'Validation errors', errors: validate.errors });
+  }
+
   let user = null;
   // let objectId = new ObjectId(id);
   if (id !== undefined) {
@@ -172,6 +190,9 @@ app.put('/user', checkJwt, async (req, res) => {
     console.log("user exists", user);
     const changes = {};
     for (const key in req.body) {
+      if (key === 'invites_sent' || key === 'invites_received' || key === 'friends') {
+        continue;
+      }
       // Here if there is an incomming key that is _id, then we have the raw string version, comparing it with the new one.
       if (`${req.body[key]}` !== user[key]) {
         console.log(`Key: ${key}, old value: ${user[key]}, new value: ${req.body[key]}`);
@@ -189,7 +210,11 @@ app.put('/user', checkJwt, async (req, res) => {
 
     let object = req.body;
     object.user_id = id;
-    myMongoDBUserManager.insert(object);
+
+    object.invites_sent = object.invites_sent || [];
+    object.invites_received = object.invites_received || [];
+
+    await myMongoDBUserManager.insert(object);
   }
 
   res.status(200).json({ message: 'Habbit updated successfully' });
@@ -200,6 +225,9 @@ app.put('/invite', checkJwt, async (req, res) => {
   const userId = req.auth.payload.sub
 
   let requestedUser = await myMongoDBUserManager.findOne({'nickname': req.query.nickname});
+  if (!requestedUser) {
+    return res.status(404).json({ message: 'User not found' });
+  }
   let requestedUserId = requestedUser.user_id;
   // check if invite already exists
   let user = await myMongoDBUserManager.findOne({ user_id: userId });
