@@ -29,9 +29,8 @@
       </div>
 
       <div class="content-container">
-        Send invite to: <input type="text" v-model="invitee" />
+        Send invite to: <input :class="{ 'has-error': error }" type="text" v-model="invitee" />
         <button @click="sendInvite">Send</button>
-        <div v-if="error"> {{ error }}</div>
       </div>
 
     </div>
@@ -85,5 +84,8 @@ watch(user, (newValue) => {
 </script>
 
 <style scoped>
-
+.has-error {
+  color: red;
+  box-shadow: 0 0 5px red;
+}
 </style>

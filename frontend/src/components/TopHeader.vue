@@ -1,6 +1,6 @@
 <template>
     <header class="header">
-        <h1 class="title">Habbit Hero</h1>
+        <h1 class="title" @click="redirect" >Habbit Hero</h1>
         <h1>{{  userStore.name }}</h1>
         <nav class="nav">
             <ul>
@@ -16,13 +16,22 @@
 </template>
 
 <script setup>
-    import { useUserStore } from '@/stores/user_legacy'
-    import { useAuth0 } from '@auth0/auth0-vue'
+  import { useUserStore } from '@/stores/user_legacy'
+import { useAuth0 } from '@auth0/auth0-vue'
 
-    const userStore = useUserStore()
-    const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0()
+  const userStore = useUserStore()
+  const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0()
 
-    userStore.fetchUserData()
+  userStore.fetchUserData()
+
+  import { useRouter } from 'vue-router'
+
+  const router = useRouter()
+
+  function redirect() {
+    router.push('/')
+  }
+
 </script>
 
 <style scoped>
@@ -49,6 +58,11 @@
   .header h1 {
     color: rgb(255, 255, 255);
     font-size: 1.5em;
+  }
+
+  .title {
+    font-size: 1.5em;
+    cursor: pointer;
   }
 
 </style>

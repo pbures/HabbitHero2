@@ -52,6 +52,7 @@ export const useUserStore = defineStore('user', {
     },
     async updateUser(userData) {
       this.loading = true;
+
       try {
         const token = await this.auth0.getAccessTokenSilently();
         await axios.put(`${backendUrl}/user`, userData, {
@@ -75,6 +76,7 @@ export const useUserStore = defineStore('user', {
             Authorization: `Bearer ${token}`
           }
         });
+        this.error = null;
       } catch (error) {
         this.error = error;
       } finally {
