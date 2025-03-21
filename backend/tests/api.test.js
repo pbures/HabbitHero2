@@ -322,7 +322,7 @@ describe('API Tests users', () => {
 
   it('should return an array of user id and nickname objects', async () => {
 
-    expectedResult = [
+    const expectedResult = [
       { "user_id": "fakeAuth-321", "nickname": "nick-321" },
       { "user_id": "fakeAuth-234", "nickname": "nick-234" },
     ];
