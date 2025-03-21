@@ -207,13 +207,19 @@ app.put('/user', checkJwt, async (req, res) => {
   } else {
     console.log('User does not exist');
     console.log('Inserting new user');
-
+    // check if nickname is awailable
+    let nickname = req.body.nickname;
+    let nicknameExists = await myMongoDBUserManager.findOne({nickname: nickname});
+    if(nicknameExists) {
+      res.status(409).json({ message: 'Nickname already exists' });
+      return;
+    }
     let object = req.body;
     object.user_id = id;
 
     object.invites_sent = object.invites_sent || [];
     object.invites_received = object.invites_received || [];
-
+    
     await myMongoDBUserManager.insert(object);
   }
 
@@ -231,6 +237,10 @@ app.put('/invite', checkJwt, async (req, res) => {
   let requestedUserId = requestedUser.user_id;
   // check if invite already exists
   let user = await myMongoDBUserManager.findOne({ user_id: userId });
+  if(requestedUserId === userId) {
+    res.status(403).json({ message: 'You cannot invite yourself' });
+    return;
+  }
   let isInvited = user.invites_sent.includes(requestedUserId);
   if(isInvited) {
     res.status(409).json({ message: 'You have already sent an invitation' });
@@ -281,8 +291,7 @@ app.get('/users', checkJwt, async (req, res) => {
 app.get('/nicknames', checkJwt, async (req, res) => {
   const userId = req.auth.payload.sub
   const email = req.auth.payload.email
-  let query = req.query;
-  console.log('GET request at /known_nicknames from user:', userId, 'with email:', email, 'query:', query);
+  console.log('GET request at /nicknames from user:', userId, 'with email:', email, 'query:', req.query);
   let ret2 = [];
   let me = await myMongoDBUserManager.findOne({user_id: userId});
   let arr = [...me.invites_received, ...me.invites_sent, ...me.friends];

@@ -320,7 +320,7 @@ describe('API Tests users', () => {
     .expect(400)
   });
 
-  it('should return error 409 if /invite is sent with the same nickname as of the given user', async () => {
+  it('should return error 403 if /invite is sent with the same nickname as of the given user', async () => {
 
     const response1 = await request(server)
       .put('/invite')
@@ -329,7 +329,7 @@ describe('API Tests users', () => {
       .query({nickname: 'nick-123'})
       .expect(403);
 
-      expect(response1.body).toHaveProperty('message', 'User cannot invite himself');
+      expect(response1.body).toHaveProperty('message', 'You cannot invite yourself');
   });
 
   it('should return error 406 if PUT /user contains already existin nickname', async () => {
