@@ -205,7 +205,7 @@ describe('API Tests users', () => {
     // .get('/users')
     // .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
     // .set('testUserId', '123')
-    // .query({nickname: '321'})
+   // .query({nickname: '321'})
     // .expect(200)
 
     const responseR = await request(server)
@@ -226,6 +226,58 @@ describe('API Tests users', () => {
     expect(response.body.friends).toContain('fakeAuth-123');
 
   })
+  it('should return 409 if user is already invited on PUT /invite', async () => {
+    const habitData = {
+      name: 'Test Habit',
+      description: 'This is a test habit'
+    }
+    
+
+    const responseS = await request(server)
+      .put('/invite')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-123')
+      .query({nickname: 'nick-321'})
+      .expect(200)
+    const responseS2 = await request(server)
+      .put('/invite')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-123')
+      .query({nickname: 'nick-321'})
+      .expect(409)
+
+    // expect(responseS.body).toHaveProperty('message', 'Invitation sent successfully')
+  })
+  it('should return 409 if user is already a friend on PUT /accept', async () => {
+    const habitData = {
+      name: 'Test Habit',
+      description: 'This is a test habit'
+    }
+    
+    // const user = await request(server)
+    // .get('/users')
+    // .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+    // .set('testUserId', '123')
+   // .query({nickname: '321'})
+    // .expect(200)
+
+    const responseR = await request(server)
+      .put('/accept')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-321')
+      .query({nickname: 'nick-123'})
+      .expect(200)
+
+    const responseR2 = await request(server)
+      .put('/accept')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-321')
+      .query({nickname: 'nick-123'})
+      .expect(409)
+
+    // expect(responseR.body).toHaveProperty('message', 'You are already friends')
+  });
+
   afterAll(async () => {
     await myMongoDBUserManager.close();
   })

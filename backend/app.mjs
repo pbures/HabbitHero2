@@ -198,17 +198,16 @@ app.put('/user', checkJwt, async (req, res) => {
 app.put('/invite', checkJwt, async (req, res) => {
   console.log('PUT request at /invite with body:', req.body, "query:", req.query);
   const userId = req.auth.payload.sub
-  // let object = req.body;
-  // let requestedUserId = req.query.nickname;
+
   let requestedUser = await myMongoDBUserManager.findOne({'nickname': req.query.nickname});
   let requestedUserId = requestedUser.user_id;
-  // find me and the user we want to invite
-  // let me = await myMongoDBUserManager.findOne({ user_id: userId });
-  // let target = await myMongoDBUserManager.findOne({ user_id: requestedUserId });
-  // save the intitation to my invites_sent and to the target's invites_recieved
-  // let myInvitesBefore = await myMongoDBUserManager.find({ nickname: req.query.nickname }).invites_recieved;
-  // let targetInvitesBefore = await myMongoDBUserManager.find({ user_id: userId }).invites_sent;
-  // update the invites arrays
+  // check if invite already exists
+  let user = await myMongoDBUserManager.findOne({ user_id: userId });
+  let isInvited = user.invites_sent.includes(requestedUserId);
+  if(isInvited) {
+    res.status(409).json({ message: 'You have already sent an invitation' });
+    return;
+  }
   await myMongoDBUserManager.push({user_id: requestedUserId}, userId, 'invites_received');
   await myMongoDBUserManager.push({ user_id: userId }, requestedUserId, 'invites_sent');
   res.status(200).json({ message: 'Invitation sent successfully' });
@@ -220,7 +219,13 @@ app.put('/accept', checkJwt, async (req, res) => {
 
   let requestedUser = await myMongoDBUserManager.findOne({'nickname': req.query.nickname});
   let requestedUserId = requestedUser.user_id;
-
+  // chceck if the user isn't already a friend
+  let user = await myMongoDBUserManager.findOne({ user_id: userId });
+  let isFriend = user.friends.includes(requestedUserId);
+  if(isFriend) {
+    res.status(409).json({ message: 'You are already friends' });
+    return;
+  }
   await myMongoDBUserManager.deleteFromArray(userId, 'invites_recieved', requestedUserId);
   await myMongoDBUserManager.deleteFromArray(requestedUserId, 'invites_sent', userId);
   // update
