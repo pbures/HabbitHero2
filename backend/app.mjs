@@ -287,14 +287,14 @@ app.get('known_nicknames', checkJwt, async (req, res) => {
   let ret = [];
   let me = myMongoDBUserManager.findOne({user_id: userId});
 
-  nicks.forEach(nick => {
-    let user = myMongoDBUserManager.findOne({nickname: nick})
+  for (const nick of nicks) {
+    let user = await myMongoDBUserManager.findOne({ nickname: nick });
     // find out about the access
-    if(me.friends.includes(user.user_id) || me.invites_sent.includes(user.user_id) || me.invites_received.includes(user.user_id)) {
-      ret.push({nick: user.nickname, user_id: user.user_id})
+    if (me.friends.includes(user.user_id) || me.invites_sent.includes(user.user_id) || me.invites_received.includes(user.user_id)) {
+      ret.push({ nick: user.nickname, user_id: user.user_id });
     }
     // find and add the user data
-  });
+  }
   res.send(ret);
 });
 
