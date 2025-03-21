@@ -4,12 +4,14 @@ FROM node:21
 WORKDIR /usr/src/app
 
 # Install app dependencies
-COPY package*.json ./
-
+COPY backend/package*.json .
 RUN npm install
 
 # Bundle app source
-COPY . .
+COPY backend .
+
+RUN mkdir -p ../frontend/src/model
+COPY frontend/src/model ../frontend/src/model
 
 # Expose the port the app runs on
 EXPOSE 3000

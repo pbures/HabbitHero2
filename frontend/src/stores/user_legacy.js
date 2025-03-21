@@ -1,8 +1,8 @@
 // src/stores/user.js
-import { defineStore } from 'pinia'
-import axios from 'axios'
-import { useAuth0 } from '@auth0/auth0-vue'
-import userMockData from '../model/user.js'
+import { useAuth0 } from '@auth0/auth0-vue';
+import axios from 'axios';
+import { defineStore } from 'pinia';
+import userMockData from '../model/user.mjs';
 
 function getMockData(){
   return userMockData.createExampleInstance();

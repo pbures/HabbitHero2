@@ -11,7 +11,7 @@ PUT /invite?nickname=theNickname
 import { useAuth0 } from '@auth0/auth0-vue'
 import axios from 'axios'
 import { defineStore } from 'pinia'
-import User from '../model/user.js'
+import User from '../model/user.mjs'
 
 const backendUrl = import.meta.env.VITE_H2_BACKEND
 

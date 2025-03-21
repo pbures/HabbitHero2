@@ -13,7 +13,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import { error } from 'console';
-import User from '../frontend/src/model/user.js';
+import User from '../frontend/src/model/user.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
