@@ -80,6 +80,8 @@ export const useUserStore = defineStore('user', {
       } finally {
         this.loading = false;
       }
+
+      this.fetchUser();
     },
     async sendInvite(nickname) {
       this.loading = true;

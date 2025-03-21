@@ -77,7 +77,7 @@ describe('API Tests habbits', () => {
 })
 
 describe('API Tests users', () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
 
     await myMongoDBUserManager.dropCollection('users');
 
@@ -133,7 +133,9 @@ describe('API Tests users', () => {
     .expect(200)
 
   })
-
+  // beforeEach(async () => {
+  //   await myMongoDBUserManager.dropCollection('users');
+  // });
   it('should invite user on PUT /invite', async () => {
     const habitData = {
       name: 'Test Habit',
@@ -224,7 +226,7 @@ describe('API Tests users', () => {
     // .get('/users')
     // .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
     // .set('testUserId', '123')
-    // .query({nickname: '321'})
+   // .query({nickname: '321'})
     // .expect(200)
 
     const responseR = await request(server)
@@ -245,6 +247,58 @@ describe('API Tests users', () => {
     expect(response.body.friends).toContain('fakeAuth-123');
 
   })
+  it('should return 409 if user is already invited on PUT /invite', async () => {
+    const habitData = {
+      name: 'Test Habit',
+      description: 'This is a test habit'
+    }
+
+
+    const responseS = await request(server)
+      .put('/invite')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-123')
+      .query({nickname: 'nick-321'})
+      .expect(200)
+    const responseS2 = await request(server)
+      .put('/invite')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-123')
+      .query({nickname: 'nick-321'})
+      .expect(409)
+
+    // expect(responseS.body).toHaveProperty('message', 'Invitation sent successfully')
+  })
+  it('should return 409 if user is already a friend on PUT /accept', async () => {
+    const habitData = {
+      name: 'Test Habit',
+      description: 'This is a test habit'
+    }
+
+    // const user = await request(server)
+    // .get('/users')
+    // .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+    // .set('testUserId', '123')
+   // .query({nickname: '321'})
+    // .expect(200)
+
+    const responseR = await request(server)
+      .put('/accept')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-321')
+      .query({nickname: 'nick-123'})
+      .expect(200)
+
+    const responseR2 = await request(server)
+      .put('/accept')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-321')
+      .query({nickname: 'nick-123'})
+      .expect(409)
+
+    // expect(responseR.body).toHaveProperty('message', 'You are already friends')
+  });
+
   afterAll(async () => {
     await myMongoDBUserManager.close();
   })
@@ -264,6 +318,47 @@ describe('API Tests users', () => {
     .set('testUserId', 'usertofail')
     .send(user)
     .expect(400)
-  })
+  });
+
+  it('should return an array of user id and nickname objects', async () => {
+
+    const expectedResult = [
+      { "user_id": "fakeAuth-234", "nickname": "nick-234" },
+      { "user_id": "fakeAuth-321", "nickname": "nick-321" },
+    ];
+
+    /* set up my user (123) to have some invitations via rest call PUT /invite */
+    const response1 = await request(server)
+      .put('/invite')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-123')
+      .query({nickname: 'nick-321'})
+      .expect(200);
+
+    const response2 = await request(server)
+      .put('/invite')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-123')
+      .query({nickname: 'nick-234'})
+      .expect(200);
+
+    const response3 = await request(server)
+      .put('/invite')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-234')
+      .query({nickname: 'nick-123'})
+      .expect(200);
+
+    const response = await request(server)
+      .get('/nicknames')
+      .set('Authorization', `Bearer ${testJWT}`)
+      .set('testUserId', 'fakeAuth-123')
+      .expect(200)
+
+    expect(response.body).toBeDefined();
+    expect(response.body).toEqual(expectedResult);
+  });
+
+
 })
 
