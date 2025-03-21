@@ -19,6 +19,7 @@ export const useUserStore = defineStore('user', {
   state: () => ({
     auth0: useAuth0(),
     user: new User(),
+    nicknames: [],
     loading: false,
     error: null,
     exists: undefined,
@@ -43,6 +44,19 @@ export const useUserStore = defineStore('user', {
             invites_sent: response.data.invites_sent,
             invites_received: response.data.invites_received,
         })
+
+        const nicknames = await axios.get(`${backendUrl}/nicknames`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (nicknames.data && nicknames.data.length > 0) {
+          this.nicknames = nicknames.data
+        } else {
+          this.nicknames = [];
+        }
+
       } catch (error) {
         this.error = error;
         this.exists = false;
@@ -100,5 +114,11 @@ export const useUserStore = defineStore('user', {
         this.loading = false;
       }
     },
+
+    userIdtoNickname(userId) {
+      const user = this.nicknames.find(user => user.user_id === userId);
+      return user ? user.nickname : 'Unknown';
+    }
+
   },
 });
