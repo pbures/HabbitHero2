@@ -252,7 +252,7 @@ describe('API Tests users', () => {
       name: 'Test Habit',
       description: 'This is a test habit'
     }
-    
+
 
     const responseS = await request(server)
       .put('/invite')
@@ -274,7 +274,7 @@ describe('API Tests users', () => {
       name: 'Test Habit',
       description: 'This is a test habit'
     }
-    
+
     // const user = await request(server)
     // .get('/users')
     // .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
@@ -318,6 +318,40 @@ describe('API Tests users', () => {
     .set('testUserId', 'usertofail')
     .send(user)
     .expect(400)
-  })
+  });
+
+  it('should return an array of user id and nickname objects', async () => {
+
+    const expectedResult = [
+      { "user_id": "fakeAuth-321", "nickname": "nick-321" },
+      { "user_id": "fakeAuth-234", "nickname": "nick-234" },
+    ];
+
+    /* set up my user (123) to have some invitations via rest call PUT /invite */
+    const response1 = await request(server)
+      .put('/invite')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-123')
+      .query({nickname: 'nick-321'})
+      .expect(200);
+
+    const response2 = await request(server)
+      .put('/invite')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-123')
+      .query({nickname: 'nick-234'})
+      .expect(200);
+
+    const response = await request(server)
+    .get('/nicknames')
+    .set('Authorization', `Bearer ${testJWT}`)
+    .set('testUserId', 'fakeAuth-123')
+    .expect(200)
+
+    expect(response.body).toBeDefined();
+    expect(response.body).toEqual(expectedResult);
+  });
+
+
 })
 
