@@ -283,25 +283,16 @@ app.get('/nicknames', checkJwt, async (req, res) => {
   const email = req.auth.payload.email
   let query = req.query;
   console.log('GET request at /known_nicknames from user:', userId, 'with email:', email, 'query:', query);
-  let ret = [];
+  let ret2 = [];
   let me = await myMongoDBUserManager.findOne({user_id: userId});
   let arr = [...me.invites_received, ...me.invites_sent, ...me.friends];
   for(const user_id of arr) {
     let user = await myMongoDBUserManager.findOne({user_id: user_id});
-    ret.push({ nickname: user.nickname, user_id: user_id });
+    ret2.push({ nickname: user.nickname, user_id: user_id });
   }
+  const ret = [...new Set(ret2)].sort((a, b) => a.nickname.localeCompare(b.nickname));
   res.send(ret);
-  // let nicks = req.body
 
-  // // for (const nick of nicks) {
-  // //   let user = await myMongoDBUserManager.findOne({ nickname: nick });
-  // //   // find out about the access
-  // //   if (me.friends.includes(user.user_id) || me.invites_sent.includes(user.user_id) || me.invites_received.includes(user.user_id)) {
-  // //     ret.push({ nick: user.nickname, user_id: user.user_id });
-  // //   }
-  // //   // find and add the user data
-  // // }
-  // // res.send(ret);
 });
 
 
