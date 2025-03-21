@@ -14,7 +14,7 @@
         <h2>Invitations Received</h2>
         <ul>
           <li v-for="invitation in user.invites_received">
-            {{ invitation }}
+            {{ userIdtoNickname(invitation) }}
           </li>
         </ul>
       </div>
