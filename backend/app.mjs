@@ -278,7 +278,7 @@ app.get('/users', checkJwt, async (req, res) => {
   // res.send({...modelUser, email: email});
 });
 
-app.get('nicknames', checkJwt, async (req, res) => {
+app.get('/nicknames', checkJwt, async (req, res) => {
   const userId = req.auth.payload.sub
   const email = req.auth.payload.email
   let query = req.query;
