@@ -80,6 +80,7 @@ describe('API Tests users', () => {
   beforeEach(async () => {
 
     await myMongoDBUserManager.dropCollection('users');
+    console.log('deleted users col.')
 
     const user1 = {
       name: 'Nick 123',
@@ -132,6 +133,7 @@ describe('API Tests users', () => {
     .send(user3)
     .expect(200)
 
+    console.log('added users')
   })
   // beforeEach(async () => {
   //   await myMongoDBUserManager.dropCollection('users');
@@ -320,7 +322,7 @@ describe('API Tests users', () => {
     .expect(400)
   });
 
-  it('should return error 409 if /invite is sent with the same nickname as of the given user', async () => {
+  it('should return error 403 if /invite is sent with the same nickname as of the given user', async () => {
 
     const response1 = await request(server)
       .put('/invite')
@@ -329,10 +331,10 @@ describe('API Tests users', () => {
       .query({nickname: 'nick-123'})
       .expect(403);
 
-      expect(response1.body).toHaveProperty('message', 'User cannot invite himself');
+      expect(response1.body).toHaveProperty('message', 'You cannot invite yourself');
   });
 
-  it('should return error 406 if PUT /user contains already existin nickname', async () => {
+  it('should return error 406 if PUT /user (existing user) contains already existin nickname', async () => {
 
     const newUser = {
       name: 'New Nick 123',
@@ -347,7 +349,29 @@ describe('API Tests users', () => {
     const response1 = await request(server)
       .put('/user')
       .set('Authorization',  `Bearer ${testJWT}`)
-      .set('testUserId', 'fakeAuth-123') //set to nickname that already exists
+      .set('testUserId', 'fakeAuth-321') //set to nickname that already exists
+      .send(newUser)
+      .expect(406);
+
+      expect(response1.body).toHaveProperty('message', 'Nickname already exists');
+  });
+
+  it('should return error 406 if PUT /user (new user) contains already existin nickname', async () => {
+
+    const newUser = {
+      name: 'New Nick 123',
+      nickname: 'nick-123',
+      email: 'new-nick123@example.com',
+      schema_version: '1.0',
+      invites_sent: [],
+      invites_received: [],
+      friends: []
+    }
+
+    const response1 = await request(server)
+      .put('/user')
+      .set('Authorization',  `Bearer ${testJWT}`)
+      .set('testUserId', 'fakeAuth-new') //set to nickname that already exists
       .send(newUser)
       .expect(406);
 
@@ -392,7 +416,43 @@ describe('API Tests users', () => {
     expect(response.body).toBeDefined();
     expect(response.body).toEqual(expectedResult);
   });
+  it('should add users to friends if they invite each other', async () => {
+    const habitData = {
+      name: 'Test Habit',
+      description: 'This is a test habit'
+    }
 
+    // const user = await request(server)
+    // .get('/users')
+    // .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+    // .set('testUserId', '123')
+    // .query({nickname: '321'})
+    // .expect(200)
+
+    const responseS = await request(server)
+      .put('/invite')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-123')
+      .query({nickname: 'nick-321'})
+      .expect(200)
+
+      const responseR = await request(server)
+      .put('/invite')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-321')
+      .query({nickname: 'nick-123'})
+      .expect(200)
+
+    // Add your assertions here based on the expected response
+    expect(responseS.body).toHaveProperty('message', 'Invitation sent successfully')
+    const response = await request(server)
+    .get('/user')
+    .set('Authorization', `Bearer ${testJWT}`)
+    .set('testUserId', 'fakeAuth-321')
+    .expect(200)
+    expect(response.body.friends).toContain('fakeAuth-123');
+
+  })
 
 })
 
