@@ -394,7 +394,43 @@ describe('API Tests users', () => {
     expect(response.body).toBeDefined();
     expect(response.body).toEqual(expectedResult);
   });
+  it('should add users to friends if they invite each other', async () => {
+    const habitData = {
+      name: 'Test Habit',
+      description: 'This is a test habit'
+    }
 
+    // const user = await request(server)
+    // .get('/users')
+    // .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+    // .set('testUserId', '123')
+    // .query({nickname: '321'})
+    // .expect(200)
+
+    const responseS = await request(server)
+      .put('/invite')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-123')
+      .query({nickname: 'nick-321'})
+      .expect(200)
+
+      const responseR = await request(server)
+      .put('/invite')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-321')
+      .query({nickname: 'nick-123'})
+      .expect(200)
+
+    // Add your assertions here based on the expected response
+    expect(responseS.body).toHaveProperty('message', 'Invitation sent successfully')
+    const response = await request(server)
+    .get('/user')
+    .set('Authorization', `Bearer ${testJWT}`)
+    .set('testUserId', 'fakeAuth-321')
+    .expect(200)
+    expect(response.body.friends).toContain('fakeAuth-123');
+
+  })
 
 })
 

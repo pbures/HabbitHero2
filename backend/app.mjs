@@ -246,6 +246,17 @@ app.put('/invite', checkJwt, async (req, res) => {
   if(requestedUserId === userId) {
     res.status(403).json({ message: 'You cannot invite yourself' });
     return;
+  }else if(user.friends.includes(requestedUserId)) {
+    // cant invite a friend
+    res.status(409).json({ message: 'You are already friends' });
+    return;
+  }else if (requestedUser.invites_sent.includes(userId)) {
+    // If 2 users send each other an invite, they become friends
+    await myMongoDBUserManager.deleteFromArray(userId, 'invites_recieved', requestedUserId);
+    await myMongoDBUserManager.deleteFromArray(requestedUserId, 'invites_sent', userId);
+    // update
+    await myMongoDBUserManager.push({user_id: requestedUserId}, userId, 'friends');
+    await myMongoDBUserManager.push({ user_id: userId }, requestedUserId, 'friends');
   }
   let isInvited = user.invites_sent.includes(requestedUserId);
   if(isInvited) {
