@@ -273,6 +273,9 @@ app.put('/accept', checkJwt, async (req, res) => {
   const userId = req.auth.payload.sub
 
   let requestedUser = await myMongoDBUserManager.findOne({'nickname': req.query.nickname});
+  if(requestedUser === null) {
+    return res.status(404).json({ message: 'User not found' });
+  }
   let requestedUserId = requestedUser.user_id;
   // chceck if the user isn't already a friend
   let user = await myMongoDBUserManager.findOne({ user_id: userId });
