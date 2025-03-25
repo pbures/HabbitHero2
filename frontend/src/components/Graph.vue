@@ -3,12 +3,10 @@
 </template>
 
 <script>
-import { ref, defineComponent } from 'vue';
-import { DoughnutChart } from 'vue-chart-3';
-import { Chart, registerables } from 'chart.js';
+import { defineComponent, ref } from 'vue';
 
-// Register chart.js components
-Chart.register(...registerables);
+import Chart from 'chart.js/auto';
+import { DoughnutChart } from 'vue-chart-3';
 
 export default defineComponent({
   name: 'GoalChart',
