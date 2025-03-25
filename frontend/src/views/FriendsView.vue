@@ -8,11 +8,11 @@
         <div class="form-value">{{ user.email }}</div>
         <div class="form-label">Nickname:</div>
         <div class="form-value">{{ user.nickname }}</div>
-        <div class="clickable form-label form-span2" @click="switchToEdit">Edit</div>
+        <div class="clickable form-label form-span2" id="edit-button" @click="switchToEdit">Edit</div>
       </div>
       <div class="content-container">
         <h2>Invitations Received</h2>
-        <ul>
+        <ul id="invitations-received">
           <li v-for="userId in user.invites_received" :key="userId">
             {{ userIdtoNickname(userId) }}
             <label class="switch">
@@ -25,7 +25,7 @@
 
       <div class="content-container">
         <h2>Invitations Sent</h2>
-        <ul>
+        <ul id="invitations-sent">
           <li v-for="is in user.invites_sent">
             {{ userIdtoNickname(is) }}
           </li>
