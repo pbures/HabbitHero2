@@ -99,11 +99,11 @@ export const useUserStore = defineStore('user', {
         this.loading = false;
       }
     },
-    async acceptInvite() {
+    async acceptInvite(nickname) {
       this.loading = true;
       try {
         const token = await this.auth0.getAccessTokenSilently();
-        await axios.put(`${backendUrl}/accept`, null, {
+        await axios.put(`${backendUrl}/accept?nickname=${nickname}`, null, {
           headers: {
             Authorization: `Bearer ${token}`
           }
