@@ -201,19 +201,31 @@ app.put('/user', checkJwt, async (req, res) => {
     }
     delete changes._id;
     console.log("Changes:", changes);
+    let nicknameExists = await myMongoDBUserManager.findOne({nickname: changes?.nickname});
+    if(nicknameExists) {
+      res.status(406).json({ message: 'Nickname already exists' });
+      return;
+    }
     if(Object.keys(changes).length > 0) {
       await myMongoDBUserManager.update({user_id: `${id}`}, changes);
     }
   } else {
     console.log('User does not exist');
     console.log('Inserting new user');
-
+    // check if nickname is awailable
+    let nickname = req.body.nickname;
+    let nicknameExists = await myMongoDBUserManager.findOne({nickname: nickname});
+    console.log(nicknameExists);
+    if(nicknameExists) {
+      res.status(406).json({ message: 'Nickname already exists' });
+      return;
+    }
     let object = req.body;
     object.user_id = id;
 
     object.invites_sent = object.invites_sent || [];
     object.invites_received = object.invites_received || [];
-
+    
     await myMongoDBUserManager.insert(object);
   }
 
@@ -231,6 +243,21 @@ app.put('/invite', checkJwt, async (req, res) => {
   let requestedUserId = requestedUser.user_id;
   // check if invite already exists
   let user = await myMongoDBUserManager.findOne({ user_id: userId });
+  if(requestedUserId === userId) {
+    res.status(403).json({ message: 'You cannot invite yourself' });
+    return;
+  }else if(user.friends.includes(requestedUserId)) {
+    // cant invite a friend
+    res.status(409).json({ message: 'You are already friends' });
+    return;
+  }else if (requestedUser.invites_sent.includes(userId)) {
+    // If 2 users send each other an invite, they become friends
+    await myMongoDBUserManager.deleteFromArray(userId, 'invites_recieved', requestedUserId);
+    await myMongoDBUserManager.deleteFromArray(requestedUserId, 'invites_sent', userId);
+    // update
+    await myMongoDBUserManager.push({user_id: requestedUserId}, userId, 'friends');
+    await myMongoDBUserManager.push({ user_id: userId }, requestedUserId, 'friends');
+  }
   let isInvited = user.invites_sent.includes(requestedUserId);
   if(isInvited) {
     res.status(409).json({ message: 'You have already sent an invitation' });
@@ -281,8 +308,7 @@ app.get('/users', checkJwt, async (req, res) => {
 app.get('/nicknames', checkJwt, async (req, res) => {
   const userId = req.auth.payload.sub
   const email = req.auth.payload.email
-  let query = req.query;
-  console.log('GET request at /known_nicknames from user:', userId, 'with email:', email, 'query:', query);
+  console.log('GET request at /nicknames from user:', userId, 'with email:', email, 'query:', req.query);
   let ret2 = [];
   let me = await myMongoDBUserManager.findOne({user_id: userId});
   let arr = [...me.invites_received, ...me.invites_sent, ...me.friends];
