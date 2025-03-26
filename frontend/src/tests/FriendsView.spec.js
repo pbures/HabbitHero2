@@ -97,6 +97,42 @@ describe('FriendsView.vue', () => {
 
   });
 
+  it('redirects user to userprofile when user is not existing yet', async () => {
+
+    const mockRouterPush = vi.fn();
+    useRouter.mockReturnValue({ push: mockRouterPush });
+
+    const tp = createTestingPinia({
+      stubActions: false,
+      initialState: {
+        user: {
+          user: null,
+          nicknames: [],
+          loading: false,
+          error: null,
+          exists: false,
+        }
+      },
+    });
+
+    const us = useUserStore(tp);
+
+    us.fetchUser = vi.fn().mockImplementation(function() {
+      console.log(`mockFetchUser called via a spy, user: ${this.user}, exists: ${this.exists}`);
+      return Promise.resolve()
+    });
+
+    mount(FriendsView, {
+      global: {
+        plugins: [tp],
+      }
+    });
+
+    nextTick( () => {
+      expect(mockRouterPush).toHaveBeenCalledWith({name: 'userprofile'});
+    });
+  });
+
   it('renders the correct user information', async () => {
     const wrapper = mount(FriendsView, {
       global: {
