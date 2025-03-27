@@ -158,6 +158,25 @@ export const useHabbitStore = defineStore('habbit', {
       await this.fetchHabbitsData();
     },
 
+    async shareHabbit(nickname, habbitId) {
+      console.log('Sharing habbit:', habbitId, 'with:', nickname)
+      const token = await this.auth0.getAccessTokenSilently()
+
+      try {
+        const response = await axios.post(`${backendUrl}/shareHabbit`, {
+          nickname: nickname,
+          habbitId: habbitId,
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+        console.log('Invite response:', response)
+      } catch (error) {
+        console.error('Failed to invite friend:', error)
+      }
+    },
+
     async deleteHabbit(habbitId) {
       const token = await this.auth0.getAccessTokenSilently()
 
