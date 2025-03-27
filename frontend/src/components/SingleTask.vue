@@ -41,7 +41,7 @@
         <div v-if="showFriendsList" class="friends-list">
           <div v-for="f in user.friends" :key="f.id" class="friend">
             <div>{{ userIdToNickname(f) }}
-              <em class="clickable" @click="inviteFriend(f, habbit._id)">
+              <em class="clickable" @click="shareHabbit(f, habbit._id)">
                 &#x2192;
               </em>
             </div>
@@ -99,8 +99,9 @@ import { computed, ref, toRefs } from 'vue';
       return ret;
     }
 
-    function inviteFriend(nickname, habbit_id) {
-      console.log(`Invite friend: ${nickname} to habbit with id: ${habbit_id}`);
+    function shareHabbit(userId, habbit_id) {
+      console.log(`Invite friend: ${userId} to habbit with id: ${habbit_id}`);
+      habbitStore.shareHabbit(userIdToNickname(userId), habbit_id);
     }
 
     const habbitStore = useHabbitStore()
@@ -108,6 +109,8 @@ import { computed, ref, toRefs } from 'vue';
     const showFriendsList = ref(false);
     const userStore = useUserStore()
     const { user, error, exists } = storeToRefs(userStore);
+
+    userStore.fetchUser()
 
     const toggleFriendsList = () =>{
       showFriendsList.value = !showFriendsList.value;
