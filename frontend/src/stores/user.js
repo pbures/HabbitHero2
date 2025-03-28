@@ -43,6 +43,7 @@ export const useUserStore = defineStore('user', {
             nickname: response.data.nickname,
             invites_sent: response.data.invites_sent,
             invites_received: response.data.invites_received,
+            friends: response.data.friends,
         })
 
         const nicknames = await axios.get(`${backendUrl}/nicknames`, {
@@ -98,7 +99,9 @@ export const useUserStore = defineStore('user', {
       } finally {
         this.loading = false;
       }
+      this.fetchUser();
     },
+
     async acceptInvite(nickname) {
       this.loading = true;
       try {
@@ -113,6 +116,7 @@ export const useUserStore = defineStore('user', {
       } finally {
         this.loading = false;
       }
+      this.fetchUser();
     },
 
     userIdtoNickname(userId) {

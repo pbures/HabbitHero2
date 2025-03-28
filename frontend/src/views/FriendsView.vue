@@ -33,6 +33,15 @@
       </div>
 
       <div class="content-container">
+        <h2>Friends</h2>
+        <ul id="friends-list">
+          <li v-for="is in user.friends">
+            {{ userIdtoNickname(is) }}
+          </li>
+        </ul>
+      </div>
+
+      <div class="content-container">
         Send invite to: <input :class="{ 'has-error': error }" type="text" v-model="invitee" />
         <button @click="sendInvite">Send</button>
       </div>

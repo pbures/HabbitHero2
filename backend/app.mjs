@@ -225,7 +225,7 @@ app.put('/user', checkJwt, async (req, res) => {
 
     object.invites_sent = object.invites_sent || [];
     object.invites_received = object.invites_received || [];
-    
+
     await myMongoDBUserManager.insert(object);
   }
 
@@ -252,8 +252,13 @@ app.put('/invite', checkJwt, async (req, res) => {
     return;
   }else if (requestedUser.invites_sent.includes(userId)) {
     // If 2 users send each other an invite, they become friends
+<<<<<<< HEAD
     await myMongoDBUserManager.deleteFromArray(userId, 'invites_sent', requestedUserId);
     await myMongoDBUserManager.deleteFromArray(requestedUserId, 'invites_recieved', userId);
+=======
+    await myMongoDBUserManager.deleteFromArray(userId, 'invites_received', requestedUserId);
+    await myMongoDBUserManager.deleteFromArray(requestedUserId, 'invites_sent', userId);
+>>>>>>> 6852e98 (Fixes for accept invites)
     // update
     await myMongoDBUserManager.push({user_id: requestedUserId}, userId, 'friends');
     await myMongoDBUserManager.push({ user_id: userId }, requestedUserId, 'friends');
@@ -279,13 +284,14 @@ app.put('/accept', checkJwt, async (req, res) => {
   let requestedUserId = requestedUser.user_id;
   // chceck if the user isn't already a friend
   let user = await myMongoDBUserManager.findOne({ user_id: userId });
+  await myMongoDBUserManager.deleteFromArray(userId, 'invites_received', requestedUserId);
+
   let isFriend = user.friends.includes(requestedUserId);
   if(isFriend) {
     res.status(409).json({ message: 'You are already friends' });
     return;
   }
-  await myMongoDBUserManager.deleteFromArray(userId, 'invites_sent', requestedUserId);
-  await myMongoDBUserManager.deleteFromArray(requestedUserId, 'invites_recieved', userId);
+  await myMongoDBUserManager.deleteFromArray(requestedUserId, 'invites_sent', userId);
   // update
   await myMongoDBUserManager.push({user_id: requestedUserId}, userId, 'friends');
   await myMongoDBUserManager.push({ user_id: userId }, requestedUserId, 'friends');
