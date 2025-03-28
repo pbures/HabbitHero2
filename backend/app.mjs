@@ -252,13 +252,8 @@ app.put('/invite', checkJwt, async (req, res) => {
     return;
   }else if (requestedUser.invites_sent.includes(userId)) {
     // If 2 users send each other an invite, they become friends
-<<<<<<< HEAD
     await myMongoDBUserManager.deleteFromArray(userId, 'invites_sent', requestedUserId);
     await myMongoDBUserManager.deleteFromArray(requestedUserId, 'invites_recieved', userId);
-=======
-    await myMongoDBUserManager.deleteFromArray(userId, 'invites_received', requestedUserId);
-    await myMongoDBUserManager.deleteFromArray(requestedUserId, 'invites_sent', userId);
->>>>>>> 6852e98 (Fixes for accept invites)
     // update
     await myMongoDBUserManager.push({user_id: requestedUserId}, userId, 'friends');
     await myMongoDBUserManager.push({ user_id: userId }, requestedUserId, 'friends');
