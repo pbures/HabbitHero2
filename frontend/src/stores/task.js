@@ -1,9 +1,9 @@
 // src/stores/user.js
-import { defineStore } from 'pinia'
-import axios from 'axios'
-import { useAuth0 } from '@auth0/auth0-vue'
-import { Task } from '../model/task.js'
 import { getDateStr } from '@/utils/findDates.js'
+import { useAuth0 } from '@auth0/auth0-vue'
+import axios from 'axios'
+import { defineStore } from 'pinia'
+import { Task } from '../model/task.js'
 
 
 
@@ -156,6 +156,25 @@ export const useHabbitStore = defineStore('habbit', {
       h.total_event_count = h.events.length;
       await this.addNewHabbit(h);
       await this.fetchHabbitsData();
+    },
+
+    async shareHabbit(nickname, habbitId) {
+      console.log('Sharing habbit:', habbitId, 'with:', nickname)
+      const token = await this.auth0.getAccessTokenSilently()
+
+      try {
+        const response = await axios.post(`${backendUrl}/shareHabbit`, {
+          nickname: nickname,
+          habbitId: habbitId,
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+        console.log('Invite response:', response)
+      } catch (error) {
+        console.error('Failed to invite friend:', error)
+      }
     },
 
     async deleteHabbit(habbitId) {

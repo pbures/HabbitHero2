@@ -8,21 +8,34 @@
         <div class="form-value">{{ user.email }}</div>
         <div class="form-label">Nickname:</div>
         <div class="form-value">{{ user.nickname }}</div>
-        <div class="clickable form-label form-span2" @click="switchToEdit">Edit</div>
+        <div class="clickable form-label form-span2" id="edit-button" @click="switchToEdit">Edit</div>
       </div>
       <div class="content-container">
         <h2>Invitations Received</h2>
-        <ul>
-          <li v-for="invitation in user.invites_received">
-            {{ userIdtoNickname(invitation) }}
+        <ul id="invitations-received">
+          <li v-for="userId in user.invites_received" :key="userId">
+            {{ userIdtoNickname(userId) }}
+            <label class="switch">
+              <input type="checkbox" @change="toggleInvite(userId, $event.target.checked)"/>
+              <span class="slider round"></span>
+            </label>
           </li>
         </ul>
       </div>
 
       <div class="content-container">
         <h2>Invitations Sent</h2>
-        <ul>
+        <ul id="invitations-sent">
           <li v-for="is in user.invites_sent">
+            {{ userIdtoNickname(is) }}
+          </li>
+        </ul>
+      </div>
+
+      <div class="content-container">
+        <h2>Friends</h2>
+        <ul id="friends-list">
+          <li v-for="is in user.friends">
             {{ userIdtoNickname(is) }}
           </li>
         </ul>
@@ -71,6 +84,18 @@ const sendInvite = () => {
   })
 }
 
+const toggleInvite = (userId, checked) => {
+  console.log(`Toggling invite for ${userId} to ${checked}`)
+
+  if(checked) {
+    userStore.acceptInvite(userIdtoNickname(userId)).then(() => {
+      userStore.fetchUser();
+    })
+  } else {
+    console.log('Decline');
+  }
+}
+
 const switchToEdit = () => {
   router.push({ name: 'userprofile' });
 }
@@ -91,5 +116,23 @@ watch(user, (newValue) => {
 .has-error {
   color: red;
   box-shadow: 0 0 5px red;
+}
+button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #45a049;
 }
 </style>
