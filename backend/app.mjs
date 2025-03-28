@@ -279,13 +279,13 @@ app.put('/accept', checkJwt, async (req, res) => {
   let requestedUserId = requestedUser.user_id;
   // chceck if the user isn't already a friend
   let user = await myMongoDBUserManager.findOne({ user_id: userId });
-  await myMongoDBUserManager.deleteFromArray(userId, 'invites_received', requestedUserId);
 
   let isFriend = user.friends.includes(requestedUserId);
   if(isFriend) {
     res.status(409).json({ message: 'You are already friends' });
     return;
   }
+
   // update
   await myMongoDBUserManager.push({user_id: requestedUserId}, userId, 'friends');
   await myMongoDBUserManager.push({ user_id: userId }, requestedUserId, 'friends');
