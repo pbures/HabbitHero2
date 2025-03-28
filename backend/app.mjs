@@ -284,7 +284,9 @@ app.put('/accept', checkJwt, async (req, res) => {
     res.status(409).json({ message: 'You are already friends' });
     return;
   }
+  await myMongoDBUserManager.deleteFromArray(userId, 'invites_recieved', requestedUserId);
   await myMongoDBUserManager.deleteFromArray(userId, 'invites_sent', requestedUserId);
+  await myMongoDBUserManager.deleteFromArray(requestedUserId, 'invites_sent', userId);
   await myMongoDBUserManager.deleteFromArray(requestedUserId, 'invites_recieved', userId);
   // update
   await myMongoDBUserManager.push({user_id: requestedUserId}, userId, 'friends');
