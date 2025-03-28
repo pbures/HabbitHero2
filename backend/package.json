@@ -5,6 +5,7 @@
   "scripts": {
     "pretest": "docker run --name test-mongo -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=welcome1 mongo",
     "test": "vitest run",
+    "rem": "docker rm -f test-mongo",
     "posttest": "docker stop test-mongo",
     "dev": "node main.mjs",
     "dockerbuild": "docker build -t h2be-backend .",

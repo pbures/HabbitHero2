@@ -252,8 +252,8 @@ app.put('/invite', checkJwt, async (req, res) => {
     return;
   }else if (requestedUser.invites_sent.includes(userId)) {
     // If 2 users send each other an invite, they become friends
-    await myMongoDBUserManager.deleteFromArray(userId, 'invites_recieved', requestedUserId);
-    await myMongoDBUserManager.deleteFromArray(requestedUserId, 'invites_sent', userId);
+    await myMongoDBUserManager.deleteFromArray(userId, 'invites_sent', requestedUserId);
+    await myMongoDBUserManager.deleteFromArray(requestedUserId, 'invites_recieved', userId);
     // update
     await myMongoDBUserManager.push({user_id: requestedUserId}, userId, 'friends');
     await myMongoDBUserManager.push({ user_id: userId }, requestedUserId, 'friends');
@@ -284,8 +284,8 @@ app.put('/accept', checkJwt, async (req, res) => {
     res.status(409).json({ message: 'You are already friends' });
     return;
   }
-  await myMongoDBUserManager.deleteFromArray(userId, 'invites_recieved', requestedUserId);
-  await myMongoDBUserManager.deleteFromArray(requestedUserId, 'invites_sent', userId);
+  await myMongoDBUserManager.deleteFromArray(userId, 'invites_sent', requestedUserId);
+  await myMongoDBUserManager.deleteFromArray(requestedUserId, 'invites_recieved', userId);
   // update
   await myMongoDBUserManager.push({user_id: requestedUserId}, userId, 'friends');
   await myMongoDBUserManager.push({ user_id: userId }, requestedUserId, 'friends');
@@ -326,7 +326,14 @@ app.get('/nicknames', checkJwt, async (req, res) => {
   res.send(ret);
 
 });
-
+app.put('/habbit_invite', checkJwt, async (req, res) => {
+  console.log('PUT request at /habbit_invite with body:', req.body, "query:", req.query);
+  const userId = req.auth.payload.sub
+  const requestedUserId = req.query.friend_id;
+  const habbit = req.body.habbit;
+  await myMongoDBManager.push({ _id: habbit._id}, userId, 'user_ids');
+  await myMongoDBManager.push({ _id: habbit._id }, requestedUserId, 'user_ids');
+});
 
 export default app;
 
