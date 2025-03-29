@@ -18,7 +18,8 @@
             </div>
             <div id="show-info" class="clickable" @click="showTaskStatistics(habbit)">&#9432;</div>
             <div id="delete" class="clickable" @click="deleteHabbit(habbit._id)">&#x1F5D1;</div>
-        </div>
+            <div id="invite" class="clickable" @click="toggleFriendsList()">&#x1F465;</div>
+          </div>
 
         <div v-if="habbit.type=='habbit'" class="habbit-stats">
           <div
@@ -37,14 +38,27 @@
           <div :style="{ width: goalRightWidth }" class="habbit-goal-stat-right" />
         </div>
 
+        <div v-if="showFriendsList" class="friends-list">
+          <div v-for="f in user.friends" :key="f.id" class="friend">
+            <div>{{ userIdToNickname(f) }}
+              <em class="clickable" @click="shareHabbit(f, habbit._id)">
+                &#x2192;
+              </em>
+            </div>
+          </div>
+        </div>
+
 
     </div>
 </template>
 
 <script setup>
-    import { useHabbitStore } from '@/stores/task'
-    import { toRefs, ref, computed } from 'vue';
-    import { findPreviousDays, getDateStr, getDayMonthStr } from '@/utils/findDates'
+import { useHabbitStore } from '@/stores/task';
+import { useUserStore } from '@/stores/user';
+import { storeToRefs } from 'pinia';
+
+import { findPreviousDays, getDateStr, getDayMonthStr } from '@/utils/findDates';
+import { computed, ref, toRefs } from 'vue';
 
     const props = defineProps(['habbit','selectedHabbit']);
     const emit = defineEmits(['update-habbit-detail']);
@@ -85,7 +99,27 @@
       return ret;
     }
 
+    function shareHabbit(userId, habbit_id) {
+      console.log(`Invite friend: ${userId} to habbit with id: ${habbit_id}`);
+      habbitStore.shareHabbit(userIdToNickname(userId), habbit_id);
+    }
+
     const habbitStore = useHabbitStore()
+
+    const showFriendsList = ref(false);
+    const userStore = useUserStore()
+    const { user, error, exists } = storeToRefs(userStore);
+
+    userStore.fetchUser()
+
+    const toggleFriendsList = () =>{
+      showFriendsList.value = !showFriendsList.value;
+      console.log('Toggle friends list:', showFriendsList.value);
+    }
+
+    function userIdToNickname(userId) {
+      return userStore.userIdtoNickname(userId);
+    }
 
     function habbitStatClass(eventDone){
       return eventDone?"event-met":"event-not-met";
