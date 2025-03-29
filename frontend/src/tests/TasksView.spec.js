@@ -1,11 +1,11 @@
+import * as auth0 from '@auth0/auth0-vue';
 import { mount } from '@vue/test-utils';
-import { describe, it, expect, beforeAll, vi } from 'vitest';
-import * as auth0 from '@auth0/auth0-vue'
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { createTestingPinia } from '@pinia/testing';
 
+import { Task } from '@/model/task.mjs';
 import TasksView from '@/views/TasksView.vue';
-import { Task } from '@/model/task';
 
 import { useHabbitStore } from '@/stores/task';
 

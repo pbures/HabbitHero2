@@ -3,6 +3,7 @@ import { createServer } from 'http';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import app from '../app.mjs'; // Adjust the path to your main.mjs file
+import Task from '../frontend/src/model/task.mjs';
 
 import MongoDBManager from './mongoDBManager.mjs';
 import MongoDBUserManager from './mongoDBUserManager.mjs';
@@ -28,12 +29,27 @@ afterAll((done) => {
 
 describe('API Tests habbits', () => {
 
-
-  it('should update habit on PUT /habbit', async () => {
+  it('should return habbits', async () => {
     const habitData = {
       name: 'Test Habit',
       description: 'This is a test habit'
     }
+
+    const response = await request(server)
+    .put('/habbit')
+    .set('Authorization',  `Bearer ${testJWT}`)
+    .send(habitData)
+    .expect(200)
+
+    const response2 = await request(server)
+    .get('/habbits')
+    .set('Authorization',  `Bearer ${testJWT}`)
+    .send(habitData)
+    .expect(200)
+  });
+
+  it('should update habit on PUT /habbit', async () => {
+    const habbit = Task.create
 
     const response = await request(server)
       .put('/habbit')

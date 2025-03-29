@@ -3,7 +3,7 @@ import { getDateStr } from '@/utils/findDates.js'
 import { useAuth0 } from '@auth0/auth0-vue'
 import axios from 'axios'
 import { defineStore } from 'pinia'
-import { Task } from '../model/task.js'
+import { Task } from '../model/task.mjs'
 
 
 

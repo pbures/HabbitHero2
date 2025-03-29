@@ -1,6 +1,6 @@
 <script setup>
-import { Task } from '@/model/task';
-import { ref, defineProps, defineEmits } from 'vue';
+import { Task } from '@/model/task.mjs';
+import { defineEmits, defineProps, ref } from 'vue';
 
 const props = defineProps(['habbit']);
 const habbit = ref(props.habbit);
