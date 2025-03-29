@@ -49,12 +49,12 @@ describe('API Tests habbits', () => {
   });
 
   it('should update habit on PUT /habbit', async () => {
-    const habbit = Task.create
+    const habbit = Task.createExampleInstance()
 
     const response = await request(server)
       .put('/habbit')
       .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
-      .send(habitData)
+      .send(habbit)
       .expect(200)
 
     // Add your assertions here based on the expected response
@@ -63,10 +63,7 @@ describe('API Tests habbits', () => {
 
 
   it('should delete a habbit', async () => {
-    const habitData = {
-      name: 'Test Habit',
-      description: 'This is a test habit'
-    }
+    const habitData = Task.createExampleInstance();
 
     const response = await request(server)
     .put('/habbit')

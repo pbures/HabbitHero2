@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { createTestingPinia } from '@pinia/testing';
 
-import { Task } from '@/model/task.mjs';
+import Task from '@/model/task.mjs';
 import TasksView from '@/views/TasksView.vue';
 
 import { useHabbitStore } from '@/stores/task';

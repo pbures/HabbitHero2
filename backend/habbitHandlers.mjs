@@ -8,14 +8,14 @@ function useHabbitHandlers(app, checkJwt, myMongoDBManager) {
     console.log(`userId: ${userId}`);
     console.log(`GET request at /habbits from user id: ${userId}`);
 
-    const taskSchema = Task.getJsonSchema()
-    const ajvInstance = new ajv();
-    const validate = ajvInstance.compile(taskSchema);
+    // const taskSchema = Task.getJsonSchema()
+    // const ajvInstance = new ajv();
+    // const validate = ajvInstance.compile(taskSchema);
 
-    if(!validate(req.bod)) {
-      console.log('Validation error on task object: ', req.body);
-      return res.status(400).json( {message: 'Validation errors', errors: validate.errors});
-    }
+    // if(!validate(req.body)) {
+    //   console.log('Validation error on task object: ', req.body);
+    //   return res.status(400).json( {message: 'Validation errors', errors: validate.errors});
+    // }
 
     const habbits = await myMongoDBManager.find({ user_ids: { $in: [userId] } });
     res.status(200).json(habbits);
@@ -27,8 +27,7 @@ function useHabbitHandlers(app, checkJwt, myMongoDBManager) {
 
     let habbit = null;
     if (req.body._id !== undefined) {
-      let objectId = new ObjectId(req.body._id);
-      habbit = (await myMongoDBManager.find({_id: objectId}))[0];
+      habbit = (await myMongoDBManager.find({_id:req.body._id}))[0];
       console.log('Habbitttt', habbit);
     }
 

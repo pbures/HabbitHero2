@@ -1,5 +1,5 @@
 <script setup>
-import { Task } from '@/model/task.mjs';
+import Task from '@/model/task.mjs';
 import { useHabbitStore } from '@/stores/task';
 import { useAuth0 } from '@auth0/auth0-vue';
 import { onMounted, ref } from 'vue';
