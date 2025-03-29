@@ -53,6 +53,15 @@ class MongoDBManager {
     console.log('query:', query,'found this:', ret);
     return ret;
   }
+  async push(query, data, arrayName) {
+    const collection = this.userCollection;
+    const updateDoct = {
+      $push: {
+        [arrayName]: data
+      }
+    }
+    await collection.updateOne(query, updateDoct);
+  }
 }
 
 export default MongoDBManager;

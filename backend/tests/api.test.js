@@ -217,7 +217,6 @@ describe('API Tests users', () => {
     .query({nickname: 'nick-978'})
     .expect(404)
   })
-
   it('should accept invite on PUT /accept', async () => {
     const habitData = {
       name: 'Test Habit',
@@ -249,6 +248,55 @@ describe('API Tests users', () => {
     expect(response.body.friends).toContain('fakeAuth-123');
 
   })
+
+  it.skip('should accept invite on PUT /accept and remove from invites sent or accepted', async () => {
+
+    /* First send an invite from user 123 to user 321 */
+    await request(server)
+      .put('/invite')
+      .set('Authorization',  `Bearer ${testJWT}`)
+      .set('testUserId', 'fakeAuth-321')
+      .query({nickname: 'nick-123'})
+      .expect(200)
+
+    /* Accept the invite */
+    const responseR = await request(server)
+      .put('/accept')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-123')
+      .query({nickname: 'nick-321'})
+      .expect(200)
+
+    expect(responseR.body).toHaveProperty('message', 'Invitation accepted successfully')
+
+    /* Verify that only the friends field is populated. Sent and invite fields should be empty */
+    /* Load the friends */
+    const user123 = await request(server)
+    .get('/user')
+    .set('Authorization', `Bearer ${testJWT}`)
+    .set('testUserId', 'fakeAuth-123')
+    .expect(200)
+
+    const user321 = await request(server)
+    .get('/user')
+    .set('Authorization', `Bearer ${testJWT}`)
+    .set('testUserId', 'fakeAuth-321')
+    .expect(200)
+
+    expect(user123.body).toHaveProperty('friends');
+    expect(user123.body).toHaveProperty('invites_sent')
+    expect(user123.body).toHaveProperty('invites_received');
+
+    expect(user123.body.invites_sent.length).toEqual(0);
+    expect(user321.body.invites_sent.length).toEqual(0);
+
+    expect(user123.body.invites_received.length).toEqual(0);
+    expect(user321.body.invites_received.length).toEqual(0);
+
+    expect(user123.body.friends).toContain('fakeAuth-321');
+    expect(user321.body.friends).toContain('fakeAuth-123');
+  })
+
   it('should return 409 if user is already invited on PUT /invite', async () => {
     const habitData = {
       name: 'Test Habit',
