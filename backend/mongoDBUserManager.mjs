@@ -56,9 +56,9 @@ class MongoDBUserManager {
     const collection = this.userCollection;
     await collection.updateOne(
       { user_id: user_id },
-      { $pull: { [arrayName]: { user_id: friend_id } } }
+      { $pull: { [arrayName]: friend_id } }
    )
-   
+
   }
   async find(query = {}) {
     console.log('trying to find a user with query:', query);

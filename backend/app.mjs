@@ -7,6 +7,7 @@ import { auth } from 'express-oauth2-jwt-bearer';
 import { ObjectId } from 'mongodb';
 import MongoDBManager from './mongoDBManager.mjs';
 import MongoDBUserManager from './mongoDBUserManager.mjs';
+import useUserHandlers from './userHandlers.mjs';
 
 import ajv from 'ajv';
 import path from 'path';
@@ -14,6 +15,7 @@ import { fileURLToPath } from 'url';
 
 import { error } from 'console';
 import User from '../frontend/src/model/user.mjs';
+
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -72,50 +74,14 @@ try {
   process.exit(1);
 }
 
+useUserHandlers(app, checkJwt, myMongoDBUserManager);
+
 app.get('/habbits', checkJwt, async (req, res) => {
   const userId = req.auth.payload.sub
   console.log(`userId: ${userId}`);
-
-  /* Keep this for reference. The code uses the /userinfo endpoint of the Auth0 to get the user
-   * info such as email. This is not needed right now, since the auth0 adds the email to the
-   * JWT token issued when user authenticates at the frontend app.
-   */
-  /*
-  const token = req.headers.authorization.split(' ')[1];
-  console.log("token:", token);
-  */
-  /*
-  const userinfo = req.auth.payload.aud[1]
-  const response = await axios.get(userinfo, {
-    headers: {
-      Authorization: `Bearer ${token}`, // Pass the Bearer token
-    },
-  });
-  console.log("userinfo response:", response);
-  */
-
   console.log(`GET request at /habbits from user id: ${userId}`);
   const habbits = await myMongoDBManager.find({ user_ids: { $in: [userId] } });
   res.status(200).json(habbits);
-});
-
-app.get('/user', checkJwt, async (req, res) => {
-  const userId = req.auth.payload.sub
-  const email = req.auth.payload.email
-
-  console.log(`GET request at /user from user ${userId} with email ${email}`);
-  const user =  await myMongoDBUserManager.findOne({
-    $or: [
-      { user_id: userId },
-      { email: email }
-    ]
-  });
-  console.log(`Sending back: `, JSON.stringify(user))
-  if (user) {
-    res.send(user);
-  } else {
-    res.status(404).json({ message: 'User not found' });
-  }
 });
 
 app.put('/habbit', checkJwt, async (req, res) => {
@@ -160,6 +126,7 @@ app.delete('/habbit', checkJwt, (req, res) => {
   res.status(200).json({ message: 'Habbit deleted successfully' });
 });
 
+<<<<<<< HEAD
 app.put('/user', checkJwt, async (req, res) => {
   // I dont know if this will work, because we now in the user have user_id and not _id
   // const userId = req.auth.payload.sub
@@ -332,6 +299,8 @@ app.get('/nicknames', checkJwt, async (req, res) => {
   res.send(ret);
 
 });
+=======
+>>>>>>> 541d55c8228f8d2e127c36474f91152418002333
 app.put('/habbit_invite', checkJwt, async (req, res) => {
   console.log('PUT request at /habbit_invite with body:', req.body, "query:", req.query);
   const userId = req.auth.payload.sub
