@@ -3,6 +3,7 @@ import { createServer } from 'http';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import app from '../app.mjs'; // Adjust the path to your main.mjs file
+import Task from '../frontend/src/model/task.mjs';
 
 import MongoDBManager from './mongoDBManager.mjs';
 import MongoDBUserManager from './mongoDBUserManager.mjs';
@@ -28,17 +29,32 @@ afterAll((done) => {
 
 describe('API Tests habbits', () => {
 
-
-  it('should update habit on PUT /habbit', async () => {
+  it('should return habbits', async () => {
     const habitData = {
       name: 'Test Habit',
       description: 'This is a test habit'
     }
 
     const response = await request(server)
+    .put('/habbit')
+    .set('Authorization',  `Bearer ${testJWT}`)
+    .send(habitData)
+    .expect(200)
+
+    const response2 = await request(server)
+    .get('/habbits')
+    .set('Authorization',  `Bearer ${testJWT}`)
+    .send(habitData)
+    .expect(200)
+  });
+
+  it('should update habit on PUT /habbit', async () => {
+    const habbit = Task.createExampleInstance()
+
+    const response = await request(server)
       .put('/habbit')
       .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
-      .send(habitData)
+      .send(habbit)
       .expect(200)
 
     // Add your assertions here based on the expected response
@@ -47,10 +63,7 @@ describe('API Tests habbits', () => {
 
 
   it('should delete a habbit', async () => {
-    const habitData = {
-      name: 'Test Habit',
-      description: 'This is a test habit'
-    }
+    const habitData = Task.createExampleInstance();
 
     const response = await request(server)
     .put('/habbit')
@@ -67,9 +80,7 @@ describe('API Tests habbits', () => {
     // console.log(response2.body[0]._id)
     const response3 = await request(server)
       .delete('/habbit')
-      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
-      .send(habitData)
-      .query({habbitId: response2.body[0]._id})
+      .set('Authorization',  `Bearer ${testJWT}`)
       .expect(200)
 
     // Add your assertions here based on the expected response

@@ -1,25 +1,61 @@
 /* An example data item of a single habbit */
 
-export class Task {
-    constructor() {
-        this._id;
-        this.schema_version = "1.0";
-        this.title = "";
-        this.description = "";
-        this.user_ids = [];
-        this.type = "habbit";
-        this.expiration_date = "";
-        this.target = undefined
-        this.numer_of_events_in_one_go = undefined
-        this.status = "";
-        this.status_date = "";
-        this.events = [];
-        this.total_event_count = 0;
+class Task {
+    constructor(
+      { _id = null,
+        schema_version = "1.0",
+        title,
+        description,
+        user_ids = [],
+        type = "habbit",
+        expiration_date = "",
+        target,
+        numer_of_events_in_one_go,
+        status = "",
+        status_date = "",
+        events = [],
+        total_event_count = 0,
+        habbit_interval = "days_in_week",
+        days_in = [],
+      } = {}
+    ) {
+        this._id = _id;
+        this.schema_version = schema_version;
+        this.title = title;
+        this.description = description;
+        this.user_ids = user_ids;
+        this.type = type;
+        this.expiration_date = expiration_date;
+        this.target = target;
+        this.numer_of_events_in_one_go = numer_of_events_in_one_go;
+        this.status = status;
+        this.status_date = status_date;
+        this.events = events;
+        this.total_event_count = total_event_count;
 
-        this.habbit_interval = "days_in_week";
-        this.days_in = [];  //Selected days (numbers 1 .. 7, where 0 = Monday or days in Month where 1 .. 31 are the days)
+        this.habbit_interval = habbit_interval;
+        this.days_in = days_in;
+    };
+
+    static createExampleInstance() {
+      return new Task({
+        title: "Example title",
+        description: "Example habbit and tasks",
+      })
     }
+
+    static getJsonSchema(){
+      return {
+        type: "object",
+        properties: {
+          _id: { type: "integer" },
+          schema_version: { type: "string" },
+        }
+      }
+    };
 }
+
+export default Task;
 
 /*
 Habbit:
