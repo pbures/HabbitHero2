@@ -19,6 +19,11 @@ function useHabbitHandlers(app, checkJwt, myMongoDBManager) {
     // }
 
     const habbits = await myMongoDBManager.find({ user_ids: { $in: [userId] } });
+    const user = await myMongoDBManager.findOne({ user_id: userId });
+    for(const friend_id of user.friends) {
+      const friendsHabbit = await myMongoDBManager.find({ user_ids: { $in: [friend_id] } });
+      habbits.push(friendsHabbit);
+    }
     res.status(200).json(habbits);
   });
 
