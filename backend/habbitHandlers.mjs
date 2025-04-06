@@ -18,7 +18,7 @@ function useHabbitHandlers(app, checkJwt, myMongoDBManager) {
     //   return res.status(400).json( {message: 'Validation errors', errors: validate.errors});
     // }
 
-    const habbits = await myMongoDBManager.find({ user_ids: { $in: [userId] } });
+    let habbits = await myMongoDBManager.find({ user_ids: { $in: [userId] } });
     const user = await myMongoDBManager.findOne({ user_id: userId });
     if (user && user.friends) {
       for(const friend_id of user.friends) {
@@ -26,6 +26,14 @@ function useHabbitHandlers(app, checkJwt, myMongoDBManager) {
         habbits.push(friendsHabbit);
       }
     }
+
+    const habbitsOfFriends = await myMongoDBManager.find({ observer_ids: { $in: [userId] } });
+    console.log('HObserving habbits:', habbitsOfFriends);
+    if (habbitsOfFriends) {
+      habbits = [...habbits, ...habbitsOfFriends];
+    }
+
+    console.log('Habbits-1:', habbits);
     res.status(200).json(habbits);
   });
 

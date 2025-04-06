@@ -115,6 +115,37 @@ describe('API Tests habbits', () => {
     // expect(response2.body).toBeDefined();
   });
 
+  it('should return habbits even of a friend that has sent an invite', async () => {
+
+    const habitDataOfUser123 = {
+      name: 'Test Habit',
+      description: 'This is a test habit',
+      observer_ids: ['fakeAuth-321']
+    }
+
+    createSampleUsers(server, testJWT);
+
+    //User 123 stores the habbit, setting the observer_ids to the user 321
+    const response = await request(server)
+    .put('/habbit')
+    .set('Authorization',  `Bearer ${testJWT}`)
+    .set('testUserId', 'fakeAuth-123')
+    .send(habitDataOfUser123)
+    .expect(200)
+
+    //User 321 asks for the habbits, he should see the habbit of user 123
+    const response2 = await request(server)
+    .get('/habbits')
+    .set('Authorization',  `Bearer ${testJWT}`)
+    .set('testUserId', 'fakeAuth-321')
+    .expect(200)
+
+    expect(response2.body).toBeDefined();
+    expect(response2.body.length).toBeGreaterThan(0);
+    const habbitOfUser123 = response2.body.find(habbit => habbit.user_ids.includes('fakeAuth-123'));
+    expect(habbitOfUser123.name).toEqual('Test Habit');
+  });
+
   it('should update habit on PUT /habbit', async () => {
     const habbit = Task.createExampleInstance()
 
