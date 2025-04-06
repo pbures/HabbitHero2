@@ -1,6 +1,6 @@
 import ajv from 'ajv';
-import Task from '../frontend/src/model/task.mjs';
 import { ObjectId } from 'mongodb';
+import Task from '../frontend/src/model/task.mjs';
 
 function useHabbitHandlers(app, checkJwt, myMongoDBManager) {
 
@@ -20,9 +20,11 @@ function useHabbitHandlers(app, checkJwt, myMongoDBManager) {
 
     const habbits = await myMongoDBManager.find({ user_ids: { $in: [userId] } });
     const user = await myMongoDBManager.findOne({ user_id: userId });
-    for(const friend_id of user.friends) {
-      const friendsHabbit = await myMongoDBManager.find({ user_ids: { $in: [friend_id] } });
-      habbits.push(friendsHabbit);
+    if (user && user.friends) {
+      for(const friend_id of user.friends) {
+        const friendsHabbit = await myMongoDBManager.find({ user_ids: { $in: [friend_id] } });
+        habbits.push(friendsHabbit);
+      }
     }
     res.status(200).json(habbits);
   });
