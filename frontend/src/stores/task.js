@@ -163,7 +163,7 @@ export const useHabbitStore = defineStore('habbit', {
       try {
         const response = await axios.put(`${backendUrl}/habbit_invite`, {
           friend_id: friendId,
-          habbitId: habbitId,
+          habbit_id: habbitId,
         }, {
           headers: {
             Authorization: `Bearer ${token}`

@@ -17,6 +17,7 @@ class Task {
         total_event_count = 0,
         habbit_interval = "days_in_week",
         days_in = [],
+        observer_ids = [],
       } = {}
     ) {
         this._id = _id;
@@ -32,6 +33,7 @@ class Task {
         this.status_date = status_date;
         this.events = events;
         this.total_event_count = total_event_count;
+        this.observer_ids = observer_ids;
 
         this.habbit_interval = habbit_interval;
         this.days_in = days_in;

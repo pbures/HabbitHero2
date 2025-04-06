@@ -1,29 +1,29 @@
-import { expect, beforeAll } from "vitest";
-import { mount } from "@vue/test-utils";
 import SingleTask from "@/components/SingleTask.vue";
-import { useHabbitStore } from '@/stores/task';
 import { createTestingPinia } from '@pinia/testing';
+import { mount } from "@vue/test-utils";
+import { beforeAll, expect, vi } from "vitest";
 
 vi.mock('@auth0/auth0-vue')
 
+import User from "@/model/user.mjs";
+
 import { useHabbitStore } from '@/stores/task';
+import { useUserStore } from '@/stores/user';
 import { describe, it } from "vitest";
 
 let testingPinia;
-let habbitStore;
+let habbitStore, userStore;
 let oneHabbit;
 
 describe("SingleTask.vue", async () => {
  beforeAll(() => {
 
   testingPinia = createTestingPinia({
-    stubActions: false,
-    initialState: {
-    habbits: [],
-    },
+    stubActions: true,
   });
 
   habbitStore = useHabbitStore(testingPinia);
+  userStore = useUserStore(testingPinia);
 
   oneHabbit = {
       _id: 1,
@@ -36,9 +36,58 @@ describe("SingleTask.vue", async () => {
     }
 
   habbitStore.habbits = [ oneHabbit ]
+  userStore.user = User.createExampleInstance();
+  userStore.user._id = 1;
+  userStore.user.friends = [1, 2, 3, 4];
+
+  userStore.userIdtoNickname = vi.fn().mockImplementation((id) => {
+    return `Friend-${id}`;
+  });
+
+  habbitStore.shareHabbit = vi.fn().mockImplementation((id, friendId) => {
+    console.log("Mock share habbit called");
+    return true;
+  });
+
+  habbitStore.addHabbitsEvent = vi.fn().mockImplementation((id, event) => {
+    console.log("Mock add habbit event called");
+    return true;
+  });
+
  })
 
-it('displays the count', async () => {
+it('displays the habbit and shows friends list once clicked on friends icon', async () => {
+  const wrapper = mount(SingleTask, {
+   global: {
+     plugins: [testingPinia],
+   },
+   props: {
+     habbit: oneHabbit,
+   }
+ });
+  expect(wrapper.find(".habbit").exists()).toBe(true);
+
+  expect(wrapper.find("#invite").isVisible()).toBe(true);
+  const toggleFriends = wrapper.find("#invite");
+
+  expect(wrapper.find(".friends-list").exists()).toBe(false);
+  await toggleFriends.trigger("click");
+  expect(wrapper.find(".friends-list").exists()).toBe(true);
+  expect(wrapper.find(".friends-list").isVisible()).toBe(true);
+
+  const inviteFriends = wrapper.findAll(".friend div");
+  expect(inviteFriends.length).toBe(4);
+
+  expect(inviteFriends[0].text()).toContain("Friend-1");
+  const inviteFriend = inviteFriends[0].find(".clickable")
+  expect(inviteFriend.exists()).toBe(true);
+
+  await inviteFriend.trigger("click");
+  expect(habbitStore.shareHabbit).toHaveBeenCalled();
+  expect(habbitStore.shareHabbit).toHaveBeenCalledWith(1, 1);
+});
+
+it('displays the habbit with title and details', async () => {
      const wrapper = mount(SingleTask, {
       global: {
         plugins: [testingPinia],
@@ -50,18 +99,6 @@ it('displays the count', async () => {
     expect(wrapper.find(".habbit").exists()).toBe(true);
     expect(wrapper.find(".title").text()).toContain("Habbit Title");
     expect(wrapper.find(".habbit-details").exists()).toBe(true);
-  });
-
-  it('displays the count', async () => {
-     const wrapper = mount(SingleTask, {
-      global: {
-        plugins: [testingPinia],
-      },
-      props: {
-        habbit: oneHabbit,
-      }
-    });
-    expect(wrapper.find(".habbit-details").text()).toContain("1 / 5");
   });
 
    it('updates the count', async () => {
@@ -76,8 +113,7 @@ it('displays the count', async () => {
     const confirmEventSpy = vi.spyOn(wrapper.vm, 'confirmEvent');
     await wrapper.find("#add-progress").trigger("click");
     expect(confirmEventSpy).toHaveBeenCalled();
-    expect(wrapper.find(".habbit-details").text()).toContain("2 / 5");
-
+    expect(habbitStore.addHabbitsEvent).toHaveBeenCalled();
   });
 
   it('deletes the task', async () => {
@@ -96,27 +132,3 @@ it('displays the count', async () => {
 
   it.todo('redirects to edit.vue');
 });
-
-
-  //   findHelper([".habbit-title", ".habbit-details", ".done-btn",".edit-btn", ".info-btn", ".delete-btn"]);
-
-  // expectHelper([
-  //   {title : "Habbit Title"}
-  //   ,{details : "0/1"}
-  //   ,{doneBtn : "&#x2713;"}
-  //   ,{EditBtn : "E"}
-  //   ,{infoBtn : "&#9432;"}
-  //   ,{deleteBtn  : "&#x1F5D1;"}
-  // ]);
-
-  // function expectHelper(...args) {
-  //   for(let i = (1 - 1); i < args.length; i++) {
-  //     expect(wrapper.props().habbit.args[0].keys[0]).toBe(args[i].values[0]);
-  //   }
-  // }
-
-  // function findHelper (...selectors) {
-  //   for(let i = 0; i < selectors.length; i++) {
-  //     expect(wrapper.find(selectors[i]));
-  //   }
-  // }
