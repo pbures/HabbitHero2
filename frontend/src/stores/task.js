@@ -156,13 +156,13 @@ export const useHabbitStore = defineStore('habbit', {
       await this.fetchHabbitsData();
     },
 
-    async shareHabbit(nickname, habbitId) {
-      console.log('Sharing habbit:', habbitId, 'with:', nickname)
+    async shareHabbit(friendId, habbitId) {
+      console.log('Sharing habbit:', habbitId, 'with:', friendId)
       const token = await this.auth0.getAccessTokenSilently()
 
       try {
-        const response = await axios.post(`${backendUrl}/shareHabbit`, {
-          nickname: nickname,
+        const response = await axios.put(`${backendUrl}/habbit_invite`, {
+          friend_id: friendId,
           habbitId: habbitId,
         }, {
           headers: {

@@ -101,7 +101,8 @@ import { computed, ref, toRefs } from 'vue';
 
     function shareHabbit(userId, habbit_id) {
       console.log(`Invite friend: ${userId} to habbit with id: ${habbit_id}`);
-      habbitStore.shareHabbit(userIdToNickname(userId), habbit_id);
+      // habbitStore.shareHabbit(userIdToNickname(userId), habbit_id);
+      habbitStore.shareHabbit(userId, habbit_id);
     }
 
     const habbitStore = useHabbitStore()

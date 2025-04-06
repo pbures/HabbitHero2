@@ -111,7 +111,7 @@ describe('API Tests habbits', () => {
     .set('Authorization',  `Bearer ${testJWT}`)
     .send(habitData)
     .expect(200)
-    
+
     // expect(response2.body).toBeDefined();
   });
 
@@ -170,7 +170,7 @@ describe('API Tests habbits', () => {
       .set('Authorization',  `Bearer ${testJWT}`)
       .set('testUserId', 'fakeAuth-321')
       .expect(200)
-    
+
     habitData._id = responseHabibi1.body[0]._id;
     /* First send an invite from user 123 to user 321 */
     await request(server)
@@ -192,7 +192,7 @@ describe('API Tests habbits', () => {
       .put('/habbit_invite')
       .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
       .set('testUserId', 'fakeAuth-321')
-      .send({friend_id: 'fakeAuth-123', habbit: habitData})
+      .send({friend_id: 'fakeAuth-123', habbit_id: habitData._id})
       .expect(200)
 
     const responseHabibi = await request(server)
@@ -211,7 +211,7 @@ describe('API Tests habbits', () => {
 
     expect(invitedHabbit.user_ids).toContain('fakeAuth-321');
     expect(invitedHabbit.observer_ids).toContain('fakeAuth-123');
-    
+
   }, 1500)
   it('should accept habbit invite on PUT /habbit_invite', async () => {
     let habitData = Task.createExampleInstance();
@@ -231,7 +231,7 @@ describe('API Tests habbits', () => {
       .set('Authorization',  `Bearer ${testJWT}`)
       .set('testUserId', 'fakeAuth-321')
       .expect(200)
-    
+
     habitData._id = responseHabibi1.body[0]._id;
     /* First send an invite from user 123 to user 321 */
     await request(server)
@@ -253,7 +253,7 @@ describe('API Tests habbits', () => {
       .put('/habbit_invite')
       .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
       .set('testUserId', 'fakeAuth-321')
-      .send({friend_id: 'fakeAuth-123', habbit: habitData})
+      .send({friend_id: 'fakeAuth-123', habbit_id: habitData._id})
       .expect(200)
 
     const responseHabibi = await request(server)
@@ -272,7 +272,7 @@ describe('API Tests habbits', () => {
 
     expect(invitedHabbit.user_ids).toContain('fakeAuth-321');
     expect(invitedHabbit.observer_ids).toContain('fakeAuth-123');
-    
+
   }, 1500)
 }, 500)
 

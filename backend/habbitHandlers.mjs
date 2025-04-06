@@ -74,9 +74,9 @@ function useHabbitHandlers(app, checkJwt, myMongoDBManager) {
     console.log('PUT request at /habbit_invite with body:', req.body, "query:", req.query);
     const userId = req.auth.payload.sub
     const requestedUserId = req.body.friend_id;
-    const habbit = req.body.habbit;
+    const habbitId = req.body.habbit_id;
     // await myMongoDBManager.push({ _id: new ObjectId(habbit._id)}, userId, 'user_ids');
-    await myMongoDBManager.push({ _id: new ObjectId(habbit._id) }, requestedUserId,'observer_ids');
+    await myMongoDBManager.push({ _id: new ObjectId(habbitId) }, requestedUserId,'observer_ids');
 
     res.status(200).json({ message: 'Habbit invited successfully' });
   });
