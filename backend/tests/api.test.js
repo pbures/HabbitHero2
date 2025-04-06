@@ -13,12 +13,70 @@ let testJWT
 
 const uri = process.env.MONGODB_CONNECTION_STRING;
 
-const myMongoDBManager = new MongoDBManager(uri);
-const myMongoDBUserManager = new MongoDBUserManager(uri);
+let myMongoDBManager = undefined
+let myMongoDBUserManager = undefined;
+
+async function createSampleUsers(server, testJWT) {
+  const user1 = {
+    name: 'Nick 123',
+    nickname: 'nick-123',
+    email: 'nick123@example.com',
+    schema_version: '1.0',
+    invites_sent: [],
+    invites_received: [],
+    friends: []
+  }
+
+  const user3 = {
+    name: 'Nick 234',
+    nickname: 'nick-234',
+    email: 'nick234@example.com',
+    schema_version: '1.0',
+    invites_sent: [],
+    invites_received: [],
+    friends: []
+  }
+
+  const user2 = {
+    name: 'Nick 321',
+    nickname: 'nick-321',
+    email: 'nick321@example.com',
+    schema_version: '1.0',
+    invites_sent: [],
+    invites_received: [],
+    friends: []
+  }
+
+  const response1 = await request(server)
+  .put('/user')
+  .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+  .set('testUserId', 'fakeAuth-123')
+  .send(user1)
+  .expect(200)
+
+  const response2 = await request(server)
+  .put('/user')
+  .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+  .set('testUserId', 'fakeAuth-321')
+  .send(user2)
+  .expect(200)
+
+  const response3 = await request(server)
+  .put('/user')
+  .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+  .set('testUserId', 'fakeAuth-234')
+  .send(user3)
+  .expect(200)
+
+  console.log('added users')
+}
 
 beforeAll((done) => {
   server = createServer(app)
-  server.listen(3001, done)
+  server.listen(3002, done)
+
+  myMongoDBManager = new MongoDBManager(uri);
+  myMongoDBUserManager = new MongoDBUserManager(uri)
 
   testJWT = "testingToken"
 })
@@ -29,10 +87,17 @@ afterAll((done) => {
 
 describe('API Tests habbits', () => {
 
+  beforeEach(async () => {
+    await myMongoDBManager.database.dropCollection('habbits');
+    await myMongoDBUserManager.database.dropCollection('users');
+    await createSampleUsers(server, testJWT);
+  });
+
   it('should return habbits', async () => {
     const habitData = {
       name: 'Test Habit',
-      description: 'This is a test habit'
+      description: 'This is a test habit',
+      user_ids: []
     }
 
     const response = await request(server)
@@ -46,6 +111,8 @@ describe('API Tests habbits', () => {
     .set('Authorization',  `Bearer ${testJWT}`)
     .send(habitData)
     .expect(200)
+    
+    // expect(response2.body).toBeDefined();
   });
 
   it('should update habit on PUT /habbit', async () => {
@@ -85,7 +152,129 @@ describe('API Tests habbits', () => {
 
     // Add your assertions here based on the expected response
   })
-})
+  it('should return friends habbits', async () => {
+    let habitData = Task.createExampleInstance();
+    // habitData.user_ids = ['fakeAuth-123'];
+    // habitData._id = 'habibi123';
+    habitData.observer_ids = [];
+
+    await request(server)
+      .put('/habbit')
+      .set('Authorization',  `Bearer ${testJWT}`)
+      .set('testUserId', 'fakeAuth-321')
+      .send(habitData)
+      .expect(200)
+
+    const responseHabibi1 = await request(server)
+      .get('/habbits')
+      .set('Authorization',  `Bearer ${testJWT}`)
+      .set('testUserId', 'fakeAuth-321')
+      .expect(200)
+    
+    habitData._id = responseHabibi1.body[0]._id;
+    /* First send an invite from user 123 to user 321 */
+    await request(server)
+      .put('/invite')
+      .set('Authorization',  `Bearer ${testJWT}`)
+      .set('testUserId', 'fakeAuth-321')
+      .query({nickname: 'nick-123'})
+      .expect(200)
+
+    /* Accept the invite */
+    const responseR = await request(server)
+      .put('/accept')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-123')
+      .query({nickname: 'nick-321'})
+      .expect(200)
+
+    const responseRe = await request(server)
+      .put('/habbit_invite')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-321')
+      .send({friend_id: 'fakeAuth-123', habbit: habitData})
+      .expect(200)
+
+    const responseHabibi = await request(server)
+      .get('/habbits')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-321')
+      .expect(200)
+
+    expect(responseHabibi.body).toBeDefined();
+    expect(responseHabibi.body.length).toBeGreaterThan(0);
+
+    // Filter from the habbits that was invited, based on the habbitData._id
+    const invitedHabbit = responseHabibi.body.find(habit => habit._id === habitData._id);
+    expect(invitedHabbit).toBeDefined();
+    console.log(`Invited habbit: user_ids: `, invitedHabbit);
+
+    expect(invitedHabbit.user_ids).toContain('fakeAuth-321');
+    expect(invitedHabbit.observer_ids).toContain('fakeAuth-123');
+    
+  }, 1500)
+  it('should accept habbit invite on PUT /habbit_invite', async () => {
+    let habitData = Task.createExampleInstance();
+    // habitData.user_ids = ['fakeAuth-123'];
+    // habitData._id = 'habibi123';
+    habitData.observer_ids = [];
+
+    await request(server)
+      .put('/habbit')
+      .set('Authorization',  `Bearer ${testJWT}`)
+      .set('testUserId', 'fakeAuth-321')
+      .send(habitData)
+      .expect(200)
+
+    const responseHabibi1 = await request(server)
+      .get('/habbits')
+      .set('Authorization',  `Bearer ${testJWT}`)
+      .set('testUserId', 'fakeAuth-321')
+      .expect(200)
+    
+    habitData._id = responseHabibi1.body[0]._id;
+    /* First send an invite from user 123 to user 321 */
+    await request(server)
+      .put('/invite')
+      .set('Authorization',  `Bearer ${testJWT}`)
+      .set('testUserId', 'fakeAuth-321')
+      .query({nickname: 'nick-123'})
+      .expect(200)
+
+    /* Accept the invite */
+    const responseR = await request(server)
+      .put('/accept')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-123')
+      .query({nickname: 'nick-321'})
+      .expect(200)
+
+    const responseRe = await request(server)
+      .put('/habbit_invite')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-321')
+      .send({friend_id: 'fakeAuth-123', habbit: habitData})
+      .expect(200)
+
+    const responseHabibi = await request(server)
+      .get('/habbits')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId', 'fakeAuth-321')
+      .expect(200)
+
+    expect(responseHabibi.body).toBeDefined();
+    expect(responseHabibi.body.length).toBeGreaterThan(0);
+
+    // Filter from the habbits that was invited, based on the habbitData._id
+    const invitedHabbit = responseHabibi.body.find(habit => habit._id === habitData._id);
+    expect(invitedHabbit).toBeDefined();
+    console.log(`Invited habbit: user_ids: `, invitedHabbit);
+
+    expect(invitedHabbit.user_ids).toContain('fakeAuth-321');
+    expect(invitedHabbit.observer_ids).toContain('fakeAuth-123');
+    
+  }, 1500)
+}, 500)
 
 describe('API Tests users', () => {
   beforeEach(async () => {
@@ -93,57 +282,7 @@ describe('API Tests users', () => {
     await myMongoDBUserManager.dropCollection('users');
     console.log('deleted users col.')
 
-    const user1 = {
-      name: 'Nick 123',
-      nickname: 'nick-123',
-      email: 'nick123@example.com',
-      schema_version: '1.0',
-      invites_sent: [],
-      invites_received: [],
-      friends: []
-    }
-
-    const user3 = {
-      name: 'Nick 234',
-      nickname: 'nick-234',
-      email: 'nick234@example.com',
-      schema_version: '1.0',
-      invites_sent: [],
-      invites_received: [],
-      friends: []
-    }
-
-    const user2 = {
-      name: 'Nick 321',
-      nickname: 'nick-321',
-      email: 'nick321@example.com',
-      schema_version: '1.0',
-      invites_sent: [],
-      invites_received: [],
-      friends: []
-    }
-
-    const response1 = await request(server)
-    .put('/user')
-    .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
-    .set('testUserId', 'fakeAuth-123')
-    .send(user1)
-    .expect(200)
-
-    const response2 = await request(server)
-    .put('/user')
-    .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
-    .set('testUserId', 'fakeAuth-321')
-    .send(user2)
-    .expect(200)
-
-    const response3 = await request(server)
-    .put('/user')
-    .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
-    .set('testUserId', 'fakeAuth-234')
-    .send(user3)
-    .expect(200)
-
+    await createSampleUsers(server, testJWT);
     console.log('added users')
   })
   // beforeEach(async () => {
@@ -512,6 +651,5 @@ describe('API Tests users', () => {
     expect(response.body.friends).toContain('fakeAuth-123');
 
   })
-
 })
 

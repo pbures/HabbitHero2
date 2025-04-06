@@ -1,5 +1,6 @@
 import ajv from 'ajv';
 import Task from '../frontend/src/model/task.mjs';
+import { ObjectId } from 'mongodb';
 
 function useHabbitHandlers(app, checkJwt, myMongoDBManager) {
 
@@ -18,6 +19,11 @@ function useHabbitHandlers(app, checkJwt, myMongoDBManager) {
     // }
 
     const habbits = await myMongoDBManager.find({ user_ids: { $in: [userId] } });
+    const user = await myMongoDBManager.findOne({ user_id: userId });
+    for(const friend_id of user.friends) {
+      const friendsHabbit = await myMongoDBManager.find({ user_ids: { $in: [friend_id] } });
+      habbits.push(friendsHabbit);
+    }
     res.status(200).json(habbits);
   });
 
@@ -65,10 +71,12 @@ function useHabbitHandlers(app, checkJwt, myMongoDBManager) {
   app.put('/habbit_invite', checkJwt, async (req, res) => {
     console.log('PUT request at /habbit_invite with body:', req.body, "query:", req.query);
     const userId = req.auth.payload.sub
-    const requestedUserId = req.query.friend_id;
+    const requestedUserId = req.body.friend_id;
     const habbit = req.body.habbit;
-    await myMongoDBManager.push({ _id: habbit._id}, userId, 'user_ids');
-    await myMongoDBManager.push({ _id: habbit._id }, requestedUserId, 'user_ids');
+    // await myMongoDBManager.push({ _id: new ObjectId(habbit._id)}, userId, 'user_ids');
+    await myMongoDBManager.push({ _id: new ObjectId(habbit._id) }, requestedUserId,'observer_ids');
+
+    res.status(200).json({ message: 'Habbit invited successfully' });
   });
 }
 

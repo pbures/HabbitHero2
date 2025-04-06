@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 
 class MongoDBManager {
   // I dont know if the connection in the constructor will work because it is async
@@ -16,6 +16,7 @@ class MongoDBManager {
   async connect() {
     await this.client.connect();
   }
+
   async close() {
     await this.client.close();
   }
@@ -38,7 +39,7 @@ class MongoDBManager {
 
     const result = await collection.updateOne(query, { $set: data });
     console.log('The record was updated.\n\n')
-    resolve(result);
+    // resolve(result);
     return result;
   }
 
@@ -50,11 +51,10 @@ class MongoDBManager {
     console.log('trying to find a habbit with query:', query);
     const collection = this.habbitCollection;
     let ret = await collection.find(query).toArray();
-    console.log('query:', query,'found this:', ret);
     return ret;
   }
   async push(query, data, arrayName) {
-    const collection = this.userCollection;
+    const collection = this.habbitCollection;
     const updateDoct = {
       $push: {
         [arrayName]: data
