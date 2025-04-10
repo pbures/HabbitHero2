@@ -2,13 +2,13 @@
     <nav class="nav">
         <ul id="actions">
             <li v-if="isAuthenticated">
-                <h1><RouterLink :to="{ path: '/edit'}" >New</RouterLink></h1>
+                <h1><RouterLink :to="{ path: '/edit'}" id="new">New</RouterLink></h1>
             </li>
             <li v-if="isAuthenticated">
                 <h1>Stats</h1>
             </li>
             <li v-if="isAuthenticated">
-                <h1><RouterLink :to="{ path: '/friends'}" >Friends</RouterLink></h1>
+                <h1><RouterLink :to="{ path: '/friends'}" id="friends">Friends</RouterLink></h1>
             </li>
             <li v-if="!isAuthenticated">
                 <button @click="loginWithRedirect"><h1>Login</h1></button>
@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-    import { useAuth0 } from '@auth0/auth0-vue'
+    import { useAuth0 } from '@auth0/auth0-vue';
     const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0()
 </script>
 

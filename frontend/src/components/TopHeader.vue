@@ -5,10 +5,10 @@
         <nav class="nav">
             <ul>
                 <li v-if="isAuthenticated">
-                    <h1 @click="logout()">Logout</h1>
+                    <h1 @click="logout()" id="logout">Logout</h1>
                 </li>
                 <li v-if="!isAuthenticated">
-                    <button @click="loginWithRedirect"><h1>Login</h1></button>
+                    <button @click="loginWithRedirect"><h1 id="login">Login</h1></button>
                 </li>
             </ul>
         </nav>

@@ -16,9 +16,9 @@
             </div>
             <div id="edit" class="clickable"><RouterLink :to="{ path: '/edit', query: { taskId:habbit._id } }" >E</RouterLink>
             </div>
-            <div id="show-info" class="clickable" @click="showTaskStatistics(habbit)">&#9432;</div>
-            <div id="delete" class="clickable" @click="deleteHabbit(habbit._id)">&#x1F5D1;</div>
-            <div id="invite" class="clickable" @click="toggleFriendsList()">&#x1F465;</div>
+            <div id="show-info" class="clickable show-info-btn" @click="showTaskStatistics(habbit)">&#9432;</div>
+            <div id="delete" class="clickable delete-btn" @click="deleteHabbit(habbit._id)">&#x1F5D1;</div>
+            <div id="invite" class="clickable invite-btn" @click="toggleFriendsList()">&#x1F465;</div>
           </div>
 
         <div v-if="habbit.type=='habbit'" class="habbit-stats">

@@ -70,11 +70,24 @@ function useHabbitHandlers(app, checkJwt, myMongoDBManager) {
     res.status(200).json({ message: 'Habbit updated successfully' });
   });
 
+  app.post('/reset', async (req, res) => {
+    console.log('POST request at /reset');
+
+    if (process.env.MODE=='testing') {
+      console.log('Resetting database');
+      await myMongoDBManager.database.dropCollection('habbits');
+      res.status(200).json({ message: 'Database reset successfully' });
+    }
+    else {
+      res.status(403).json({ message: 'Forbidden' });
+    }
+  });
+
   app.delete('/habbit', checkJwt, async (req, res) => {
     const userId = req.auth.payload.sub;
 
     console.log(`DELETE request from user: ${userId} at /habbit, id:` + req.query.habbitId);
-    myMongoDBManager.delete({ _id: req.query.habbitId });
+    await myMongoDBManager.delete({ _id: new ObjectId(req.query.habbitId) });
     res.status(200).json({ message: 'Habbit deleted successfully' });
   });
 
