@@ -70,13 +70,13 @@ function useHabbitHandlers(app, checkJwt, myMongoDBManager) {
     res.status(200).json({ message: 'Habbit updated successfully' });
   });
 
-  app.post('/reset', async (req, res) => {
-    console.log('POST request at /reset');
+  app.post('/tasks_reset', async (req, res) => {
+    console.log('POST request at /tasks_reset');
 
     if (process.env.MODE=='testing') {
-      console.log('Resetting database');
+      console.log('Resetting tasks database');
       await myMongoDBManager.database.dropCollection('habbits');
-      res.status(200).json({ message: 'Database reset successfully' });
+      res.status(200).json({ message: 'Tasks database reset successfully' });
     }
     else {
       res.status(403).json({ message: 'Forbidden' });

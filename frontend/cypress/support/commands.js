@@ -26,7 +26,7 @@ Cypress.Commands.add('loginToAuth0', (username, password) => {
   log.snapshot('before')
 
   cy.session(
-    `auth0-${username}`,
+    `${username}`,
     () => {
       loginViaAuth0Ui(username, password)
     },
@@ -42,5 +42,6 @@ Cypress.Commands.add('loginToAuth0', (username, password) => {
 })
 
 Cypress.Commands.add('resetDatabase', () => {
-  cy.request('POST', 'http://localhost:3000/reset');
+  cy.request('POST', 'http://localhost:3000/tasks_reset');
+  cy.request('POST', 'http://localhost:3000/users_reset');
 });

@@ -3,6 +3,18 @@ import User from '../frontend/src/model/user.mjs';
 
 function useUserHandlers(app, checkJwt, myMongoDBUserManager) {
 
+  app.post('/users_reset', async (req, res) => {
+    console.log('POST request at /tasks_reset');
+
+    if (process.env.MODE=='testing') {
+      console.log('Resetting user database');
+      await myMongoDBUserManager.database.dropCollection('users');
+      res.status(200).json({ message: 'Users database reset successfully' });
+    }
+    else {
+      res.status(403).json({ message: 'Forbidden' });
+    }
+  });
   app.get('/user', checkJwt, async (req, res) => {
     const userId = req.auth.payload.sub
     const email = req.auth.payload.email

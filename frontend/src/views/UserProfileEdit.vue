@@ -22,7 +22,7 @@
         <input type="text" id="nickname" v-model="user.nickname" required />
       </div>
 
-      <div type="submit" class="form-label form-span2 clickable" @click="updateProfile">Save</div>
+      <div type="submit" class="form-label form-span2 clickable" id="submit" @click="updateProfile">Save</div>
     </form>
 </main>
 </template>

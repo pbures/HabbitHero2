@@ -21,8 +21,11 @@ export default defineConfig({
       // implement node event listeners here
     },
     env: {
-      auth0_username: process.env.AUTH0_USERNAME,
-      auth0_password: process.env.AUTH0_PASSWORD,
+      auth0_username_1: process.env.AUTH0_USERNAME_1,
+      auth0_password_1: process.env.AUTH0_PASSWORD_1,
+      auth0_username_2: process.env.AUTH0_USERNAME_2,
+      auth0_password_2: process.env.AUTH0_PASSWORD_2,
+
       auth0_domain: process.env.REACT_APP_AUTH0_DOMAIN,
       auth0_audience: process.env.REACT_APP_AUTH0_AUDIENCE,
       auth0_scope: process.env.REACT_APP_AUTH0_SCOPE,

@@ -42,7 +42,7 @@
       </div>
 
       <div class="content-container">
-        Send invite to: <input :class="{ 'has-error': error }" type="text" v-model="invitee" />
+        Send invite to: <input id="invite-friend" :class="{ 'has-error': error }" type="text" v-model="invitee" />
         <button @click="sendInvite">Send</button>
       </div>
 
