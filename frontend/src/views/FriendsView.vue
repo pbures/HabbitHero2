@@ -26,7 +26,7 @@
       <div class="content-container">
         <h2>Invitations Sent</h2>
         <ul id="invitations-sent">
-          <li v-for="is in user.invites_sent">
+          <li class="invited-user-nickname" v-for="is in user.invites_sent">
             {{ userIdtoNickname(is) }}
           </li>
         </ul>
@@ -43,7 +43,7 @@
 
       <div class="content-container">
         Send invite to: <input id="invite-friend" :class="{ 'has-error': error }" type="text" v-model="invitee" />
-        <button @click="sendInvite">Send</button>
+        <button id="send-invite-btn" @click="sendInvite">Send</button>
       </div>
 
     </div>

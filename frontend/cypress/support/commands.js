@@ -34,6 +34,7 @@ Cypress.Commands.add('loginToAuth0', (username, password) => {
       validate: () => {
         cy.getCookie(`auth0.${Cypress.env('auth0_client_id')}.is.authenticated`).should('exist')
       },
+      cacheAcrossSpecs: true
     }
   )
 

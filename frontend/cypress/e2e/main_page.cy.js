@@ -45,22 +45,45 @@ describe('example to-do app', () => {
     cy.get('.task-container >> .title').contains('Test task 1')
   })
 
-  it('fills in the user details for a user', () => {
+  it.skip('fills in the user details for a user', () => {
 
     /* Verify that the main page is the autheticated one */
-    cy.visit('http://localhost:5173/')
-    cy.get('.header').contains('Habbit Hero')
-    cy.get('#logout', {timeout: 15000}).contains('Logout')
-
-    cy.get('#friends').click()
-    cy.url().should('equal', 'http://localhost:5173/userprofile')
-    cy.get('#name').type('Test User 1')
-    cy.get('#email').type('test.user.1@example.com')
-    cy.get('#nickname').type('testuser1')
-
-    cy.get('#submit').click()
-    cy.url().should('equal', 'http://localhost:5173/friends')
-
-    cy.get('#invite-friend').should('exist')
+    cy.loginToAuth0(Cypress.env('auth0_username_1'), Cypress.env('auth0_password_1'))
+    fillInUserFormAndSubmit('Test User 1', Cypress.env('auth0_username_1'), 'testuser1')
   })
+
+  it('fills in the user details for both users and user2 invites user 1', () => {
+
+    /* Verify that the main page is the autheticated one */
+    cy.loginToAuth0(Cypress.env('auth0_username_1'), Cypress.env('auth0_password_1'))
+    fillInUserFormAndSubmit('Test User 1', Cypress.env('auth0_username_1'), 'testuser1')
+
+    cy.loginToAuth0(Cypress.env('auth0_username_2'), Cypress.env('auth0_password_2'))
+    fillInUserFormAndSubmit('Test User 2', Cypress.env('auth0_username_2'), 'testuser2')
+
+    cy.get('#invite-friend').should('exist').type('testuser1')
+    cy.get('#send-invite-btn').should('exist').click()
+
+    cy.get('li.invited-user-nickname:first').should('exist')
+    cy.get('li.invited-user-nickname:first').contains('testuser1')
+  })
+
+
 })
+
+function fillInUserFormAndSubmit(name, email, nickname) {
+  cy.visit('http://localhost:5173/')
+  cy.get('.header').contains('Habbit Hero')
+  cy.get('#logout', {timeout: 15000}).contains('Logout')
+
+  cy.get('#friends').click()
+  cy.url().should('equal', 'http://localhost:5173/userprofile')
+  cy.get('#name').type(name)
+  cy.get('#email').type(email)
+  cy.get('#nickname').type(nickname)
+
+  cy.get('#submit').click()
+  cy.url().should('equal', 'http://localhost:5173/friends')
+
+  cy.get('#invite-friend').should('exist')
+}

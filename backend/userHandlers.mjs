@@ -1,7 +1,7 @@
 import ajv from 'ajv';
 import User from '../frontend/src/model/user.mjs';
 
-function useUserHandlers(app, checkJwt, myMongoDBUserManager) {
+function useUserHandlers(app, myMongoDBUserManager) {
 
   app.post('/users_reset', async (req, res) => {
     console.log('POST request at /tasks_reset');
@@ -15,7 +15,7 @@ function useUserHandlers(app, checkJwt, myMongoDBUserManager) {
       res.status(403).json({ message: 'Forbidden' });
     }
   });
-  app.get('/user', checkJwt, async (req, res) => {
+  app.get('/user', async (req, res) => {
     const userId = req.auth.payload.sub
     const email = req.auth.payload.email
 
@@ -34,7 +34,7 @@ function useUserHandlers(app, checkJwt, myMongoDBUserManager) {
     }
   });
 
-  app.put('/user', checkJwt, async (req, res) => {
+  app.put('/user', async (req, res) => {
     const id = req.auth.payload.sub;
     console.log(`PUT request from user ${id} at /user with data:`, req.body, '_id:', id);
 
@@ -101,7 +101,7 @@ function useUserHandlers(app, checkJwt, myMongoDBUserManager) {
     res.status(200).json({ message: 'Habbit updated successfully' });
   });
 
-  app.get('/users', checkJwt, async (req, res) => {
+  app.get('/users', async (req, res) => {
     const userId = req.auth.payload.sub
     const email = req.auth.payload.email
     let query = req.query;
@@ -117,7 +117,7 @@ function useUserHandlers(app, checkJwt, myMongoDBUserManager) {
     // res.send({...modelUser, email: email});
   });
 
-  app.put('/invite', checkJwt, async (req, res) => {
+  app.put('/invite', async (req, res) => {
     console.log('PUT request at /invite with body:', req.body, "query:", req.query);
     const userId = req.auth.payload.sub
 
@@ -153,7 +153,7 @@ function useUserHandlers(app, checkJwt, myMongoDBUserManager) {
     res.status(200).json({ message: 'Invitation sent successfully' });
   });
 
-  app.put('/accept', checkJwt, async (req, res) => {
+  app.put('/accept', async (req, res) => {
     console.log('PUT request at /accept with body:', req.body, "query:", req.query);
     const userId = req.auth.payload.sub
 
@@ -183,7 +183,7 @@ function useUserHandlers(app, checkJwt, myMongoDBUserManager) {
     res.status(200).json({ message: 'Invitation accepted successfully' });
   });
 
-  app.get('/nicknames', checkJwt, async (req, res) => {
+  app.get('/nicknames', async (req, res) => {
     const userId = req.auth.payload.sub
     const email = req.auth.payload.email
     console.log('GET request at /nicknames from user:', userId, 'with email:', email, 'query:', req.query);

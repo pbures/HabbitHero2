@@ -2,7 +2,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import { auth } from 'express-oauth2-jwt-bearer';
-import { ObjectId } from 'mongodb';
 import useHabbitHandlers from './habbitHandlers.mjs';
 import MongoDBManager from './mongoDBManager.mjs';
 import MongoDBUserManager from './mongoDBUserManager.mjs';
@@ -18,27 +17,30 @@ dotenv.config({path:`${__dirname}/.env`});
 // exist and be verified against the Auth0 JSON Web Key Set.
 // Authorization middleware. When used, the Access Token must
 // exist and be verified against the Auth0 JSON Web Key Set.
-let checkJwt = auth({
+const checkJwt = auth({
   audience: process.env.AUTH0_AUDIENCE,
   issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
+  authRequired: false,
 });
 
-if (process.env.MODE=='testing') {
-  console.log("Using mocked authentication");
+const testCheckJwt = async (req, res, next) => {
 
-  checkJwt = (req, res, next) => {
-    let userId = 'auth0|1234567890';
-    if(req.headers.testuserid) {
-      userId = req.headers.testuserid;
+  // Check if the request has a valid JWT token
+  if(req.auth?.payload?.sub) {
+    console.log("Testing mode: using real authentication with userId:", req.auth.payload.sub);
+    return next();
+  }
+
+  const userId = req.headers.testuserid || 'auth0|1234567890';
+  console.log("Testing mode: using mocked authentication with userId:", userId);
+  req.auth = {
+    payload: {
+      sub: `${userId}`,
+      email: `${userId}@example.com`
     }
-    req.auth = {
-      payload: {
-        sub: `${userId}`,
-        email: `${userId}@example.com`
-      }
-    };
-    next();
   };
+
+  next();
 }
 
 console.log(process.env.AUTH0_AUDIENCE);
@@ -54,6 +56,12 @@ const app = express();
 
 app.use(express.json());
 app.use(cors(corsOptions));
+app.use(checkJwt)
+
+if (process.env.MODE=='testing') {
+  console.log('Testing mode: using mocked authentication');
+  app.use(testCheckJwt);
+}
 
 const uri = process.env.MONGODB_CONNECTION_STRING;
 
@@ -68,7 +76,7 @@ try {
   process.exit(1);
 }
 
-useUserHandlers(app, checkJwt, myMongoDBUserManager);
-useHabbitHandlers(app, checkJwt, myMongoDBManager);
+useUserHandlers(app, myMongoDBUserManager);
+useHabbitHandlers(app, myMongoDBManager);
 
 export default app;

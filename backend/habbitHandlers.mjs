@@ -2,9 +2,9 @@ import ajv from 'ajv';
 import { ObjectId } from 'mongodb';
 import Task from '../frontend/src/model/task.mjs';
 
-function useHabbitHandlers(app, checkJwt, myMongoDBManager) {
+function useHabbitHandlers(app, myMongoDBManager) {
 
-  app.get('/habbits', checkJwt, async (req, res) => {
+  app.get('/habbits', async (req, res) => {
     const userId = req.auth.payload.sub
     console.log(`userId: ${userId}`);
     console.log(`GET request at /habbits from user id: ${userId}`);
@@ -37,7 +37,7 @@ function useHabbitHandlers(app, checkJwt, myMongoDBManager) {
     res.status(200).json(habbits);
   });
 
-  app.put('/habbit', checkJwt, async (req, res) => {
+  app.put('/habbit', async (req, res) => {
     const userId = req.auth.payload.sub
     console.log(`PUT request from user ${userId} at /habbit with data:`, req.body, '_id:', req.body._id);
 
@@ -83,7 +83,7 @@ function useHabbitHandlers(app, checkJwt, myMongoDBManager) {
     }
   });
 
-  app.delete('/habbit', checkJwt, async (req, res) => {
+  app.delete('/habbit', async (req, res) => {
     const userId = req.auth.payload.sub;
 
     console.log(`DELETE request from user: ${userId} at /habbit, id:` + req.query.habbitId);
@@ -91,7 +91,7 @@ function useHabbitHandlers(app, checkJwt, myMongoDBManager) {
     res.status(200).json({ message: 'Habbit deleted successfully' });
   });
 
-  app.put('/habbit_invite', checkJwt, async (req, res) => {
+  app.put('/habbit_invite', async (req, res) => {
     console.log('PUT request at /habbit_invite with body:', req.body, "query:", req.query);
     const userId = req.auth.payload.sub
     const requestedUserId = req.body.friend_id;
