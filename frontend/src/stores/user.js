@@ -75,14 +75,13 @@ export const useUserStore = defineStore('user', {
             Authorization: `Bearer ${token}`
           }
         });
-        this.user = new User(userData);
       } catch (error) {
         this.error = error;
       } finally {
         this.loading = false;
       }
 
-      this.fetchUser();
+      await this.fetchUser();
     },
     async sendInvite(nickname) {
       this.loading = true;

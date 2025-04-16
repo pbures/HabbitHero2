@@ -38,8 +38,12 @@ const router = useRouter();
 
 const updateProfile = () => {
   console.log(`Saving user ${user.value}`);
-  userStore.updateUser(user.value);
-  router.push({ name: 'friends' });
+  userStore.updateUser(user.value).then(() => {
+    console.log('User updated successfully');
+    router.push({ name: 'friends' });
+  }).catch((error) => {
+    console.error('Error updating user:', error);
+  });
 };
 </script>
 
