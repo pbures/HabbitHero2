@@ -1,7 +1,7 @@
 <template>
     <header class="header">
         <h1 id="home" class="title" @click="redirect" >Habbit Hero</h1>
-        <h1>{{  userStore.name }}</h1>
+        <h1>{{  user.name }}</h1>
         <nav class="nav">
             <ul>
                 <li v-if="isAuthenticated">
@@ -16,22 +16,22 @@
 </template>
 
 <script setup>
-  import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/user'
 import { useAuth0 } from '@auth0/auth0-vue'
+import { storeToRefs } from 'pinia'
 
-  const userStore = useUserStore()
-  const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0()
+import { useRouter } from 'vue-router'
 
-  userStore.fetchUser()
+const userStore = useUserStore()
+const { loginWithRedirect, logout, isAuthenticated } = useAuth0()
+const { user } = storeToRefs(userStore);
 
-  import { useRouter } from 'vue-router'
+userStore.fetchUser()
+const router = useRouter()
 
-  const router = useRouter()
-
-  function redirect() {
-    router.push('/')
-  }
-
+function redirect() {
+  router.push('/')
+}
 </script>
 
 <style scoped>
