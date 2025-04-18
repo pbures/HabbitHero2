@@ -166,6 +166,52 @@ describe('API Tests habbits', () => {
     expect(response.body).toHaveProperty('message', 'Habbit updated successfully')
   })
 
+  it('should update habit on PUT /habbit and not create a new one', async () => {
+    const habbit = Task.createExampleInstance()
+
+    /* Create the habbit first */
+    const response = await request(server)
+      .put('/habbit')
+      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .send(habbit)
+      .expect(200)
+
+    // Add your assertions here based on the expected response
+    expect(response.body).toHaveProperty('message', 'Habbit updated successfully')
+
+    /* Get habbits and verify there is just one returned */
+    const response2 = await request(server)
+      .get('/habbits')
+      .set('Authorization',  `Bearer ${testJWT}`)
+      .expect(200)
+
+    expect(response2.body).toBeDefined();
+    expect(response2.body.length).toBe(1);
+    expect(response2.body[0].name).toEqual(habbit.name);
+    expect(response2.body[0]._id).toBeDefined();
+
+    /* Update the very same habbit */
+    const updatedHabbit = response2.body[0];
+    updatedHabbit.name = 'Updated Test Habit';
+    updatedHabbit.description = 'This is an updated test habit';
+
+    const response3 = await request(server)
+    .put('/habbit')
+    .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+    .send(updatedHabbit)
+    .expect(200)
+
+    /* Get habbits and verify there is just one returned */
+    const response4 = await request(server)
+    .get('/habbits')
+    .set('Authorization',  `Bearer ${testJWT}`)
+    .expect(200)
+
+    expect(response4.body).toBeDefined();
+    expect(response4.body.length).toBe(1);
+    expect(response4.body[0].name).toEqual('Updated Test Habit');
+    expect(response4.body[0].description).toEqual('This is an updated test habit');
+  })
 
   it('should delete a habbit', async () => {
     const habitData = Task.createExampleInstance();

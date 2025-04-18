@@ -59,11 +59,11 @@ function useHabbitHandlers(app, myMongoDBManager) {
     console.log(`PUT request from user ${userId} at /habbit with data:`, req.body, '_id:', req.body._id);
 
     /* TODO: Verify the data is as expected in the request body */
+    const habbitId = req.body._id;
 
     let habbit = null;
     if (req.body._id !== undefined) {
-      habbit = (await myMongoDBManager.find({_id:req.body._id}))[0];
-      console.log('Habbitttt', habbit);
+      habbit = (await myMongoDBManager.find({_id:new ObjectId(habbitId)}))[0];
     }
 
     if(habbit) {
