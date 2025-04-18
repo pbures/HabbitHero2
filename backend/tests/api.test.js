@@ -93,26 +93,32 @@ describe('API Tests habbits', () => {
     await createSampleUsers(server, testJWT);
   });
 
-  it('should return habbits', async () => {
+  it('should return exactly one habbit', async () => {
     const habitData = {
       name: 'Test Habit',
       description: 'This is a test habit',
-      user_ids: []
+      user_ids: [],
+      observer_ids: ['fakeAuth-123']
     }
 
     const response = await request(server)
     .put('/habbit')
     .set('Authorization',  `Bearer ${testJWT}`)
+    .set('testUserId', 'fakeAuth-123')
     .send(habitData)
     .expect(200)
 
     const response2 = await request(server)
     .get('/habbits')
     .set('Authorization',  `Bearer ${testJWT}`)
+    .set('testUserId', 'fakeAuth-123')
     .send(habitData)
     .expect(200)
 
-    // expect(response2.body).toBeDefined();
+    expect(response2.body).toBeDefined();
+    expect(response2.body.length).toBe(1);
+    expect(response2.body[0].name).toEqual('Test Habit');
+    expect(response2.body[0].description).toEqual('This is a test habit');
   });
 
   it('should return habbits even of a friend that has sent an invite', async () => {
@@ -144,6 +150,7 @@ describe('API Tests habbits', () => {
     expect(response2.body.length).toBeGreaterThan(0);
     const habbitOfUser123 = response2.body.find(habbit => habbit.user_ids.includes('fakeAuth-123'));
     expect(habbitOfUser123.name).toEqual('Test Habit');
+    expect(habbitOfUser123.is_observer).toBe(true);
   });
 
   it('should update habit on PUT /habbit', async () => {
