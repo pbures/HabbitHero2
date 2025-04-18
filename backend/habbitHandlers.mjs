@@ -6,7 +6,8 @@ function useHabbitHandlers(app, myMongoDBManager) {
 
   app.get('/habbits', async (req, res) => {
     const userId = req.auth.payload.sub
-    console.log(`userId: ${userId}`);
+
+    /* TODO: Move that into a middleware, for testing mode */
     console.log(`GET request at /habbits from user id: ${userId}`);
 
     // const taskSchema = Task.getJsonSchema()
@@ -18,22 +19,38 @@ function useHabbitHandlers(app, myMongoDBManager) {
     //   return res.status(400).json( {message: 'Validation errors', errors: validate.errors});
     // }
 
-    let habbits = await myMongoDBManager.find({ user_ids: { $in: [userId] } });
-    const user = await myMongoDBManager.findOne({ user_id: userId });
-    if (user && user.friends) {
-      for(const friend_id of user.friends) {
-        const friendsHabbit = await myMongoDBManager.find({ user_ids: { $in: [friend_id] } });
-        habbits.push(friendsHabbit);
-      }
+    /* Find habbits which user owns, start putting them into unique map based on it's _id */
+    const uniqueHabbits = new Map();
+
+    let habbits = await myMongoDBManager.find(
+      { user_ids: { $in: [userId] } }
+    );
+    if (habbits) {
+      habbits.forEach(habbit => {
+        const habbitIdStr = habbit._id.toString();
+        if (!uniqueHabbits.has(habbitIdStr)) {
+          uniqueHabbits.set(habbitIdStr, habbit);
+        }
+      });
     }
 
+    /* Find habbits where the user is an observer.
+       Ensure that non of the habbits is contained in the habbits array twice, based on _id property
+    */
     const habbitsOfFriends = await myMongoDBManager.find({ observer_ids: { $in: [userId] } });
-    console.log('HObserving habbits:', habbitsOfFriends);
-    if (habbitsOfFriends) {
-      habbits = [...habbits, ...habbitsOfFriends];
+
+    if(habbitsOfFriends) {
+      habbitsOfFriends.forEach(habbit => {
+        const habbitIdStr = habbit._id.toString();
+        if (!uniqueHabbits.has(habbitIdStr)) {
+          habbit.is_observer = true;
+          uniqueHabbits.set(habbitIdStr, habbit);
+        }
+      });
     }
 
-    console.log('Habbits-1:', habbits);
+    habbits = Array.from(uniqueHabbits.values());
+    console.log('Habbits:', habbits);
     res.status(200).json(habbits);
   });
 
@@ -41,10 +58,12 @@ function useHabbitHandlers(app, myMongoDBManager) {
     const userId = req.auth.payload.sub
     console.log(`PUT request from user ${userId} at /habbit with data:`, req.body, '_id:', req.body._id);
 
+    /* TODO: Verify the data is as expected in the request body */
+    const habbitId = req.body._id;
+
     let habbit = null;
     if (req.body._id !== undefined) {
-      habbit = (await myMongoDBManager.find({_id:req.body._id}))[0];
-      console.log('Habbitttt', habbit);
+      habbit = (await myMongoDBManager.find({_id:new ObjectId(habbitId)}))[0];
     }
 
     if(habbit) {
