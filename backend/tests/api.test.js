@@ -236,6 +236,7 @@ describe('API Tests habbits', () => {
 
     // Add your assertions here based on the expected response
   })
+
   it('should return friends habbits', async () => {
     let habitData = Task.createExampleInstance();
     // habitData.user_ids = ['fakeAuth-123'];
@@ -451,18 +452,26 @@ describe('API Tests users', () => {
     .query({nickname: 'nick-978'})
     .expect(404)
   })
+
   it('should accept invite on PUT /accept', async () => {
     const habitData = {
       name: 'Test Habit',
       description: 'This is a test habit'
     }
 
-    // const user = await request(server)
-    // .get('/users')
-    // .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
-    // .set('testUserId', '123')
-   // .query({nickname: '321'})
-    // .expect(200)
+    await request(server)
+    .put('/invite')
+    .set('testUserId', 'fakeAuth-123')
+    .query({nickname: 'nick-321'})
+    .expect(200)
+
+    const responseI = await request(server)
+    .get('/user')
+    .set('testUserId', 'fakeAuth-321')
+    .expect(200)
+
+    expect(responseI.body).toHaveProperty('invites_received');
+    expect(responseI.body.invites_received).toContain('fakeAuth-123');
 
     const responseR = await request(server)
       .put('/accept')
@@ -476,11 +485,12 @@ describe('API Tests users', () => {
     .get('/user')
     .set('Authorization', `Bearer ${testJWT}`)
     .set('testUserId', 'fakeAuth-321')
-
     .expect(200)
+
+    /* Verify that the user is in friends array, and is not in invites_received array */
     expect(response.body).toHaveProperty('friends');
     expect(response.body.friends).toContain('fakeAuth-123');
-
+    expect(response.body.invites_received).not.toContain('fakeAuth-123');
   })
 
   it.skip('should accept invite on PUT /accept and remove from invites sent or accepted', async () => {
