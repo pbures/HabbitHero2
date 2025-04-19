@@ -176,10 +176,8 @@ function useUserHandlers(app, myMongoDBUserManager) {
     await myMongoDBUserManager.push({ user_id: userId }, requestedUserId, 'friends');
 
     // deletes
-    await myMongoDBUserManager.deleteFromArray(userId, 'invites_recieved', requestedUserId);
-    await myMongoDBUserManager.deleteFromArray(userId, 'invites_sent', requestedUserId);
+    await myMongoDBUserManager.deleteFromArray(userId, 'invites_received', requestedUserId);
     await myMongoDBUserManager.deleteFromArray(requestedUserId, 'invites_sent', userId);
-    await myMongoDBUserManager.deleteFromArray(requestedUserId, 'invites_recieved', userId);
     res.status(200).json({ message: 'Invitation accepted successfully' });
   });
 
