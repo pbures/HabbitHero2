@@ -1,5 +1,4 @@
-
-class DaysInWeekDateUtil {
+class DaysInMonthDateUtil {
 
   constructor(targetDaysInWeek) {
     this.targetDays = targetDaysInWeek;
@@ -8,13 +7,13 @@ class DaysInWeekDateUtil {
   findPreviousDays(today) {
     let result = [];
 
-    const dayInWeek = today.getDay();
+    const dayInMonth = today.getDate();
     const targetDaysReversed = this.targetDays.sort().reverse();
 
     let i=0;
 
     for(let j=0; j< targetDaysReversed.length; j++){
-      if(this.targetDays[j] === dayInWeek) {
+      if(this.targetDays[j] <= dayInMonth) {
         i = j;
         break;
       }
@@ -30,11 +29,14 @@ class DaysInWeekDateUtil {
     return result;
   }
 
-  findPreviousOneDay(today, dayOfWeek) {
-      let daysAgo = (today.getDay() - dayOfWeek + 7) % 7;
-      const pastDate = new Date(today);
-      pastDate.setDate(today.getDate() - daysAgo);
-      return pastDate;
+  findPreviousOneDay(today, dayOfMonth) {
+      let resultDate = new Date(`${today.getFullYear()}-${today.getMonth() + 1}-${dayOfMonth}`);
+
+      console.log("resultDate", resultDate);
+      if (resultDate > today) {
+        resultDate.setFullYear(today.getFullYear() - 1);
+      }
+      return resultDate;
   }
 
   static getDateStr(dateObj) {
@@ -49,4 +51,4 @@ class DaysInWeekDateUtil {
 }
 
 // export { findPreviousDays, findPreviousOneDay, getDateStr, getDayMonthStr };
-export default DaysInWeekDateUtil;
+export default DaysInMonthDateUtil;

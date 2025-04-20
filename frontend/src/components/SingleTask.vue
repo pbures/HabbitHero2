@@ -57,7 +57,7 @@ import { useHabbitStore } from '@/stores/task';
 import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia';
 
-import DaysInWeekDateUtil from '@/utils/findDates';
+import DaysInWeekDateUtil from '@/utils/DaysInWeekDateUtil';
 import { computed, ref, toRefs } from 'vue';
 
     const props = defineProps(['habbit','selectedHabbit']);
