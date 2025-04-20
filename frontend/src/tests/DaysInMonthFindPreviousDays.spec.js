@@ -1,4 +1,4 @@
-import DaysInMonthDateUtil from '@/utils/DaysInMonthDateUtils';
+import DaysInMonthDateUtil from '@/utils/DaysInMonthDateUtil';
 import { describe, expect, it } from "vitest";
 
 function formatDate (date) {
@@ -12,6 +12,43 @@ describe('DaysInWeekDateUtil.findPreviousDays', () => {
     let dateUtil =  new DaysInMonthDateUtil([]);
     let result = dateUtil.findPreviousOneDay(new Date("2025-1-29") , 3);
     expect(formatDate(result)).toEqual("2025-1-3");
+  });
+
+  it('should return date from previous year', () => {
+    let dateUtil =  new DaysInMonthDateUtil([30]);
+    let result = dateUtil.findPreviousOneDay(new Date("2025-1-29") , 30);
+    expect(formatDate(result)).toEqual("2024-12-30");
+  });
+
+  it('should return one day closest one to future if exact date does not exist', () => {
+    let dateUtil =  new DaysInMonthDateUtil([30]);
+    let result = dateUtil.findPreviousOneDay(new Date("2025-3-20") , 30);
+    expect(formatDate(result)).toEqual("2025-3-1");
+  });
+
+  it('should return one day', () => {
+    let dateUtil =  new DaysInMonthDateUtil([]);
+    let result = dateUtil.findPreviousOneDay(new Date("2025-1-29") , 3);
+    expect(formatDate(result)).toEqual("2025-1-3");
+  });
+
+  it('should return 10 of the same previous days on 20th', () => {
+    let dateUtil =  new DaysInMonthDateUtil([20]);
+    let result = dateUtil.findPreviousDays(new Date('2025-4-20'));
+    const arr = result.map((r) => formatDate(r))
+    expect(arr).toContain(
+      "2025-3-20",
+      "2025-2-20",
+      "2025-1-20",
+      "2024-12-20",
+      "2024-11-20",
+      "2024-10-20",
+      "2024-9-20",
+      "2024-8-20",
+      "2024-7-20",
+      "2024-6-20",
+    );
+    expect(result.length).toBe(10);
   });
 
   it('should return 10 of the same previous days', () => {
@@ -52,6 +89,19 @@ describe('DaysInWeekDateUtil.findPreviousDays', () => {
       "2025-10-10",
       "2025-10-1",
     )
+  })
+
+  it('should jump over Feb 30th and keep the 30th', () => {
+    let dateUtil =  new DaysInMonthDateUtil([30]);
+    let result = dateUtil.findPreviousDays(new Date('2025-3-31'));
+    const arr = result.map( (r) => formatDate(r));
+
+    expect(result.length).toBe(10);
+    console.log("arr", arr);
+
+    expect(arr).toContain("2025-3-30")
+    expect(arr).toContain("2025-3-1")
+    expect(arr).toContain("2025-1-30")
   })
 
 });

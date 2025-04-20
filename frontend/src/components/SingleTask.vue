@@ -57,16 +57,25 @@ import { useHabbitStore } from '@/stores/task';
 import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia';
 
+import DaysInMonthDateUtil from '@/utils/DaysInMonthDateUtil';
 import DaysInWeekDateUtil from '@/utils/DaysInWeekDateUtil';
+
 import { computed, ref, toRefs } from 'vue';
 
     const props = defineProps(['habbit','selectedHabbit']);
     const emit = defineEmits(['update-habbit-detail']);
 
     let {habbit, selectedHabbit} = toRefs(props);
-    let dateUtil = new DaysInWeekDateUtil(habbit.value.days_in);
 
-    const days = ref(dateUtil.findPreviousDays(new Date()).reverse());
+    const dateUtil = computed ( () => {
+      if (habbit.value.habbit_interval == 'days_in_month') {
+        return new DaysInMonthDateUtil((habbit.value.days_in || []).map(d => d+1));
+      } else {
+        return new DaysInWeekDateUtil(habbit.value.days_in);
+      }
+    });
+    const days = computed( () =>  { return dateUtil.value.findPreviousDays(new Date()).reverse()});
+
     const habbitEvents = computed( () => { return getHabbitEvents(habbit.value) });
     const focusedEvent = ref(null);
 
@@ -110,7 +119,7 @@ import { computed, ref, toRefs } from 'vue';
 
     const showFriendsList = ref(false);
     const userStore = useUserStore()
-    const { user, error, exists } = storeToRefs(userStore);
+    const { user } = storeToRefs(userStore);
 
     userStore.fetchUser()
 

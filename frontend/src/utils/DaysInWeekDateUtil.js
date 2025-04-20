@@ -47,5 +47,4 @@ class DaysInWeekDateUtil {
 
 }
 
-// export { findPreviousDays, findPreviousOneDay, getDateStr, getDayMonthStr };
 export default DaysInWeekDateUtil;

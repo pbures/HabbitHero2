@@ -1,5 +1,5 @@
 // src/stores/user.js
-import { getDateStr } from '@/utils/DaysInWeekDateUtil.js'
+import { getDateStr } from '@/utils/common.js'
 import { useAuth0 } from '@auth0/auth0-vue'
 import axios from 'axios'
 import { defineStore } from 'pinia'
