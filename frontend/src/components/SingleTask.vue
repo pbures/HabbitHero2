@@ -27,10 +27,10 @@
             :key="he.date"
             class="habbit-stat"
             :class="habbitStatClass(he.hit)"
-            :alt="getDayMonthStr(he.date)"
+            :alt="DaysInWeekDateUtil.getDayMonthStr(he.date)"
             @click="focusedEvent=i"
           >
-          <div v-if="i == focusedEvent" class="habbit-event-detail"> {{ getDayMonthStr(he.date) }}</div>
+          <div v-if="i == focusedEvent" class="habbit-event-detail"> {{ DaysInWeekDateUtil.getDayMonthStr(he.date) }}</div>
         </div>
         </div>
         <div v-else class="habbit-stats">
@@ -57,15 +57,16 @@ import { useHabbitStore } from '@/stores/task';
 import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia';
 
-import { findPreviousDays, getDateStr, getDayMonthStr } from '@/utils/findDates';
+import DaysInWeekDateUtil from '@/utils/findDates';
 import { computed, ref, toRefs } from 'vue';
 
     const props = defineProps(['habbit','selectedHabbit']);
     const emit = defineEmits(['update-habbit-detail']);
 
     let {habbit, selectedHabbit} = toRefs(props);
+    let dateUtil = new DaysInWeekDateUtil(habbit.value.days_in);
 
-    const days = ref(findPreviousDays(new Date(), habbit.value.days_in).reverse());
+    const days = ref(dateUtil.findPreviousDays(new Date()).reverse());
     const habbitEvents = computed( () => { return getHabbitEvents(habbit.value) });
     const focusedEvent = ref(null);
 
@@ -92,7 +93,7 @@ import { computed, ref, toRefs } from 'vue';
 
     function isEventInDates(eDate, dates) {
       const ret = dates.some( (d) => {
-        const r = getDateStr(new Date(d.date)) === getDateStr(eDate);
+        const r = DaysInWeekDateUtil.getDateStr(new Date(d.date)) === DaysInWeekDateUtil.getDateStr(eDate);
         return r;
       })
 
