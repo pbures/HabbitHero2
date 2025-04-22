@@ -101,7 +101,18 @@ it('displays the habbit with title and details', async () => {
     expect(wrapper.find(".habbit-details").exists()).toBe(true);
   });
 
-   it('updates the count', async () => {
+  it('shows the habbit with the right dates selected', async () => {
+    const wrapper = mount(SingleTask, {
+      global: {
+        plugins: [testingPinia],
+      },
+      props: {
+        habbit: oneHabbit,
+      }
+    })
+  })
+
+  it('updates the count', async () => {
      const wrapper = mount(SingleTask, {
       global: {
         plugins: [testingPinia],
