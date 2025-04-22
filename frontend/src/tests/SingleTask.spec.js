@@ -109,9 +109,8 @@ it('displays the habbit with title and details', async () => {
       props: {
         habbit: oneHabbit,
       }
-
-
-  }
+    })
+  })
 
   it('updates the count', async () => {
      const wrapper = mount(SingleTask, {

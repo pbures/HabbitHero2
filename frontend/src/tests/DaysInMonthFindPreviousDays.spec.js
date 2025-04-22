@@ -10,26 +10,14 @@ describe('DaysInWeekDateUtil.findPreviousDays', () => {
 
   it('should return one day', () => {
     let dateUtil =  new DaysInMonthDateUtil([]);
-    let result = dateUtil.findPreviousOneDay(new Date("2025-1-29") , 3);
-    expect(formatDate(result)).toEqual("2025-1-3");
+    let result = dateUtil.findPreviousOneDay([2025, 1, 29] , 3);
+    expect(result).toEqual([2025,1,3]);
   });
 
   it('should return date from previous year', () => {
     let dateUtil =  new DaysInMonthDateUtil([30]);
-    let result = dateUtil.findPreviousOneDay(new Date("2025-1-29") , 30);
-    expect(formatDate(result)).toEqual("2024-12-30");
-  });
-
-  it('should return one day closest one to future if exact date does not exist', () => {
-    let dateUtil =  new DaysInMonthDateUtil([30]);
-    let result = dateUtil.findPreviousOneDay(new Date("2025-3-20") , 30);
-    expect(formatDate(result)).toEqual("2025-3-1");
-  });
-
-  it('should return one day', () => {
-    let dateUtil =  new DaysInMonthDateUtil([]);
-    let result = dateUtil.findPreviousOneDay(new Date("2025-1-29") , 3);
-    expect(formatDate(result)).toEqual("2025-1-3");
+    let result = dateUtil.findPreviousOneDay([2025, 1, 29] , 30);
+    expect(result).toEqual([2024, 12, 30]);
   });
 
   it('should return 10 of the same previous days on 20th', () => {
@@ -102,6 +90,8 @@ describe('DaysInWeekDateUtil.findPreviousDays', () => {
     expect(arr).toContain("2025-3-30")
     expect(arr).toContain("2025-3-1")
     expect(arr).toContain("2025-1-30")
+    expect(arr).toContain("2024-12-30")
+    expect(arr).toContain("2024-11-30")
   })
 
 });
