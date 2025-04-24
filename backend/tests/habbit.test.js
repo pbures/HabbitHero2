@@ -125,6 +125,39 @@ describe('API Tests habbits', () => {
     expect(response.body).toHaveProperty('message', 'Habbit updated successfully')
   })
 
+  it('should not update & delete habit on PUT /habbit when not owner', async () => {
+    const habbit = Task.createExampleInstance()
+    habbit.user_ids = ['fakeAuth-123']
+
+    const response1 = await request(server)
+    .put('/habbit')
+    .set('testUserId', 'fakeAuth-123')
+    .send(habbit)
+    .expect(200)
+
+    const response15 = await request(server)
+      .get('/habbits')
+      .set('Authorization',  `Bearer ${testJWT}`)
+      .set('testUserId', 'fakeAuth-123')
+      .expect(200)
+
+    const response2 = await request(server)
+      .put('/habbit')
+      .set('testUserId', 'fakeAuth-321')
+      .send(response15.body[0])
+      .expect(403)
+    
+    const response3 = await request(server)
+      .delete('/habbit')
+      .set('testUserId', 'fakeAuth-321')
+      .query({ habbit_id: response15.body[0]._id })
+      .expect(403)
+
+    // Add your assertions here based on the expected response
+    expect(response2.body).toHaveProperty('message', 'Forbidden')
+    expect(response3.body).toHaveProperty('message', 'Forbidden')
+  })
+
   it('should update habit on PUT /habbit and not create a new one', async () => {
     const habbit = Task.createExampleInstance()
 
@@ -191,6 +224,7 @@ describe('API Tests habbits', () => {
     const response3 = await request(server)
       .delete('/habbit')
       .set('Authorization',  `Bearer ${testJWT}`)
+      .query({ habbit_id: response2.body[0]._id })
       .expect(200)
 
     // Add your assertions here based on the expected response
