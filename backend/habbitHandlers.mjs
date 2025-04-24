@@ -65,9 +65,11 @@ function useHabbitHandlers(app, myMongoDBManager) {
     if (req.body._id !== undefined) {
       habbit = (await myMongoDBManager.find({_id:new ObjectId(habbitId)}))[0];
     }
-
     if(habbit) {
       console.log("Habbit exists", habbit);
+      if(!habbit.user_ids.includes(userId)) {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
       const changes = {};
       for (const key in req.body) {
         // Here if there is an incomming key that is _id, then we have the raw string version, comparing it with the new one.
@@ -104,9 +106,12 @@ function useHabbitHandlers(app, myMongoDBManager) {
 
   app.delete('/habbit', async (req, res) => {
     const userId = req.auth.payload.sub;
-
-    console.log(`DELETE request from user: ${userId} at /habbit, id:` + req.query.habbitId);
-    await myMongoDBManager.delete({ _id: new ObjectId(req.query.habbitId) });
+    let habbit = (await myMongoDBManager.find({_id:new ObjectId(req.query.habbit_id)}))[0];
+    if(!habbit.user_ids.includes(userId)) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+    console.log(`DELETE request from user: ${userId} at /habbit, id:` + req.query.habbit_id);
+    await myMongoDBManager.delete({ _id: new ObjectId(req.query.habbit_id) });
     res.status(200).json({ message: 'Habbit deleted successfully' });
   });
 
