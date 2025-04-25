@@ -41,8 +41,24 @@ class Task {
 
     static createExampleInstance() {
       return new Task({
-        title: "Example title",
-        description: "Example habbit and tasks",
+        schema_version: "1.0",
+        title: "Example Task",
+        description: "This is an example description",
+        user_ids: ["U1"],
+        type: "habbit",
+        expiration_date: "2023-12-31",
+        target: 20,
+        numer_of_events_in_one_go: 1,
+        status: "active",
+        status_date: "2023-10-01",
+        events: [
+          { _id: 1, user_id: "user1", num_of_events: 2, date: "2023-10-01T10:00:00Z" },
+          { _id: 2, user_id: "user2", num_of_events: 1, date: "2023-10-03T10:00:00Z" }
+        ],
+        total_event_count: 3,
+        observer_ids: ["O2", "O3"],
+        habbit_interval: "days_in_week",
+        days_in: ["Monday", "Wednesday", "Friday"]
       })
     }
 
@@ -50,8 +66,35 @@ class Task {
       return {
         type: "object",
         properties: {
-          _id: { type: "integer" },
+          _id: {type:  ["string","integer", "null"]},
           schema_version: { type: "string" },
+          title: { type: "string"},
+          description: { type: "string" },
+          user_ids: { type: "array", items: { type: "string" } },
+          type: { type: "string" },
+          expiration_date: { type: "string" },
+          target: { type: "integer" },
+          numer_of_events_in_one_go: { type: "integer" },
+          status: { type: "string" },
+          status_date: { type: "string" },
+          events: {
+            type: "array",
+            items: {
+              type: "object",
+              // properties: {
+              //   _id: { type: "integer" },
+              //   user_id: { type: "integer" },
+              //   num_of_events: { type: "integer" },
+              //   date: { type: "string", format: "date-time" },
+              // },
+              // required: ["_id", "user_id", "num_of_events", "date"],
+            },
+          },
+          total_event_count: { type: "integer" },
+          observer_ids: { type: "array", items: { type: "string" } },
+          habbit_interval: { type: "string" },
+          days_in: { type: "array" }
+          
         }
       }
     };
