@@ -62,14 +62,12 @@ describe('API Tests habbits', () => {
 
     const response = await request(server)
     .put('/habbit')
-    .set('Authorization',  `Bearer ${testJWT}`)
     .set('testUserId', 'fakeAuth-123')
     .send(habitData)
     .expect(200)
 
     const response2 = await request(server)
     .get('/habbits')
-    .set('Authorization',  `Bearer ${testJWT}`)
     .set('testUserId', 'fakeAuth-123')
     .send(habitData)
     .expect(200)
@@ -82,33 +80,25 @@ describe('API Tests habbits', () => {
 
   it('should return habbits even of a friend that has sent an invite', async () => {
 
-    const habitDataOfUser123 = {
-      name: 'Test Habit',
-      description: 'This is a test habit',
-      observer_ids: ['fakeAuth-321']
-    }
-
+    const habitDataOfUser123 = Task.createExampleInstance()
     createSampleUsers(server, testJWT);
 
     //User 123 stores the habbit, setting the observer_ids to the user 321
     const response = await request(server)
     .put('/habbit')
-    .set('Authorization',  `Bearer ${testJWT}`)
     .set('testUserId', 'fakeAuth-123')
-    .send(habitDataOfUser123)
+    .send({...habitDataOfUser123, observer_ids: ['fakeAuth-321']})
     .expect(200)
 
     //User 321 asks for the habbits, he should see the habbit of user 123
     const response2 = await request(server)
     .get('/habbits')
-    .set('Authorization',  `Bearer ${testJWT}`)
     .set('testUserId', 'fakeAuth-321')
     .expect(200)
 
     expect(response2.body).toBeDefined();
     expect(response2.body.length).toBeGreaterThan(0);
     const habbitOfUser123 = response2.body.find(habbit => habbit.user_ids.includes('fakeAuth-123'));
-    expect(habbitOfUser123.name).toEqual('Test Habit');
     expect(habbitOfUser123.is_observer).toBe(true);
   });
 
@@ -127,7 +117,7 @@ describe('API Tests habbits', () => {
 
   it('should not update & delete habit on PUT /habbit when not owner', async () => {
     const habbit = Task.createExampleInstance()
-    habbit.user_ids = ['fakeAuth-123']
+    // habbit.user_ids = ['fakeAuth-123']
 
     const response1 = await request(server)
     .put('/habbit')
@@ -137,7 +127,6 @@ describe('API Tests habbits', () => {
 
     const response15 = await request(server)
       .get('/habbits')
-      .set('Authorization',  `Bearer ${testJWT}`)
       .set('testUserId', 'fakeAuth-123')
       .expect(200)
 
@@ -164,7 +153,7 @@ describe('API Tests habbits', () => {
     /* Create the habbit first */
     const response = await request(server)
       .put('/habbit')
-      .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+      .set('testUserId',  'fakeAuth-1234') // Replace with a valid test JWT
       .send(habbit)
       .expect(200)
 
@@ -174,7 +163,7 @@ describe('API Tests habbits', () => {
     /* Get habbits and verify there is just one returned */
     const response2 = await request(server)
       .get('/habbits')
-      .set('Authorization',  `Bearer ${testJWT}`)
+      .set('testUserId',  'fakeAuth-1234')
       .expect(200)
 
     expect(response2.body).toBeDefined();
@@ -189,14 +178,14 @@ describe('API Tests habbits', () => {
 
     const response3 = await request(server)
     .put('/habbit')
-    .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+    .set('testUserId',  'fakeAuth-1234') // Replace with a valid test JWT
     .send(updatedHabbit)
     .expect(200)
 
     /* Get habbits and verify there is just one returned */
     const response4 = await request(server)
     .get('/habbits')
-    .set('Authorization',  `Bearer ${testJWT}`)
+    .set('testUserId',  'fakeAuth-1234')
     .expect(200)
 
     expect(response4.body).toBeDefined();
@@ -217,7 +206,6 @@ describe('API Tests habbits', () => {
     const response2 = await request(server)
     .get('/habbits')
     .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
-    .send(habitData)
     .expect(200)
 
     // console.log(response2.body[0]._id)

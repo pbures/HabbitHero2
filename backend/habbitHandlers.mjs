@@ -58,14 +58,30 @@ function useHabbitHandlers(app, myMongoDBManager) {
     const userId = req.auth.payload.sub
     console.log(`PUT request from user ${userId} at /habbit with data:`, req.body, '_id:', req.body._id);
 
+    
+    const schema = Task.getJsonSchema();
+    /* Validate the payload of the request against the schema using AJV */
+    const ajvInstance = new ajv();
+    const validate = ajvInstance.compile(schema);
+    const valid = validate(req.body);
+    
+    if (!valid) {
+      console.log('Validation errors:', validate.errors);
+      return res.status(400).json({ message: 'Validation errors', errors: validate.errors });
+    }
+    /*
+
+      
+    */
     /* TODO: Verify the data is as expected in the request body */
     const habbitId = req.body._id;
 
     let habbit = null;
-    if (req.body._id !== undefined) {
+    if ((req.body._id !== undefined) && (req.body._id !== null)) {
       habbit = (await myMongoDBManager.find({_id:new ObjectId(habbitId)}))[0];
     }
     if(habbit) {
+      // habbit exists
       console.log("Habbit exists", habbit);
       if(!habbit.user_ids.includes(userId)) {
         return res.status(403).json({ message: 'Forbidden' });
@@ -82,6 +98,7 @@ function useHabbitHandlers(app, myMongoDBManager) {
       console.log("Changes:", changes);
       await myMongoDBManager.update({_id: habbit._id}, changes);
     } else {
+      // Habbit does not exist, create a new one
       console.log('Inserting new habbit');
       let object = req.body;
       object.user_ids = [userId];
@@ -106,7 +123,9 @@ function useHabbitHandlers(app, myMongoDBManager) {
 
   app.delete('/habbit', async (req, res) => {
     const userId = req.auth.payload.sub;
-    let habbit = (await myMongoDBManager.find({_id:new ObjectId(req.query.habbit_id)}))[0];
+    // let habbit = (await myMongoDBManager.find({_id:new ObjectId(req.query.habbit_id)}))[0];
+    let habbit = await myMongoDBManager.findOne({_id: new ObjectId(req.query.habbit_id)})
+    
     if(!habbit.user_ids.includes(userId)) {
       return res.status(403).json({ message: 'Forbidden' });
     }

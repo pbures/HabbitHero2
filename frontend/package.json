@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "dockerbuild": "docker build -t habbithero2 .",
     "dockerstart": "docker run -p 8080:80 habbithero2",
