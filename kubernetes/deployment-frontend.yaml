@@ -22,11 +22,10 @@ spec:
     metadata:
       labels:
         app:  fe-hh2-app
-
     spec:
       containers:
       - name:  hh2-container
-        image:  ghcr.io/pbures/habbithero2:v0.0.19
+        image:  ghcr.io/pbures/habbithero2:v0.0.20
         resources:
           requests:
             cpu: 99m

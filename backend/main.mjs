@@ -1,6 +1,6 @@
 import createApp from './app.mjs';
-import MongoDBManager from './MongoDBManager.mjs';
-import MongoDBUserManager from './MongoDBUserManager.mjs';
+import MongoDBManager from './mongoDBManager.mjs';
+import MongoDBUserManager from './mongoDBUserManager.mjs';
 
 import dotenv from 'dotenv';
 import { createServer } from 'http';
