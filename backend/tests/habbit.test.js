@@ -139,7 +139,7 @@ describe('API Tests habbits', () => {
     const response3 = await request(server)
       .delete('/habbit')
       .set('testUserId', 'fakeAuth-321')
-      .query({ habbit_id: response15.body[0]._id })
+      .query({ habbitId: response15.body[0]._id })
       .expect(403)
 
     // Add your assertions here based on the expected response
@@ -199,25 +199,57 @@ describe('API Tests habbits', () => {
 
     const response = await request(server)
     .put('/habbit')
-    .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+    .set('testUserId',  'fakeAuth-123')
     .send(habitData)
     .expect(200)
 
     const response2 = await request(server)
     .get('/habbits')
-    .set('Authorization',  `Bearer ${testJWT}`) // Replace with a valid test JWT
+    .set('testUserId', 'fakeAuth-123')
     .expect(200)
 
     // console.log(response2.body[0]._id)
     const response3 = await request(server)
       .delete('/habbit')
-      .set('Authorization',  `Bearer ${testJWT}`)
-      .query({ habbit_id: response2.body[0]._id })
+      .set('testUserId', 'fakeAuth-123')
+      .query({ habbitId: response2.body[0]._id })
       .expect(200)
 
-    // Add your assertions here based on the expected response
-  })
+    const response4 = await request(server)
+      .get('/habbits')
+      .set('testUserId', 'fakeAuth-123')
+      .expect(200)
 
+    expect(response4.body).toBeDefined();
+    expect(response4.body.length).toBe(0);
+    
+    
+    // Add your assertions here based on the expected response
+  }) 
+  it('should throw 400 when bad request at /delete a habbit', async () => {
+    const habitData = Task.createExampleInstance();
+
+    const response = await request(server)
+    .put('/habbit')
+    .set('testUserId',  'fakeAuth-123')
+    .send(habitData)
+    .expect(200)
+
+    const response2 = await request(server)
+    .get('/habbits')
+    .set('testUserId', 'fakeAuth-123')
+    .expect(200)
+
+    // console.log(response2.body[0]._id)
+    const response3 = await request(server)
+      .delete('/habbit')
+      .set('testUserId', 'fakeAuth-123')
+      .query({ nonGudID: response2.body[0]._id })
+      .expect(400)
+
+    
+    // Add your assertions here based on the expected response
+  }) 
   it('should return friends habbits', async () => {
     let habitData = Task.createExampleInstance();
     // habitData.user_ids = ['fakeAuth-123'];
