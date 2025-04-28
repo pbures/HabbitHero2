@@ -125,8 +125,7 @@ function useHabbitHandlers(app, myMongoDBManager) {
     const userId = req.auth.payload.sub;
     // let habbit = (await myMongoDBManager.find({_id:new ObjectId(req.query.habbit_id)}))[0];
     let habbit = await myMongoDBManager.findOne({_id: new ObjectId(req.query.habbit_id)})
-    
-    if(!habbit.user_ids.includes(userId)) {
+    if(!habbit?.user_ids?.includes(userId)) {
       return res.status(403).json({ message: 'Forbidden' });
     }
     console.log(`DELETE request from user: ${userId} at /habbit, id:` + req.query.habbit_id);
