@@ -124,12 +124,15 @@ function useHabbitHandlers(app, myMongoDBManager) {
   app.delete('/habbit', async (req, res) => {
     const userId = req.auth.payload.sub;
     // let habbit = (await myMongoDBManager.find({_id:new ObjectId(req.query.habbit_id)}))[0];
-    let habbit = await myMongoDBManager.findOne({_id: new ObjectId(req.query.habbit_id)})
-    if(!habbit?.user_ids?.includes(userId)) {
+    let habbit = await myMongoDBManager.findOne({_id: new ObjectId(req.query.habbitId)})
+    if(!habbit) {
+      return res.status(400).json({ message: 'Habbit not found' });
+    }
+    if(!habbit.user_ids.includes(userId)) {
       return res.status(403).json({ message: 'Forbidden' });
     }
-    console.log(`DELETE request from user: ${userId} at /habbit, id:` + req.query.habbit_id);
-    await myMongoDBManager.delete({ _id: new ObjectId(req.query.habbit_id) });
+    console.log(`DELETE request from user: ${userId} at /habbit, id:` + req.query.habbitId);
+    await myMongoDBManager.delete({ _id: new ObjectId(req.query.habbitId) });
     res.status(200).json({ message: 'Habbit deleted successfully' });
   });
 
