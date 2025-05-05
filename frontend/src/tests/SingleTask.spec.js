@@ -19,7 +19,7 @@ describe("SingleTask.vue", async () => {
  beforeAll(() => {
 
   testingPinia = createTestingPinia({
-    stubActions: true,
+    stubActions: false,
   });
 
   habbitStore = useHabbitStore(testingPinia);
@@ -33,12 +33,14 @@ describe("SingleTask.vue", async () => {
       total_event_count: 1,
       events: [{num_of_events: 1, date: "2021-10-10"}],
       days_in: [1, 2],
+      observer_ids: [3, 4]
     }
 
   habbitStore.habbits = [ oneHabbit ]
   userStore.user = User.createExampleInstance();
   userStore.user._id = 1;
   userStore.user.friends = [1, 2, 3, 4];
+
 
   userStore.userIdtoNickname = vi.fn().mockImplementation((id) => {
     return `Friend-${id}`;
@@ -77,6 +79,13 @@ it('displays the habbit and shows friends list once clicked on friends icon', as
 
   const inviteFriends = wrapper.findAll(".friend div");
   expect(inviteFriends.length).toBe(4);
+
+  expect(inviteFriends[2].text()).toContain("Friend-3");
+  const alreadyInvitedFriend = inviteFriends[2].find("em")
+  expect(alreadyInvitedFriend.exists()).toBe(true);
+
+  await alreadyInvitedFriend.trigger("click");
+  expect(habbitStore.shareHabbit).not.toHaveBeenCalled();
 
   expect(inviteFriends[0].text()).toContain("Friend-1");
   const inviteFriend = inviteFriends[0].find(".clickable")
