@@ -173,6 +173,7 @@ export const useHabbitStore = defineStore('habbit', {
       } catch (error) {
         console.error('Failed to invite friend:', error)
       }
+      await this.fetchHabbitsData();
     },
 
     async deleteHabbit(habbitId) {
@@ -230,6 +231,20 @@ export const useHabbitStore = defineStore('habbit', {
         console.error('Failed to fetch habbit data:', error)
       }
     },
+
+    //Returns true if userId is in the observer_ids property of the habbit
+    isUserInHabbitObservers(userId, habbit_id){
+      const habbit = this.habbits.find(h => h._id === habbit_id)
+      if (!habbit) {
+        return false
+      }
+      return habbit.observer_ids.includes(userId)
+    },
+  },
+
+  getters: {
+
+
   },
 })
 

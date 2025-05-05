@@ -41,9 +41,10 @@
         <div v-if="showFriendsList" class="friends-list">
           <div v-for="f in user.friends" :key="f.id" class="friend">
             <div>{{ userIdToNickname(f) }}
-              <em class="clickable" @click="shareHabbit(f, habbit._id)">
+              <em v-if="!isUserInHabbit(f, habbit._id)" class="clickable" @click="shareHabbit(f, habbit._id)">
                 &#x2192;
               </em>
+              <em v-else>&#x2713;</em>
             </div>
           </div>
         </div>
@@ -107,6 +108,12 @@ import { computed, ref, toRefs } from 'vue';
       })
 
       return ret;
+    }
+
+    const isUserInHabbit = (userId, habbit_id) => {
+      const res = habbitStore.isUserInHabbitObservers(userId, habbit_id);
+      console.log(`User: ${userId} is already in habbit with id: ${habbit_id}: ${res}`);
+      return res;
     }
 
     function shareHabbit(userId, habbit_id) {
