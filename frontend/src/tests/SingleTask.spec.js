@@ -10,6 +10,7 @@ import User from "@/model/user.mjs";
 import { useHabbitStore } from '@/stores/task';
 import { useUserStore } from '@/stores/user';
 import { describe, it } from "vitest";
+// import { nextTick } from "vue";
 
 let testingPinia;
 let habbitStore, userStore;
@@ -145,10 +146,57 @@ it('displays the habbit with title and details', async () => {
         habbit: oneHabbit,
       }
     });
-    const confirmEventSpy = vi.spyOn(wrapper.vm, 'deleteHabbit');
+
+    const deleteHabbitSpy = vi.spyOn(wrapper.vm, 'deleteHabbit');
+    const displayDeletionConfirmationSpy = vi.spyOn(wrapper.vm, 'displayDeletionConfirmation');
+
     await wrapper.find("#delete").trigger("click");
-    expect(confirmEventSpy).toHaveBeenCalled();
+    expect(displayDeletionConfirmationSpy).toHaveBeenCalled();
+
+    expect(wrapper.find("#deletion-confirmation").exists()).toBe(true)
+    let confirmYes=wrapper.find("#deletion-yes")
+    expect(confirmYes.exists()).toBe(true)
+    await confirmYes.trigger("click");
+    // await nextTick()
+
+    expect(deleteHabbitSpy).toBeCalledTimes(1)
   });
+
+  it('displays the habbit deletion confirmation and user clicks no', async () => {
+    const wrapper = mount(SingleTask, {
+      global: {
+        plugins: [testingPinia],
+      },
+      props: {
+        habbit: oneHabbit,
+      }
+    });
+
+    const deleteHabbitSpy = vi.spyOn(wrapper.vm, 'deleteHabbit');
+    const displayDeletionConfirmationSpy = vi.spyOn(wrapper.vm, 'displayDeletionConfirmation')
+
+    expect(wrapper.find(".habbit").exists()).toBe(true);
+    expect(wrapper.find(".title").text()).toContain("Habbit Title");
+    expect(wrapper.find(".habbit-details").exists()).toBe(true);
+
+    const deleteBtn = wrapper.find("#delete")
+    expect(deleteBtn.exists()).toBe(true)
+    await deleteBtn.trigger("click")
+    // await nextTick()
+    expect(deleteHabbitSpy).toBeCalledTimes(0)
+    expect(displayDeletionConfirmationSpy).toHaveBeenCalled()
+    expect(wrapper.find(".habbit-details").exists()).toBe(false)
+
+    expect(wrapper.find("#deletion-confirmation").exists()).toBe(true)
+    let confirmNo=wrapper.find("#deletion-no")
+    expect(confirmNo.exists()).toBe(true)
+    await confirmNo.trigger("click");
+    // await nextTick()
+
+    expect(deleteHabbitSpy).toBeCalledTimes(0)
+    expect(wrapper.find(".habbit-details").exists()).toBe(true);
+  });
+
 
   it.todo('redirects to edit.vue');
 });

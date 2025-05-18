@@ -1,7 +1,8 @@
 <template>
     <div class="habbit">
         <div class="title">{{ habbit.title }}</div>
-        <div class="habbit-footer">
+        <div v-if="!showDeletionConfirmation">
+          <div class="habbit-footer">
             <div class="habbit-details" v-if="habbit.type === 'goal'">
                 G: {{ habbit.total_event_count }} / {{ habbit.target }}
             </div>
@@ -17,38 +18,46 @@
             <div id="edit" class="clickable"><RouterLink :to="{ path: '/edit', query: { taskId:habbit._id } }" >E</RouterLink>
             </div>
             <div id="show-info" class="clickable show-info-btn" @click="showTaskStatistics(habbit)">&#9432;</div>
-            <div id="delete" class="clickable delete-btn" @click="deleteHabbit(habbit._id)">&#x1F5D1;</div>
+            <div id="delete" class="clickable delete-btn" @click="displayDeletionConfirmation(true)">&#x1F5D1;</div>
             <div id="invite" class="clickable invite-btn" @click="toggleFriendsList()">&#x1F465;</div>
           </div>
 
-        <div v-if="habbit.type=='habbit'" class="habbit-stats">
-          <div
-            v-for="he, i in habbitEvents"
-            :key="he.date"
-            class="habbit-stat"
-            :class="habbitStatClass(he.hit)"
-            :alt="DaysInWeekDateUtil.getDayMonthStr(he.date)"
-            @click="focusedEvent=i"
-          >
-          <div v-if="i == focusedEvent" class="habbit-event-detail"> {{ DaysInWeekDateUtil.getDayMonthStr(he.date) }}</div>
-        </div>
-        </div>
-        <div v-else class="habbit-stats">
-          <div :style="{ width: goalLeftWidth }" class="habbit-goal-stat-left" />
-          <div :style="{ width: goalRightWidth }" class="habbit-goal-stat-right" />
-        </div>
+          <div v-if="habbit.type=='habbit'" class="habbit-stats">
+            <div
+              v-for="he, i in habbitEvents"
+              :key="he.date"
+              class="habbit-stat"
+              :class="habbitStatClass(he.hit)"
+              :alt="DaysInWeekDateUtil.getDayMonthStr(he.date)"
+              @click="focusedEvent=i"
+            >
+            <div v-if="i == focusedEvent" class="habbit-event-detail"> {{ DaysInWeekDateUtil.getDayMonthStr(he.date) }}</div>
+          </div>
+          </div>
+          <div v-else class="habbit-stats">
+            <div :style="{ width: goalLeftWidth }" class="habbit-goal-stat-left" />
+            <div :style="{ width: goalRightWidth }" class="habbit-goal-stat-right" />
+          </div>
 
-        <div v-if="showFriendsList" class="friends-list">
-          <div v-for="f in user.friends" :key="f.id" class="friend">
-            <div>{{ userIdToNickname(f) }}
-              <em v-if="!isUserInHabbit(f, habbit._id)" class="clickable" @click="shareHabbit(f, habbit._id)">
-                &#x2192;
-              </em>
-              <em v-else>&#x2713;</em>
+          <div v-if="showFriendsList" class="friends-list">
+            <div v-for="f in user.friends" :key="f.id" class="friend">
+              <div>{{ userIdToNickname(f) }}
+                <em v-if="!isUserInHabbit(f, habbit._id)" class="clickable" @click="shareHabbit(f, habbit._id)">
+                  &#x2192;
+                </em>
+                <em v-else>&#x2713;</em>
+              </div>
             </div>
           </div>
         </div>
 
+        <div class="deletion-confirmation-container" v-if="showDeletionConfirmation">
+          <em>Confirm the deletion</em>
+          <div id="deletion-confirmation">
+            <button id="deletion-yes" class="clickable" @click="deleteHabbit(habbit._id)">Yes</button>
+            <button id="deletion-no" class="clickable" @click="displayDeletionConfirmation(false)">No</button>
+          </div>
+        </div>
 
     </div>
 </template>
@@ -67,6 +76,7 @@ import { computed, ref, toRefs } from 'vue';
     const emit = defineEmits(['update-habbit-detail']);
 
     let {habbit, selectedHabbit} = toRefs(props);
+    let showDeletionConfirmation = ref(false)
 
     const dateUtil = computed ( () => {
       if (habbit.value.habbit_interval == 'days_in_month') {
@@ -165,8 +175,13 @@ import { computed, ref, toRefs } from 'vue';
     }
 
     const deleteHabbit = (id) => {
+      showDeletionConfirmation.value = false
         habbitStore.deleteHabbit(id)
     };
+
+    const displayDeletionConfirmation = (v) => {
+      showDeletionConfirmation.value = v
+    }
 
     const showTaskStatistics = (habbit) => {
         console.log('SingleTask.vue: Show statistics for habbit:', habbit);
@@ -225,6 +240,27 @@ import { computed, ref, toRefs } from 'vue';
       margin: 5px;
       max-height: 8px;
       padding-top: 5px;
+    }
+
+    #deletion-confirmation {
+      display: flex;
+      justify-content: space-around;
+      padding: 8px;
+    }
+
+    .deletion-confirmation-container em {
+      font-size: 1em;
+      margin-bottom: 8px;
+      border-bottom: 1px solid white;
+    }
+
+    #deletion-confirmation > button {
+      background-color: rgba(255,255,255, 0.2);
+      border: 1px solid rgba(255,255,255, 0.5);
+      border-radius: 5px;
+      padding: 5px;
+      padding-left: 12px;
+      padding-right: 12px;
     }
 
     .event-met {
