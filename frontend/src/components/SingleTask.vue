@@ -51,7 +51,8 @@
           </div>
         </div>
 
-        <div v-if="showDeletionConfirmation">
+        <div class="deletion-confirmation-container" v-if="showDeletionConfirmation">
+          <em>Confirm to Delete</em>
           <div id="deletion-confirmation">
             <button id="deletion-yes" class="clickable" @click="deleteHabbit(habbit._id)">Yes</button>
             <button id="deletion-no" class="clickable" @click="displayDeletionConfirmation(false)">No</button>
@@ -245,6 +246,11 @@ import { computed, ref, toRefs } from 'vue';
       display: flex;
       justify-content: space-around;
       padding: 8px;
+    }
+
+    .deletion-confirmation-container em {
+      font-size: 0.8em;
+      margin-bottom: 8px;
     }
 
     .event-met {
