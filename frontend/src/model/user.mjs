@@ -50,7 +50,7 @@ class User {
         friends: {
           type: "array",
           items: { type: "string" }
-        }
+        },
       },
       required: ["name", "nickname", "email", "schema_version", "invites_sent", "invites_received", "friends"],
       additionalProperties: false
@@ -67,7 +67,7 @@ class User {
       email: ${this.email},
       invites_sent: ${JSON.stringify(this.invites_sent)},
       invites_received: ${JSON.stringify(this.invites_received)},
-      friends: ${JSON.stringify(this.friends)}
+      friends: ${JSON.stringify(this.friends)},
     }`;
   }
 
