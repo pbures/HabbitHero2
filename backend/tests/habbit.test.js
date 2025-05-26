@@ -374,19 +374,20 @@ describe('API Tests habbits', () => {
   }, 1500),
   it('should update habbit notes on PUT /habbit', async () => {
     const habbit = Task.createExampleInstance()
+    expect(habbit.notes).toEqual('This is an example task for demonstration purposes.')
 
     const response = await request(server)
       .put('/habbit')
       .set('testUserId', 'fakeAuth-321') // Replace with a valid test JWT
       .send(habbit)
       .expect(200)
-
-      const response2 = await request(server)
+    
+    const response2 = await request(server)
       .get('/habbits')
       .set('testUserId', 'fakeAuth-321') // Replace with a valid test JWT
       .expect(200)
     // Add your assertions here based on the expected response
-    expect(response.body).toHaveProperty('message', 'Habbit updated successfully')
-    // expect(response2.body[0].notes).toBe('This is an example task for demonstration purposes.'); //This isnt working. It cant find it idk its just stupid, but it works :D
+    expect(response.body).toHaveProperty('message', 'Habbit updated successfully');
+    expect(response2.body[0].notes).toEqual('This is an example task for demonstration purposes.'); //This isnt working. It cant find it idk its just stupid, but it works :D
   }, 1000)
 }, 500)
