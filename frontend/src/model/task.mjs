@@ -18,6 +18,7 @@ class Task {
         habbit_interval = "days_in_week",
         days_in = [],
         observer_ids = [],
+        notes = ""
       } = {}
     ) {
         this._id = _id;
@@ -37,6 +38,7 @@ class Task {
 
         this.habbit_interval = habbit_interval;
         this.days_in = days_in;
+        this.notes = notes;
     };
 
     static createExampleInstance() {
@@ -58,7 +60,8 @@ class Task {
         total_event_count: 3,
         observer_ids: ["O2", "O3"],
         habbit_interval: "days_in_week",
-        days_in: ["Monday", "Wednesday", "Friday"]
+        days_in: ["Monday", "Wednesday", "Friday"],
+        notes: "This is an example task for demonstration purposes."
       })
     }
 
@@ -93,7 +96,8 @@ class Task {
           total_event_count: { type: "integer" },
           observer_ids: { type: "array", items: { type: "string" } },
           habbit_interval: { type: "string" },
-          days_in: { type: "array" }
+          days_in: { type: "array" },
+          notes: { type: "string" }
           
         }
       }
