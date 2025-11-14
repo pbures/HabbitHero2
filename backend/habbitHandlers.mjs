@@ -58,20 +58,20 @@ function useHabbitHandlers(app, myMongoDBManager) {
     const userId = req.auth.payload.sub
     console.log(`PUT request from user ${userId} at /habbit with data:`, req.body, '_id:', req.body._id);
 
-    
+
     const schema = Task.getJsonSchema();
     /* Validate the payload of the request against the schema using AJV */
     const ajvInstance = new ajv();
     const validate = ajvInstance.compile(schema);
     const valid = validate(req.body);
-    
+
     if (!valid) {
       console.log('Validation errors:', validate.errors);
       return res.status(400).json({ message: 'Validation errors', errors: validate.errors });
     }
     /*
 
-      
+
     */
     /* TODO: Verify the data is as expected in the request body */
     const habbitId = req.body._id;
@@ -128,6 +128,12 @@ function useHabbitHandlers(app, myMongoDBManager) {
     if(!habbit) {
       return res.status(400).json({ message: 'Habbit not found' });
     }
+
+    //test if habbit has user_ids array
+    if(!Array.isArray(habbit.user_ids)) {
+      return res.status(422).json({ message: 'Internal server error: habbit user_ids is not an array' });
+    }
+
     if(!habbit.user_ids.includes(userId)) {
       return res.status(403).json({ message: 'Forbidden' });
     }
