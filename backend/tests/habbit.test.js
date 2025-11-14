@@ -8,6 +8,7 @@ import { createServer } from 'http';
 import request from 'supertest';
 import createApp from '../app.mjs';
 
+import { ObjectId } from 'mongodb';
 import Task from '../frontend/src/model/task.mjs';
 import MongoDBManager from '../MongoDBManager.mjs';
 import MongoDBUserManager from '../MongoDBUserManager.mjs';
@@ -135,7 +136,7 @@ describe('API Tests habbits', () => {
       .set('testUserId', 'fakeAuth-321')
       .send(response15.body[0])
       .expect(403)
-    
+
     const response3 = await request(server)
       .delete('/habbit')
       .set('testUserId', 'fakeAuth-321')
@@ -194,6 +195,47 @@ describe('API Tests habbits', () => {
     expect(response4.body[0].description).toEqual('This is an updated test habit');
   })
 
+  it('should skip a habbit without user_id (bug#61)', async () => {
+    const habitData = Task.createExampleInstance();
+
+    const response = await request(server)
+    .put('/habbit')
+    .set('testUserId',  'fakeAuth-123')
+    .send(habitData)
+    .expect(200)
+
+    const response2 = await request(server)
+    .get('/habbits')
+    .set('testUserId', 'fakeAuth-123')
+    .expect(200)
+
+    const objectId = ObjectId.createFromHexString(response2.body[0]._id);
+    const res_find = await myMongoDBManager.find(
+      { _id: objectId }
+    );
+    expect(res_find.length).toBe(1);
+
+    //Modify the habbit directly in the DB to remove user_ids to simulate the bug.
+    const res = await myMongoDBManager.database.collection('habbits').updateOne(
+      { _id: objectId },
+      { $unset: { user_ids: ""} }
+    );
+    expect(res.modifiedCount).toBe(1);
+
+    const modified_object = await myMongoDBManager.findOne(
+      { _id: objectId }
+    );
+    expect(modified_object.user_ids).toBeUndefined
+
+    const response3 = await request(server)
+      .delete('/habbit')
+      .set('testUserId', 'fakeAuth-123')
+      .query({ habbitId: response2.body[0]._id })
+      .expect(422)
+
+    expect(response3.body).toHaveProperty('message');
+  })
+
   it('should delete a habbit', async () => {
     const habitData = Task.createExampleInstance();
 
@@ -222,10 +264,10 @@ describe('API Tests habbits', () => {
 
     expect(response4.body).toBeDefined();
     expect(response4.body.length).toBe(0);
-    
-    
+
+
     // Add your assertions here based on the expected response
-  }) 
+  })
   it('should throw 400 when bad request at /delete a habbit', async () => {
     const habitData = Task.createExampleInstance();
 
@@ -247,9 +289,9 @@ describe('API Tests habbits', () => {
       .query({ nonGudID: response2.body[0]._id })
       .expect(400)
 
-    
+
     // Add your assertions here based on the expected response
-  }) 
+  })
   it('should return friends habbits', async () => {
     let habitData = Task.createExampleInstance();
     // habitData.user_ids = ['fakeAuth-123'];
@@ -381,7 +423,7 @@ describe('API Tests habbits', () => {
       .set('testUserId', 'fakeAuth-321') // Replace with a valid test JWT
       .send(habbit)
       .expect(200)
-    
+
     const response2 = await request(server)
       .get('/habbits')
       .set('testUserId', 'fakeAuth-321') // Replace with a valid test JWT
