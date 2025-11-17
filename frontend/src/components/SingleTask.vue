@@ -1,6 +1,6 @@
 <template>
     <div class="habbit">
-        <div class="title">{{ habbit.title }}</div>
+        <div :class="habbit.is_observer ? 'title_nickname' : 'title'">{{ habbit.title }} <span class="title_nickname" v-if="habbit.is_observer"> - {{ userIdToNickname(habbit.user_ids[0]) }}</span> </div>
         <div v-if="!showDeletionConfirmation">
           <div class="habbit-footer">
             <div class="habbit-details" v-if="habbit.type === 'goal'">
@@ -9,17 +9,17 @@
             <div class="habbit-details" v-else>
                 H: {{ habbit.total_event_count }}
             </div>
-            <div class="clickable" @click="confirmEvent(habbit._id)" id="add-progress">
+            <div v-if="!habbit.is_observer" class="clickable" @click="confirmEvent(habbit._id)" id="add-progress">
               &#x2713;
             </div>
-            <div class="clickable" @click="removeEvents(habbit._id)" id="add-progress">
+            <div v-if="!habbit.is_observer" class="clickable" @click="removeEvents(habbit._id)" id="add-progress">
               X
             </div>
-            <div id="edit" class="clickable"><RouterLink :to="{ path: '/edit', query: { taskId:habbit._id } }" >E</RouterLink>
+            <div v-if="!habbit.is_observer" id="edit" class="clickable"><RouterLink :to="{ path: '/edit', query: { taskId:habbit._id } }" >E</RouterLink>
             </div>
             <div id="show-info" class="clickable show-info-btn" @click="showTaskStatistics(habbit)">&#9432;</div>
-            <div id="delete" class="clickable delete-btn" @click="displayDeletionConfirmation(true)">&#x1F5D1;</div>
-            <div id="invite" class="clickable invite-btn" @click="toggleFriendsList()">&#x1F465;</div>
+            <div v-if="!habbit.is_observer" id="delete" class="clickable delete-btn" @click="displayDeletionConfirmation(true)">&#x1F5D1;</div>
+            <div v-if="!habbit.is_observer" id="invite" class="clickable invite-btn" @click="toggleFriendsList()">&#x1F465;</div>
           </div>
 
           <div v-if="habbit.type=='habbit'" class="habbit-stats">
@@ -191,6 +191,13 @@ import { computed, ref, toRefs } from 'vue';
 </script>
 
 <style scoped>
+
+    .title_nickname {
+      font-size: 0.8em;
+      font-style: italic;
+      color: rgb(146, 146, 146);
+    }
+
     div.habbit {
         display: flex;
         flex-direction: column;
