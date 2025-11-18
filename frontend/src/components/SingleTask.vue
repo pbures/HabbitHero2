@@ -12,7 +12,7 @@
             <div v-if="!habbit.is_observer" class="clickable" @click="confirmEvent(habbit._id)" id="add-progress">
               &#x2713;
             </div>
-            <div v-if="!habbit.is_observer" class="clickable" @click="removeEvents(habbit._id)" id="add-progress">
+            <div v-if="!habbit.is_observer" class="clickable" @click="removeEvents(habbit._id)" id="remove-progress">
               X
             </div>
             <div v-if="!habbit.is_observer" id="edit" class="clickable"><RouterLink :to="{ path: '/edit', query: { taskId:habbit._id } }" >E</RouterLink>
@@ -168,6 +168,17 @@ import { computed, ref, toRefs } from 'vue';
     };
 
     const removeEvents = (id) => {
+      // For goals, we don't need a specific date - just remove the last event
+      if (habbit.value.type === 'goal') {
+        habbitStore.removeHabbitsFromEvent(id, null)
+        return;
+      }
+
+      // For habbits, require a focused event
+      if (focusedEvent.value == null) {
+        console.warn('No event focused. Please select an event to remove.');
+        return;
+      }
       const dateToRemove = days.value[focusedEvent.value]
       console.log(`Events for event: ${id} confirmed for removal with dates: `, dateToRemove);
 

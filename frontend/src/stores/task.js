@@ -116,13 +116,21 @@ export const useHabbitStore = defineStore('habbit', {
         return;
       }
 
-      h.events = h.events.filter( (e) => {
-        const d1 = getDateStr(new Date(e.date));
-        const d2 = getDateStr(dateToRemove);
+      // If dateToRemove is null, remove the last event (for goals)
+      if (dateToRemove === null) {
+        if (h.events.length > 0) {
+          h.events.pop();
+        }
+      } else {
+        // For habbits, filter by date
+        h.events = h.events.filter( (e) => {
+          const d1 = getDateStr(new Date(e.date));
+          const d2 = getDateStr(dateToRemove);
 
-        const ret = ( d1 != d2 )
-        return ret;
-      });
+          const ret = ( d1 != d2 )
+          return ret;
+        });
+      }
 
       h.total_event_count = h.events.length;
 
