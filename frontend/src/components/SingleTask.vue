@@ -1,13 +1,13 @@
 <template>
     <div class="habbit">
         <div :class="habbit.is_observer ? 'title_nickname' : 'title'">{{ habbit.title }} <span class="title_nickname" v-if="habbit.is_observer"> - {{ userIdToNickname(habbit.user_ids[0]) }}</span> </div>
-        <div v-if="!showDeletionConfirmation">
+        <div class="habbit-content" v-if="!showDeletionConfirmation">
           <div class="habbit-footer">
             <div class="habbit-details" v-if="habbit.type === 'goal'">
-                G: {{ habbit.total_event_count }} / {{ habbit.target }}
+                <div>[{{ habbit.total_event_count }}/{{ habbit.target }}]</div>
             </div>
             <div class="habbit-details" v-else>
-                H: {{ habbit.total_event_count }}
+                <div>[{{ habbit.total_event_count }}]</div>
             </div>
             <div v-if="!habbit.is_observer" class="clickable" @click="confirmEvent(habbit._id)" id="add-progress">
               &#x2713;
@@ -17,7 +17,7 @@
             </div>
             <div v-if="!habbit.is_observer" id="edit" class="clickable"><RouterLink :to="{ path: '/edit', query: { taskId:habbit._id } }" >E</RouterLink>
             </div>
-            <div id="show-info" class="clickable show-info-btn" @click="showTaskStatistics(habbit)">&#9432;</div>
+            <div v-if="!habbit.is_observer" id="show-info" class="clickable show-info-btn" @click="showTaskStatistics(habbit)">&#9432;</div>
             <div v-if="!habbit.is_observer" id="delete" class="clickable delete-btn" @click="displayDeletionConfirmation(true)">&#x1F5D1;</div>
             <div v-if="!habbit.is_observer" id="invite" class="clickable invite-btn" @click="toggleFriendsList()">&#x1F465;</div>
           </div>
@@ -219,6 +219,7 @@ import { computed, ref, toRefs } from 'vue';
 
         margin: 1em;
         padding: 8px;
+        padding-bottom: 16px;
 
         border: 1px solid white;
         box-shadow: 3px 3px 5px #1b2d3d;
@@ -229,9 +230,14 @@ import { computed, ref, toRefs } from 'vue';
         border-radius: 15px;
     }
 
+    div.habbit-content {
+        width: 85%;
+    }
+
     div.habbit-footer {
         display: flex;
         flex-direction: row;
+        justify-content: space-between;
     }
 
     div.habbit-details {
@@ -249,13 +255,14 @@ import { computed, ref, toRefs } from 'vue';
       justify-content: space-around;
       border-top: 1px white solid;
       width: 100%;
+      padding-top: 5px;
       padding-bottom: 5px;
     }
 
     .habbit-stat {
       border: 1px black solid;
-      width: 100%;
-      margin: 5px;
+      min-width: 15px;
+      margin: 1px;
       max-height: 8px;
       padding-top: 5px;
     }
