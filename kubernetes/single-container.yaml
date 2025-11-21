@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-container
+  namespace: hh2
+spec:
+  containers:
+  - name: my-container
+    image: ghcr.io/pbures/habbithero2-backend:v0.0.5
+    ports:
+    - containerPort: 3000
+    resources:
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+    env:
+    - name: MONGODB_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: mongodb-secret
+          key: MONGODB_USERNAME
+          
+    - name: MONGODB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: mongodb-secret
+          key: MONGODB_PASSWORD
+
+    - name: MONGODB_URL
+      valueFrom:
+        secretKeyRef:
+          name: mongodb-secret
+          key: MONGODB_URL
+
+  imagePullSecrets:
+  - name: ghcr-secret
+  
